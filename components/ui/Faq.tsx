@@ -14,12 +14,14 @@ export function Faq({
   id = "faq",
   jsonLd = true,
   openFirst = true,
+  headingLevel = 2,
 }: {
   items: FaqItem[];
   title?: string;
   id?: string;
   jsonLd?: boolean;
   openFirst?: boolean;
+  headingLevel?: 2 | 3;
 }) {
   if (items.length === 0) return null;
 
@@ -32,6 +34,7 @@ export function Faq({
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
+  const Heading = headingLevel === 3 ? "h3" : "h2";
 
   return (
     <section id={id} className="scroll-mt-24">
@@ -42,7 +45,11 @@ export function Faq({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }}
         />
       )}
-      <h2 className="font-display text-3xl font-bold tracking-tight text-ink">{title}</h2>
+      <Heading
+        className={`font-display font-bold tracking-tight text-ink ${headingLevel === 3 ? "text-2xl" : "text-3xl"}`}
+      >
+        {title}
+      </Heading>
       <div className="mt-6 space-y-3">
         {items.map((f, i) => (
           <details
