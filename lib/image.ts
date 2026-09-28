@@ -20,5 +20,9 @@ export function posterSrcSet(url?: string | null): string | undefined {
 export function posterSrc(url?: string | null, width = 342): string | undefined {
   if (!url) return undefined;
   const m = url.match(TMDB_RE);
-  return m ? `${m[1]}w${width}${m[2]}` : url;
+  if (m) return `${m[1]}w${width}${m[2]}`;
+  // MyAnimeList: ".../123l.jpg" is the 425px-wide "large" file. For small
+  // thumbnails the un-suffixed ".../123.jpg" (~225px) is about a third the size.
+  if (width <= 185) return url.replace(/(\/\d+)l\.(jpg|webp)(\?.*)?$/, "$1.$2$3");
+  return url;
 }

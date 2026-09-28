@@ -11,6 +11,8 @@ import { TitleRequestForm } from "@/components/TitleRequestForm";
 import { HOME_FAQ } from "@/lib/faq";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { buildOgImageUrl } from "@/lib/og";
+import { preload } from "react-dom";
+import { posterSrc, posterSrcSet } from "@/lib/image";
 import { graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
 
 export const revalidate = 3600;
@@ -83,6 +85,12 @@ export default async function HomePage() {
     .slice(0, 8);
 
   const spotlight = latestGuides[0];
+
+  // The spotlight poster is the largest element in the first mobile screen
+  // (the LCP element). Preloading starts its download from the document head
+  // instead of waiting for the parser to reach the card.
+  const spotlightSrc = posterSrc(spotlight?.posterUrl, 185);
+  if (spotlightSrc) preload(spotlightSrc, { as: "image", fetchPriority: "high" });
 
   const pageJsonLd = graph(
     {
@@ -201,7 +209,9 @@ export default async function HomePage() {
                 <div className="mt-3 flex gap-4">
                   {spotlight.posterUrl && (
                     <img
-                      src={spotlight.posterUrl}
+                      src={posterSrc(spotlight.posterUrl, 185)}
+                      srcSet={posterSrcSet(spotlight.posterUrl)}
+                      sizes="96px"
                       alt={`${spotlight.title} poster`}
                       width={96}
                       height={144}
