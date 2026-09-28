@@ -4,12 +4,24 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 
-export function SearchBar({ initialValue, path }: { initialValue?: string; path: string }) {
+export function SearchBar({
+  initialValue,
+  path,
+  size = "md",
+  placeholder = "Search a movie, anime or franchise",
+}: {
+  initialValue?: string;
+  path: string;
+  size?: "md" | "lg";
+  placeholder?: string;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState(initialValue ?? "");
+  const big = size === "lg";
 
   return (
     <form
+      role="search"
       onSubmit={(event) => {
         event.preventDefault();
         const params = new URLSearchParams();
@@ -17,15 +29,26 @@ export function SearchBar({ initialValue, path }: { initialValue?: string; path:
         trackEvent("search", { search_term: query.trim() });
         router.push(`${path}?${params.toString()}`);
       }}
-      className="flex flex-col gap-3 sm:flex-row"
+      className={`flex items-center gap-2 rounded-full border-2 border-ink bg-surface p-1.5 shadow-block ${big ? "sm:p-2" : ""}`}
     >
+      <label htmlFor={`search-${path}`} className="sr-only">
+        Search by title
+      </label>
       <input
+        id={`search-${path}`}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search by title"
-        className="w-full rounded border border-marquee-line bg-marquee-panel px-4 py-3 text-marquee-text outline-none focus:border-marquee-gold"
+        placeholder={placeholder}
+        className={`min-w-0 flex-1 bg-transparent px-4 font-display font-medium text-ink placeholder:text-muted/70 focus:outline-none ${
+          big ? "py-3 text-lg sm:text-xl" : "py-2 text-base"
+        }`}
       />
-      <button type="submit" className="rounded bg-marquee-gold px-4 py-3 font-semibold text-marquee-bg">
+      <button
+        type="submit"
+        className={`shrink-0 rounded-full border-2 border-ink bg-tape font-bold text-ink transition hover:bg-ink hover:text-tape ${
+          big ? "px-6 py-3 text-lg" : "px-5 py-2"
+        }`}
+      >
         Search
       </button>
     </form>

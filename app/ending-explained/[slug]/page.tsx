@@ -6,6 +6,9 @@ import { getPublishedAnimeBySlugOrId, getSimilarAnime } from "@/lib/api/anime";
 import { buildOgImageUrl } from "@/lib/og";
 import { SimilarTitles } from "@/components/media/SimilarTitles";
 import { BarChart } from "@/components/media/BarChart";
+import { Faq } from "@/components/ui/Faq";
+import { Slate } from "@/components/ui/Slate";
+import { SpoilerGate } from "@/components/ui/SpoilerGate";
 import LikeButton from "@/components/LikeButton";
 import FavoriteButton from "@/components/FavoriteButton";
 import CommentSection from "@/components/CommentSection";
@@ -99,7 +102,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
         .filter((t): t is MediaItem => Boolean(t && t.endingExplained && t.slug !== item.slug))
         .slice(0, 6)
     : [];
-  const faq = item.endingExplained?.faq ?? [];
+  const aiFaq = item.endingExplained?.faq ?? [];
 
   // Rating chart: this title vs the similar titles shown below (real scores only).
   const ratingChartItems = [item, ...similar]
@@ -131,6 +134,39 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     ...(item.endingExplainedWordCount ? ([["Guide length", `${item.endingExplainedWordCount.toLocaleString("en-US")} words`]] as [string, string][]) : []),
   ];
 
+  // Guide FAQ (generated) plus answers we can state from real catalog data.
+  const faq = [
+    ...aiFaq,
+    ...(providerRows.length > 0
+      ? [
+          {
+            q: `Where can I watch ${item.title}?`,
+            a: `${providerRows.map(([how, list]) => `${how}: ${list.map((p) => p.name).join(", ")}`).join(". ")}.${
+              providers?.region ? ` Availability listed for region ${providers.region} and varies by country.` : ""
+            }`,
+          },
+        ]
+      : []),
+    ...(item.score
+      ? [
+          {
+            q: `How is ${item.title} rated?`,
+            a: `${item.title} has an average rating of ${item.score.toFixed(1)} out of 10${
+              item.ratingCount ? ` from ${item.ratingCount.toLocaleString("en-US")} ratings` : ""
+            }.`,
+          },
+        ]
+      : []),
+    ...(franchise
+      ? [
+          {
+            q: `Where does ${item.title} fit in the ${franchise.title} watch order?`,
+            a: `See the ${franchise.title} watch order guide for the full order and notes on each entry.`,
+          },
+        ]
+      : []),
+  ];
+
   const toc = [
     item.endingExplained?.recap && ["recap", "Recap"],
     item.endingExplained?.ending && ["ending", "How it ends"],
@@ -155,19 +191,6 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       : {}),
   };
 
-  const faqLd =
-    faq.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faq.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }
-      : null;
-
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -177,179 +200,212 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     ],
   };
 
+  const ee = item.endingExplained;
+  const kindLabel = item.kind === "anime" ? "Anime" : "Movie";
+
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
+    <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd).replace(/</g, "\\u003c") }}
       />
-      {faqLd && (
-        <script
-          type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }}
-        />
-      )}
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }}
       />
 
-      <nav className="mb-6 font-mono text-xs text-marquee-textDim">
-        <Link href="/ending-explained" className="hover:text-marquee-gold">
-          Ending Explained
-        </Link>{" "}
-        / {item.title}
-      </nav>
-
-      <div className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <div className="overflow-hidden rounded border border-marquee-line bg-marquee-panel">
-          {item.posterUrl ? (
-            <img src={item.posterUrl} alt={item.title} className="h-full w-full object-cover" />
-          ) : (
-            <div className="p-8 text-sm text-marquee-textDim">No poster</div>
-          )}
-        </div>
-
-        <div>
-          <p className="font-mono text-xs tracking-[0.3em] text-marquee-gold">
-            {item.kind === "anime" ? "🍥 anime" : "🎬 movie"} · ending explained
-          </p>
-          <h1 className="mt-3 font-display text-3xl sm:text-5xl text-marquee-text">
-            {item.title} Ending Explained
-          </h1>
-
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-marquee-textDim">
-            {item.year ? <span className="rounded border border-marquee-line px-3 py-1">{item.year}</span> : null}
-            {item.score ? <span className="rounded border border-marquee-line px-3 py-1">★ {item.score.toFixed(1)}</span> : null}
-            {item.genres.map((genre) => (
-              <span key={genre} className="rounded border border-marquee-line px-3 py-1">{genre}</span>
-            ))}
-            <LikeButton type={item.kind} slug={item.slug} initialLikes={item.likes} />
-            <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} />
+      {/* Title card */}
+      <section className="border-b-2 border-ink bg-beam text-white">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1fr_260px]">
+          <div>
+            <nav aria-label="Breadcrumb" className="text-sm text-white/80">
+              <Link href="/" className="hover:underline">Home</Link>
+              <span aria-hidden="true"> / </span>
+              <Link href="/ending-explained" className="hover:underline">Ending explained</Link>
+            </nav>
+            <p className="mt-5 inline-block rounded-full border-2 border-ink bg-tape px-3 py-1 text-sm font-bold text-ink">
+              {kindLabel} guide, contains spoilers
+            </p>
+            <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+              {item.title} ending explained
+            </h1>
+            <div className="mt-6 flex flex-wrap items-center gap-2 text-sm font-semibold">
+              {item.year ? <span className="rounded-full bg-white/15 px-3 py-1">{item.year}</span> : null}
+              {item.score ? <span className="rounded-full bg-white/15 px-3 py-1">★ {item.score.toFixed(1)}</span> : null}
+              {item.genres.map((genre) => (
+                <span key={genre} className="rounded-full bg-white/15 px-3 py-1">{genre}</span>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <LikeButton type={item.kind} slug={item.slug} initialLikes={item.likes} tone="onDark" />
+              <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} tone="onDark" />
+            </div>
           </div>
+          <div className="mx-auto w-48 rotate-2 overflow-hidden rounded-xl border-4 border-white bg-fog shadow-block lg:w-full">
+            {item.posterUrl ? (
+              <img src={item.posterUrl} alt={`${item.title} poster`} className="aspect-[2/3] w-full object-cover" />
+            ) : (
+              <div className="flex aspect-[2/3] items-center justify-center p-6 text-center text-sm text-muted">No poster yet</div>
+            )}
+          </div>
+        </div>
+      </section>
 
-          <nav aria-label="On this page" className="mt-6 flex flex-wrap gap-2 text-xs">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-14 lg:grid-cols-[minmax(0,1fr)_330px]">
+        <article className="min-w-0 space-y-14">
+          <nav aria-label="On this page" className="flex flex-wrap gap-2 lg:hidden">
             {toc.map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="rounded-full border border-marquee-line px-3 py-1 text-marquee-textDim hover:border-marquee-gold hover:text-marquee-gold">
+              <a key={id} href={`#${id}`} className="rounded-full border-2 border-ink bg-surface px-3 py-1 text-sm font-semibold hover:bg-tape">
                 {label}
               </a>
             ))}
           </nav>
 
-          {item.endingExplained ? (
-            <div className="mt-8 space-y-8">
-              {item.endingExplained.recap && (
+          {ee ? (
+            <>
+              {ee.recap && (
                 <section id="recap" className="scroll-mt-24">
-                  <h2 className="font-display text-2xl text-marquee-text">Recap</h2>
-                  <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.recap}</p>
+                  <h2 className="font-display text-3xl font-bold tracking-tight">Recap, spoiler-light</h2>
+                  <p className="guide-prose mt-4 whitespace-pre-line">{ee.recap}</p>
                 </section>
               )}
-              {item.endingExplained.ending && (
+              {ee.ending && (
                 <section id="ending" className="scroll-mt-24">
-                  <h2 className="font-display text-2xl text-marquee-text">How It Ends</h2>
-                  <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.ending}</p>
-                </section>
-              )}
-              {item.endingExplained.themes && (
-                <section id="themes" className="scroll-mt-24">
-                  <h2 className="font-display text-2xl text-marquee-text">Themes &amp; Meaning</h2>
-                  <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.themes}</p>
-                </section>
-              )}
-              {faq.length > 0 && (
-                <section id="faq" className="scroll-mt-24">
-                  <h2 className="font-display text-2xl text-marquee-text">{item.title} Ending FAQ</h2>
-                  <div className="mt-3 divide-y divide-marquee-line rounded border border-marquee-line">
-                    {faq.map((f, i) => (
-                      <details key={i} className="group p-4" open={i === 0}>
-                        <summary className="cursor-pointer list-none font-semibold text-marquee-text marker:hidden">
-                          {f.q}
-                        </summary>
-                        <p className="mt-2 text-marquee-textDim">{f.a}</p>
-                      </details>
-                    ))}
+                  <h2 className="font-display text-3xl font-bold tracking-tight">How {item.title} ends</h2>
+                  <div className="mt-4">
+                    <SpoilerGate>
+                      <p className="guide-prose whitespace-pre-line">{ee.ending}</p>
+                    </SpoilerGate>
                   </div>
                 </section>
               )}
-            </div>
+              {ee.themes && (
+                <section id="themes" className="scroll-mt-24">
+                  <h2 className="font-display text-3xl font-bold tracking-tight">Themes and meaning</h2>
+                  <p className="guide-prose mt-4 whitespace-pre-line">{ee.themes}</p>
+                </section>
+              )}
+            </>
           ) : (
-            <p className="mt-6 text-marquee-textDim">{item.description}</p>
+            <p className="guide-prose">{item.description}</p>
           )}
 
-          <section id="facts" className="mt-10 scroll-mt-24">
-            <h2 className="font-display text-2xl text-marquee-text">{item.title} quick facts</h2>
-            <table className="mt-3 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
-              <tbody>
-                {factRows.map(([label, value]) => (
-                  <tr key={label} className="border-b border-marquee-line last:border-0">
-                    <th scope="row" className="w-40 bg-marquee-panel px-4 py-2 text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
-                      {label}
-                    </th>
-                    <td className="px-4 py-2 text-marquee-text">{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
           {ratingChartItems.length > 1 && (
-            <section id="ratings" className="mt-10 scroll-mt-24">
+            <section id="ratings" className="scroll-mt-24">
               <BarChart
                 title={`How ${item.title} rates against similar titles`}
                 items={ratingChartItems}
                 max={10}
                 unit=" / 10"
-                caption="Average audience ratings from the source database; click a title to read its ending explained."
+                caption="Average audience ratings from the source database. Click a title to read its ending explained."
               />
             </section>
           )}
 
           {providerRows.length > 0 && (
-            <section id="watch" className="mt-10 scroll-mt-24">
-              <h2 className="font-display text-2xl text-marquee-text">Where to watch {item.title}</h2>
-              <table className="mt-3 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
-                <thead className="bg-marquee-panel text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
-                  <tr>
-                    <th className="px-4 py-2">How</th>
-                    <th className="px-4 py-2">Available on</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {providerRows.map(([how, list]) => (
-                    <tr key={how} className="border-t border-marquee-line">
-                      <th scope="row" className="px-4 py-2 text-left text-marquee-text">{how}</th>
-                      <td className="px-4 py-2 text-marquee-textDim">{list.map((p) => p.name).join(", ")}</td>
+            <section id="watch" className="scroll-mt-24">
+              <h2 className="font-display text-3xl font-bold tracking-tight">Where to watch {item.title}</h2>
+              <div className="mt-5 overflow-x-auto rounded-2xl border-2 border-ink bg-surface">
+                <table className="w-full min-w-[20rem] text-left">
+                  <thead className="border-b-2 border-ink bg-tape">
+                    <tr>
+                      <th className="px-5 py-3 font-bold">How</th>
+                      <th className="px-5 py-3 font-bold">Available on</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {providerRows.map(([how, list]) => (
+                      <tr key={how} className="border-b border-fog last:border-0">
+                        <th scope="row" className="px-5 py-3 font-semibold">{how}</th>
+                        <td className="px-5 py-3 font-body text-muted">{list.map((p) => p.name).join(", ")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               {providers?.region && (
-                <p className="mt-2 text-xs text-marquee-textDim">Availability for region {providers.region}; it varies by country.</p>
+                <p className="mt-2 text-sm text-muted">Listed for region {providers.region}. Availability varies by country.</p>
               )}
             </section>
           )}
 
+          <Faq items={faq} title={`${item.title} ending FAQ`} />
+
+          {item.castList && item.castList.length > 0 && (
+            <section id="cast" className="scroll-mt-24">
+              <h2 className="font-display text-3xl font-bold tracking-tight">{item.title} cast</h2>
+              <div className="mt-5 overflow-x-auto rounded-2xl border-2 border-ink bg-surface">
+                <table className="w-full min-w-[20rem] text-left">
+                  <thead className="border-b-2 border-ink bg-tape">
+                    <tr>
+                      <th className="px-5 py-3 font-bold">{item.kind === "anime" ? "Character" : "Actor"}</th>
+                      <th className="px-5 py-3 font-bold">{item.kind === "anime" ? "Role" : "Character"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {item.castList.map((member) => (
+                      <tr key={`${member.name}-${member.role}`} className="border-b border-fog last:border-0">
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-3">
+                            {member.photoUrl ? (
+                              <img src={member.photoUrl} alt={member.name} loading="lazy" className="h-11 w-11 shrink-0 rounded-full border-2 border-ink object-cover" />
+                            ) : (
+                              <div className="h-11 w-11 shrink-0 rounded-full border-2 border-ink bg-fog" />
+                            )}
+                            <span className="font-semibold">{member.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3 font-body text-muted">{member.role}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {item.tags && item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {item.tags.map((tag) => (
+                <span key={tag} className="rounded-full border-2 border-ink bg-surface px-3 py-1 text-sm font-semibold">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          <Slate title={`${item.title}, at a glance`} rows={factRows} />
+
+          <nav aria-label="On this page" className="hidden rounded-2xl border-2 border-ink bg-surface p-5 lg:block">
+            <p className="font-display text-lg font-bold">On this page</p>
+            <ul className="mt-3 space-y-1.5">
+              {toc.map(([id, label]) => (
+                <li key={id}>
+                  <a href={`#${id}`} className="font-semibold text-beam hover:underline">{label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
           {franchise && (
-            <div className="mt-10 rounded border border-marquee-line bg-marquee-panel p-5">
-              <p className="font-mono text-xs uppercase tracking-[0.25em] text-marquee-gold">Part of a franchise</p>
-              <p className="mt-2 text-marquee-textDim">
-                Not sure where {item.title} fits? See the{" "}
-                <Link href={`/watch-order/${franchise.slug}`} className="text-marquee-gold hover:underline">
-                  {franchise.title} watch order
-                </Link>
-                .
-              </p>
+            <div className="rounded-2xl border-2 border-ink bg-tape p-5">
+              <p className="font-display text-lg font-bold">Part of {franchise.title}</p>
+              <p className="mt-1 font-body text-base text-ink/80">Not sure where {item.title} fits?</p>
+              <Link
+                href={`/watch-order/${franchise.slug}`}
+                className="mt-3 inline-block rounded-full border-2 border-ink bg-ink px-4 py-2 text-sm font-bold text-white"
+              >
+                {franchise.title} watch order
+              </Link>
               {siblingGuides.length > 0 && (
-                <ul className="mt-3 flex flex-wrap gap-2">
+                <ul className="mt-4 space-y-1.5 border-t-2 border-ink/20 pt-3">
                   {siblingGuides.map((t) => (
                     <li key={t.slug}>
-                      <Link
-                        href={`/ending-explained/${t.slug}`}
-                        className="rounded-full border border-marquee-line px-3 py-1 text-xs text-marquee-text hover:border-marquee-gold hover:text-marquee-gold"
-                      >
+                      <Link href={`/ending-explained/${t.slug}`} className="font-semibold underline underline-offset-2">
                         {t.title} ending explained
                       </Link>
                     </li>
@@ -358,62 +414,13 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
               )}
             </div>
           )}
-
-          {item.tags && item.tags.length > 0 && (
-            <div className="mt-10">
-              <p className="font-mono text-xs uppercase tracking-[0.25em] text-marquee-gold mb-3">Tags</p>
-              <div className="flex flex-wrap gap-2">
-                {item.tags.map((tag) => (
-                  <span key={tag} className="rounded-full border border-marquee-line px-3 py-1 text-xs text-marquee-textDim">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-8">
-            <Link href="/ending-explained" className="rounded border border-marquee-line px-4 py-2 text-marquee-text">
-              Back to all guides
-            </Link>
-          </div>
-        </div>
+        </aside>
       </div>
 
-      {item.castList && item.castList.length > 0 && (
-        <section id="cast" className="mt-14 scroll-mt-24">
-          <h2 className="font-display text-2xl text-marquee-text">{item.title} cast</h2>
-          <table className="mt-4 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
-            <thead className="bg-marquee-panel text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
-              <tr>
-                <th className="px-4 py-2">{item.kind === "anime" ? "Character" : "Actor"}</th>
-                <th className="px-4 py-2">{item.kind === "anime" ? "Role" : "Character"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.castList.map((member) => (
-                <tr key={`${member.name}-${member.role}`} className="border-t border-marquee-line">
-                  <td className="px-4 py-2">
-                    <div className="flex items-center gap-3">
-                      {member.photoUrl ? (
-                        <img src={member.photoUrl} alt={member.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
-                      ) : (
-                        <div className="h-10 w-10 shrink-0 rounded-full bg-marquee-line" />
-                      )}
-                      <span className="text-marquee-text">{member.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 text-marquee-textDim">{member.role}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
-
-      <SimilarTitles items={similar} basePath="/ending-explained" />
-
-      <CommentSection type="ending-explained" slug={item.slug} />
-    </div>
+      <div className="mx-auto max-w-6xl px-6 pb-16">
+        <SimilarTitles items={similar} basePath="/ending-explained" />
+        <CommentSection type="ending-explained" slug={item.slug} />
+      </div>
+    </>
   );
 }

@@ -7,76 +7,84 @@ html {
 }
 
 body {
-  background-color: #12131a;
-  color: #edebe3;
+  background-color: #f6f7fb;
+  color: #0d1030;
+  font-size: 17px;
 }
 
-/* Marquee bulb strip — the signature element. A row of small "bulbs" that
-   light up in sequence, used sparingly on the hero and section dividers,
-   evoking a theater marquee without becoming a gimmick. */
-.bulb-row {
-  display: flex;
-  gap: 14px;
-  align-items: center;
+::selection {
+  background: #ffd23f;
+  color: #0d1030;
 }
 
-.bulb {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-  background: #8a6a2a;
-  box-shadow: 0 0 0 rgba(232, 176, 75, 0);
-  animation: bulb-glow 3.2s ease-in-out infinite;
+/* Keyboard focus: tape-yellow ring with an ink edge so it reads on both
+   the white page and the blue hero fields. */
+.focus-ring:focus-visible,
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #ffd23f;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #0d1030;
 }
 
-@keyframes bulb-glow {
-  0%,
-  100% {
-    background: #8a6a2a;
-    box-shadow: 0 0 0 rgba(232, 176, 75, 0);
-  }
-  50% {
-    background: #e8b04b;
-    box-shadow: 0 0 8px 2px rgba(232, 176, 75, 0.65);
-  }
+/* Long-form reading text (recap, ending, themes). Serif, generous
+   line-height, capped to a comfortable measure. */
+.guide-prose {
+  font-family: var(--font-body), Georgia, serif;
+  font-size: 1.1875rem;
+  line-height: 1.8;
+  max-width: 66ch;
+  color: #1c2048;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bulb {
-    animation: none;
-    background: #e8b04b;
-  }
-  html {
-    scroll-behavior: auto;
-  }
-}
-
-/* Ticket-stub card used for tool entries — a torn/perforated edge on one
-   side, referencing a cinema ticket rather than a generic rounded card. */
-.ticket {
-  position: relative;
-  background: #1a1c26;
-  border: 1px solid #2c2f3d;
-  border-radius: 4px;
-}
-
-.ticket::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 1px;
+/* Clapper-slate header: the one decorative motif, used on fact tables. */
+.slate-stripes {
+  height: 22px;
   background-image: repeating-linear-gradient(
-    to bottom,
-    #2c2f3d 0,
-    #2c2f3d 6px,
-    transparent 6px,
-    transparent 12px
+    -45deg,
+    #0d1030 0,
+    #0d1030 14px,
+    #ffffff 14px,
+    #ffffff 28px
   );
 }
 
-.focus-ring:focus-visible {
-  outline: 2px solid #e8b04b;
-  outline-offset: 2px;
+/* Card used on list pages and legacy call sites (admin, comments). */
+.card,
+.ticket {
+  background: #ffffff;
+  border: 2px solid #0d1030;
+  border-radius: 14px;
+}
+
+/* Spoiler gate: the text stays in the DOM (readable by search engines and
+   screen readers); it is only visually blurred until the reader opts in. */
+.spoiler-blur {
+  filter: blur(9px);
+  user-select: none;
+  transition: filter 0.35s ease;
+}
+.spoiler-clear {
+  filter: none;
+  transition: filter 0.35s ease;
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .spoiler-blur,
+  .spoiler-clear {
+    transition: none;
+  }
 }

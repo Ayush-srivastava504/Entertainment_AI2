@@ -6,9 +6,9 @@ export function SimilarTitles({ items, basePath, title = "You might also like" }
 
   return (
     <section className="mt-16">
-      <h2 className="font-display text-2xl text-marquee-text">{title}</h2>
-      <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
+      <h2 className="font-display text-3xl font-bold tracking-tight text-ink">{title}</h2>
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+        {items.slice(0, 4).map((item) => (
           <MediaCard key={item.id} item={item} href={`${basePath}/${item.slug}`} />
         ))}
       </div>

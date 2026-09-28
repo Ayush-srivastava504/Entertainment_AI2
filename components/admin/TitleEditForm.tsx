@@ -47,20 +47,20 @@ export default function TitleEditForm({ kind, title }: { kind: TitleKind; title:
   return (
     <div>
       <div className="flex items-start gap-6">
-        <div className="w-32 shrink-0 overflow-hidden rounded border border-marquee-line bg-marquee-panel">
+        <div className="w-32 shrink-0 overflow-hidden rounded border border-fog bg-surface">
           {title.posterUrl ? (
             <img src={title.posterUrl} alt={title.title} className="w-full object-cover" />
           ) : (
-            <div className="p-4 text-xs text-marquee-textDim">No poster</div>
+            <div className="p-4 text-xs text-muted">No poster</div>
           )}
         </div>
         <div>
-          <p className="font-mono text-xs tracking-[0.3em] text-marquee-gold">{kind}</p>
-          <h1 className="mt-1 font-display text-2xl text-marquee-text">{title.title}</h1>
-          <p className="mt-1 text-sm text-marquee-textDim">
+          <p className="text-sm font-bold text-beam">{kind}</p>
+          <h1 className="mt-1 font-display text-2xl text-ink">{title.title}</h1>
+          <p className="mt-1 text-sm text-muted">
             {title.year ?? "—"} · {title.score?.toFixed(1) ?? "no score"} · {title.genres.join(", ") || "no genres"}
           </p>
-          <Link href={publicHref} target="_blank" className="mt-2 inline-block text-xs text-marquee-gold hover:underline">
+          <Link href={publicHref} target="_blank" className="mt-2 inline-block text-xs text-beam hover:underline">
             View public page →
           </Link>
         </div>
@@ -68,35 +68,35 @@ export default function TitleEditForm({ kind, title }: { kind: TitleKind; title:
 
       <div className="mt-8 space-y-6">
         <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-sm text-marquee-text">
+          <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
               checked={noindex}
               onChange={(e) => setNoindex(e.target.checked)}
-              className="h-4 w-4 accent-marquee-gold"
+              className="h-4 w-4 accent-beam"
             />
             Noindex (hide from Google + sitemap)
           </label>
-          <label className="flex items-center gap-2 text-sm text-marquee-text">
+          <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
               checked={featured}
               onChange={(e) => setFeatured(e.target.checked)}
-              className="h-4 w-4 accent-marquee-gold"
+              className="h-4 w-4 accent-beam"
             />
             Featured
           </label>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-wide text-marquee-textDim">Original source description</p>
-          <p className="mt-1 rounded border border-marquee-line bg-marquee-panel p-3 text-sm text-marquee-textDim">
+          <p className="text-xs uppercase tracking-wide text-muted">Original source description</p>
+          <p className="mt-1 rounded border border-fog bg-surface p-3 text-sm text-muted">
             {title.description || "(empty)"}
           </p>
         </div>
 
         <div>
-          <label className="text-xs uppercase tracking-wide text-marquee-textDim">
+          <label className="text-xs uppercase tracking-wide text-muted">
             Synopsis override (shown on the public page instead of the source description, if set)
           </label>
           <textarea
@@ -105,7 +105,7 @@ export default function TitleEditForm({ kind, title }: { kind: TitleKind; title:
             rows={6}
             maxLength={2000}
             placeholder="Write a real synopsis — cast notes, standout scenes, why it's worth watching..."
-            className="mt-2 w-full rounded border border-marquee-line bg-transparent px-3 py-2 text-sm text-marquee-text placeholder:text-marquee-textDim focus-ring"
+            className="mt-2 w-full rounded border border-fog bg-transparent px-3 py-2 text-sm text-ink placeholder:text-muted focus-ring"
           />
         </div>
 
@@ -113,11 +113,11 @@ export default function TitleEditForm({ kind, title }: { kind: TitleKind; title:
           <button
             onClick={handleSave}
             disabled={status === "saving"}
-            className="rounded bg-marquee-gold px-4 py-2 text-sm font-semibold text-marquee-bg disabled:opacity-50 focus-ring"
+            className="rounded bg-beam px-4 py-2 text-sm font-semibold text-paper disabled:opacity-50 focus-ring"
           >
             {status === "saving" ? "Saving..." : "Save changes"}
           </button>
-          {status === "saved" && <span className="text-sm text-marquee-gold">Saved.</span>}
+          {status === "saved" && <span className="text-sm text-beam">Saved.</span>}
           {status === "error" && <span className="text-sm text-red-400">Could not save. Try again.</span>}
         </div>
       </div>

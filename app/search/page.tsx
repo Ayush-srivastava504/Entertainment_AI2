@@ -2,21 +2,19 @@ import Link from "next/link";
 import { searchSite } from "@/lib/search";
 import { SearchBar } from "@/components/media/SearchBar";
 import { MediaGrid } from "@/components/media/MediaGrid";
+import { PageHero } from "@/components/ui/PageHero";
 import { getBaseUrl } from "@/lib/site";
 
 const BASE_URL = getBaseUrl();
 
 export const metadata = {
   title: "Search | Marquee",
-  description: "Search Ending Explained guides and Watch Order guides by title.",
+  description: "Search ending explained guides and watch order guides by title.",
   alternates: { canonical: `${BASE_URL}/search` },
+  robots: { index: false, follow: true },
 };
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
+export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   const query = (q ?? "").trim();
   const results = query ? await searchSite(query) : null;
@@ -24,68 +22,67 @@ export default async function SearchPage({
   const hasResults = Boolean(results && (items.length > 0 || results.franchises.length > 0));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <p className="font-mono text-xs tracking-[0.3em] text-marquee-gold">🔎 SEARCH</p>
-      <h1 className="mt-3 font-display text-3xl sm:text-5xl text-marquee-text">Search Marquee</h1>
-      <p className="mt-4 max-w-2xl text-marquee-textDim">
-        Find an Ending Explained guide or a Watch Order guide by title.
-      </p>
+    <>
+      <PageHero
+        kicker="Search"
+        title={query ? `Results for “${query}”` : "Find a guide"}
+        subtitle={query ? undefined : "Search ending explained guides and watch order guides by title."}
+      >
+        <SearchBar initialValue={query} path="/search" size="lg" />
+      </PageHero>
 
-      <div className="mt-8 max-w-xl">
-        <SearchBar initialValue={query} path="/search" />
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        {!query && (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Link href="/ending-explained" className="rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block">
+              <p className="font-display text-2xl font-extrabold">Browse ending explained</p>
+              <p className="mt-2 font-body text-muted">Every movie and anime guide, newest first.</p>
+            </Link>
+            <Link href="/watch-order" className="rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block">
+              <p className="font-display text-2xl font-extrabold">Browse watch orders</p>
+              <p className="mt-2 font-body text-muted">Franchises in the order that makes sense.</p>
+            </Link>
+          </div>
+        )}
+
+        {query && !hasResults && (
+          <div className="rounded-2xl border-2 border-ink bg-surface p-8">
+            <p className="font-display text-2xl font-bold">No guides match “{query}”</p>
+            <p className="mt-2 font-body text-lg text-muted">
+              Check the spelling, try a shorter title, or browse{" "}
+              <Link href="/ending-explained" className="font-semibold text-beam underline">ending explained</Link> and{" "}
+              <Link href="/watch-order" className="font-semibold text-beam underline">watch order</Link> guides.
+            </p>
+          </div>
+        )}
+
+        {query && items.length > 0 && (
+          <section>
+            <h2 className="font-display text-3xl font-bold tracking-tight">Ending explained ({items.length})</h2>
+            <div className="mt-6">
+              <MediaGrid items={items} basePath="/ending-explained" />
+            </div>
+          </section>
+        )}
+
+        {query && results && results.franchises.length > 0 && (
+          <section className="mt-16">
+            <h2 className="font-display text-3xl font-bold tracking-tight">Watch order ({results.franchises.length})</h2>
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {results.franchises.map((f) => (
+                <Link
+                  key={f.id}
+                  href={`/watch-order/${f.slug}`}
+                  className="group rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
+                >
+                  <h3 className="font-display text-2xl font-extrabold group-hover:text-beam">{f.title} watch order</h3>
+                  {f.intro && <p className="mt-2 line-clamp-3 font-body text-muted">{f.intro}</p>}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-
-      {!query && (
-        <div className="mt-10 flex gap-4">
-          <Link href="/ending-explained" className="rounded border border-marquee-line px-4 py-2 text-marquee-text">
-            Browse Ending Explained
-          </Link>
-          <Link href="/watch-order" className="rounded border border-marquee-line px-4 py-2 text-marquee-text">
-            Browse Watch Order
-          </Link>
-        </div>
-      )}
-
-      {query && !hasResults && (
-        <p className="mt-10 text-marquee-textDim">
-          No guides matched &ldquo;{query}&rdquo;. Try a different title, or browse{" "}
-          <Link href="/ending-explained" className="text-marquee-gold hover:underline">
-            Ending Explained
-          </Link>{" "}
-          and{" "}
-          <Link href="/watch-order" className="text-marquee-gold hover:underline">
-            Watch Order
-          </Link>{" "}
-          guides.
-        </p>
-      )}
-
-      {query && items.length > 0 && (
-        <div className="mt-10">
-          <h2 className="font-display text-2xl text-marquee-text">Ending Explained</h2>
-          <div className="mt-5">
-            <MediaGrid items={items} basePath="/ending-explained" />
-          </div>
-        </div>
-      )}
-
-      {query && results && results.franchises.length > 0 && (
-        <div className="mt-12">
-          <h2 className="font-display text-2xl text-marquee-text">Watch Order</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {results.franchises.map((f) => (
-              <Link
-                key={f.id}
-                href={`/watch-order/${f.slug}`}
-                className="ticket block p-5 pl-8 transition hover:border-marquee-gold"
-              >
-                <h3 className="font-display text-xl text-marquee-text">{f.title}</h3>
-                {f.intro && <p className="mt-2 text-sm text-marquee-textDim line-clamp-2">{f.intro}</p>}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

@@ -3,23 +3,38 @@ import type { MediaItem } from "@/lib/api/normalize";
 
 export function MediaCard({ item, href }: { item: MediaItem; href: string }) {
   return (
-    <Link href={href} className="group block overflow-hidden rounded border border-marquee-line bg-marquee-panel transition hover:border-marquee-gold">
-      <div className="aspect-[2/3] overflow-hidden bg-marquee-panel">
+    <Link
+      href={href}
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-ink bg-surface transition hover:-translate-y-1 hover:shadow-block"
+    >
+      <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-ink bg-fog">
         {item.posterUrl ? (
-          <img src={item.posterUrl} alt={item.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+          <img
+            src={item.posterUrl}
+            alt={`${item.title} poster`}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-marquee-textDim">No poster</div>
+          <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted">No poster yet</div>
         )}
+        <span className="absolute left-3 top-3 rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold text-ink">
+          {item.kind === "anime" ? "Anime" : "Movie"}
+        </span>
+        {item.score ? (
+          <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-surface px-2.5 py-0.5 text-xs font-bold text-ink">
+            ★ {item.score.toFixed(1)}
+          </span>
+        ) : null}
       </div>
-      <div className="p-4">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-marquee-gold">{item.kind === "anime" ? "anime" : "movie"}</p>
-        <h3 className="mt-2 font-display text-2xl text-marquee-text">{item.title}</h3>
-        <p className="mt-2 text-sm text-marquee-textDim line-clamp-3">{item.description}</p>
-        <div className="mt-3 flex flex-wrap gap-2 text-xs text-marquee-textDim">
-          {item.year ? <span>{item.year}</span> : null}
-          {item.score ? <span>★ {item.score.toFixed(1)}</span> : null}
-          {item.genres.slice(0, 2).map((genre) => <span key={genre}>{genre}</span>)}
-        </div>
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="font-display text-xl font-bold leading-tight text-ink group-hover:text-beam">
+          {item.title} ending explained
+        </h3>
+        {item.description && <p className="mt-2 line-clamp-3 font-body text-sm leading-relaxed text-muted">{item.description}</p>}
+        <p className="mt-auto pt-3 text-xs font-semibold text-muted">
+          {[item.year, ...item.genres.slice(0, 2)].filter(Boolean).join(", ")}
+        </p>
       </div>
     </Link>
   );

@@ -7,6 +7,7 @@ interface LikeButtonProps {
   type: "movie" | "anime" | "watch-order";
   slug: string;
   initialLikes: number;
+  tone?: "onDark" | "onLight";
 }
 
 // Not real vote integrity (there's no login) -- just a localStorage flag
@@ -16,7 +17,7 @@ function storageKey(type: string, slug: string) {
   return `liked:${type}:${slug}`;
 }
 
-export default function LikeButton({ type, slug, initialLikes }: LikeButtonProps) {
+export default function LikeButton({ type, slug, initialLikes, tone = "onLight" }: LikeButtonProps) {
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
   const [pending, setPending] = useState(false);
@@ -56,13 +57,15 @@ export default function LikeButton({ type, slug, initialLikes }: LikeButtonProps
       onClick={handleLike}
       disabled={liked || pending}
       aria-pressed={liked}
-      className={`text-xs font-mono rounded border px-2 py-1 transition focus-ring ${
+      className={`rounded-full border-2 px-4 py-1.5 text-sm font-bold transition ${
         liked
-          ? "border-marquee-gold text-marquee-gold"
-          : "border-marquee-line text-marquee-textDim hover:border-marquee-gold hover:text-marquee-gold disabled:opacity-50"
-      }`}
+          ? "border-ink bg-tape text-ink"
+          : tone === "onDark"
+            ? "border-white text-white hover:bg-white hover:text-beam"
+            : "border-ink bg-surface text-ink hover:bg-tape"
+      } disabled:opacity-60`}
     >
-      {liked ? "♥ liked" : "♡ like"} · {likes}
+      {liked ? "♥ Liked" : "♡ Like"} ({likes})
     </button>
   );
 }

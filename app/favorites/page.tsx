@@ -19,29 +19,21 @@ export default function FavoritesPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16">
-      <p className="font-mono text-xs text-marquee-gold tracking-marquee mb-2">
-        ★ WATCHLIST
-      </p>
-      <h1 className="font-display text-3xl sm:text-5xl text-marquee-text mb-3">
-        Your Favorites
-      </h1>
-      <p className="text-marquee-textDim mb-8">
-        Saved on this device only — there&apos;s no account system yet, so
-        this list lives in your browser&apos;s local storage.
+    <div className="mx-auto max-w-3xl px-6 py-16">
+      <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Saved titles</h1>
+      <p className="mt-4 font-body text-lg text-muted">
+        Saved on this device only. There is no account, so this list lives in your browser.
       </p>
 
-      {items === null && (
-        <p className="text-marquee-textDim font-mono text-sm">Loading…</p>
-      )}
+      {items === null && <p className="mt-8 font-semibold text-muted">Loading your list…</p>}
 
       {items && items.length === 0 && (
-        <div className="ticket p-6 pl-8">
-          <p className="text-marquee-textDim">
-            Nothing saved yet. Hit{" "}
-            <span className="text-marquee-gold">☆ save</span> on any{" "}
-            <Link href="/ending-explained" className="underline hover:text-marquee-gold">
-              Ending Explained guide
+        <div className="mt-8 rounded-2xl border-2 border-ink bg-surface p-8">
+          <p className="font-display text-2xl font-bold">Nothing saved yet</p>
+          <p className="mt-2 font-body text-lg text-muted">
+            Press Save on any{" "}
+            <Link href="/ending-explained" className="font-semibold text-beam underline">
+              ending explained guide
             </Link>{" "}
             to keep it here.
           </p>
@@ -49,23 +41,20 @@ export default function FavoritesPage() {
       )}
 
       {items && items.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="mt-8 space-y-3">
           {items.map((f) => (
-            <li
-              key={f.id}
-              className="ticket p-5 pl-8 flex items-center justify-between gap-4"
-            >
-              <div>
-                <span className="font-mono text-xs text-marquee-textDim uppercase mr-2">
-                  {f.type}
+            <li key={f.id} className="flex items-center justify-between gap-4 rounded-2xl border-2 border-ink bg-surface p-5">
+              <div className="min-w-0">
+                <span className="mr-3 rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold">
+                  {f.type === "anime" ? "Anime" : "Movie"}
                 </span>
-                <span className="text-marquee-text">{f.title}</span>
+                <span className="font-display text-xl font-bold">{f.title}</span>
               </div>
               <button
                 onClick={() => removeFavorite(f.id)}
-                className="text-xs font-mono text-marquee-textDim hover:text-marquee-amber transition focus-ring"
+                className="shrink-0 rounded-full border-2 border-ink px-4 py-1.5 text-sm font-bold hover:bg-cue hover:text-white"
               >
-                remove
+                Remove
               </button>
             </li>
           ))}

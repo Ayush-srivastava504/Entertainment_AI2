@@ -33,10 +33,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl text-marquee-text">Dashboard</h1>
-      <p className="mt-2 text-sm text-marquee-textDim">
+      <h1 className="font-display text-3xl text-ink">Dashboard</h1>
+      <p className="mt-2 text-sm text-muted">
         Quick view of catalog size and moderation queue. Use Anime / Movies to flip{" "}
-        <code className="text-marquee-gold">noindex</code>, <code className="text-marquee-gold">featured</code>, or
+        <code className="text-beam">noindex</code>, <code className="text-beam">featured</code>, or
         write a real synopsis for thin pages.
       </p>
 
@@ -45,18 +45,18 @@ export default async function AdminDashboardPage() {
           <Link
             key={c.label}
             href={c.href}
-            className="ticket p-5 transition hover:border-marquee-gold"
+            className="ticket p-5 transition hover:border-beam"
           >
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-marquee-textDim">{c.label}</p>
-            <p className="mt-2 font-display text-3xl text-marquee-text">{c.value.toLocaleString()}</p>
-            <p className="mt-1 text-xs text-marquee-textDim">{c.sub}</p>
+            <p className="text-sm font-bold text-muted">{c.label}</p>
+            <p className="mt-2 font-display text-3xl text-ink">{c.value.toLocaleString()}</p>
+            <p className="mt-1 text-xs text-muted">{c.sub}</p>
           </Link>
         ))}
       </div>
 
       <div className="mt-10 ticket p-5">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-marquee-gold">Suggested workflow</p>
-        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-marquee-textDim">
+        <p className="text-sm font-bold text-beam">Suggested workflow</p>
+        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-muted">
           <li>Open Anime or Movies, filter by "Thin description".</li>
           <li>For titles worth keeping, write a real synopsis override.</li>
           <li>For the rest, flip noindex — the sitemap updates automatically.</li>

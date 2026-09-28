@@ -36,8 +36,8 @@ function LoginForm() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-6">
-      <p className="font-mono text-xs tracking-[0.3em] text-marquee-gold">admin</p>
-      <h1 className="mt-2 font-display text-3xl text-marquee-text">Sign in</h1>
+      <p className="text-sm font-bold text-beam">admin</p>
+      <h1 className="mt-2 font-display text-3xl text-ink">Sign in</h1>
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <input
           type="password"
@@ -45,12 +45,12 @@ function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Admin password"
-          className="w-full rounded border border-marquee-line bg-transparent px-3 py-2 text-sm text-marquee-text placeholder:text-marquee-textDim focus-ring"
+          className="w-full rounded border border-fog bg-transparent px-3 py-2 text-sm text-ink placeholder:text-muted focus-ring"
         />
         <button
           type="submit"
           disabled={loading || !password}
-          className="w-full rounded bg-marquee-gold px-4 py-2 text-sm font-semibold text-marquee-bg disabled:opacity-50 focus-ring"
+          className="w-full rounded bg-beam px-4 py-2 text-sm font-semibold text-paper disabled:opacity-50 focus-ring"
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>

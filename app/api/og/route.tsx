@@ -14,13 +14,13 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 
 const COLORS = {
-  bg: "#12131A",
-  panel: "#1A1C26",
-  line: "#2C2F3D",
-  gold: "#E8B04B",
-  amber: "#D96C3F",
-  text: "#EDEBE3",
-  textDim: "#9C9CAA",
+  bg: "#2A3FF0",
+  panel: "#1B2BB8",
+  line: "#0D1030",
+  gold: "#FFD23F",
+  amber: "#F23D2B",
+  text: "#FFFFFF",
+  textDim: "#DCE0FF",
 };
 
 function truncate(value: string, max: number): string {
@@ -45,12 +45,11 @@ export async function GET(request: Request) {
           display: "flex",
           flexDirection: "column",
           backgroundColor: COLORS.bg,
-          backgroundImage: `radial-gradient(circle at 85% 0%, rgba(232,176,75,0.20) 0%, rgba(232,176,75,0) 55%)`,
-          padding: "64px",
+                    padding: "64px",
           position: "relative",
         }}
       >
-        {/* thin gold rule along the top, evokes a marquee ticket edge */}
+        {/* tape-yellow rule along the top */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, display: "flex", backgroundColor: COLORS.gold }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

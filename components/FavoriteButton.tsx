@@ -8,9 +8,10 @@ interface FavoriteButtonProps {
   id: string;
   type: "anime" | "movie";
   title: string;
+  tone?: "onDark" | "onLight";
 }
 
-export default function FavoriteButton({ id, type, title }: FavoriteButtonProps) {
+export default function FavoriteButton({ id, type, title, tone = "onLight" }: FavoriteButtonProps) {
   const [saved, setSaved] = useState(false);
 
   // Read from localStorage only after mount to avoid server/client mismatch.
@@ -29,13 +30,15 @@ export default function FavoriteButton({ id, type, title }: FavoriteButtonProps)
         });
       }}
       aria-pressed={saved}
-      className={`text-xs font-mono rounded border px-2 py-1 transition focus-ring ${
+      className={`rounded-full border-2 px-4 py-1.5 text-sm font-bold transition ${
         saved
-          ? "border-marquee-gold text-marquee-gold"
-          : "border-marquee-line text-marquee-textDim hover:border-marquee-gold hover:text-marquee-gold"
-      }`}
+          ? "border-ink bg-tape text-ink"
+          : tone === "onDark"
+            ? "border-white text-white hover:bg-white hover:text-beam"
+            : "border-ink bg-surface text-ink hover:bg-tape"
+      } disabled:opacity-60`}
     >
-      {saved ? "★ saved" : "☆ save"}
+      {saved ? "★ Saved" : "☆ Save"}
     </button>
   );
 }

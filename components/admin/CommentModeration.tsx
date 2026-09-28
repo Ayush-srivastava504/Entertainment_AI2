@@ -38,26 +38,26 @@ export default function CommentModeration() {
 
   return (
     <div>
-      {rows === null && <p className="text-sm text-marquee-textDim">Loading...</p>}
-      {rows?.length === 0 && <p className="text-sm text-marquee-textDim">No comments yet.</p>}
+      {rows === null && <p className="text-sm text-muted">Loading...</p>}
+      {rows?.length === 0 && <p className="text-sm text-muted">No comments yet.</p>}
       <div className="space-y-3">
         {rows?.map((c) => (
           <div key={c.id} className="ticket flex items-start justify-between gap-4 p-4">
             <div className="min-w-0">
               <div className="flex items-baseline gap-2">
-                <p className="font-mono text-sm text-marquee-gold">{c.authorName}</p>
-                <p className="text-xs text-marquee-textDim">
+                <p className="font-bold text-beam">{c.authorName}</p>
+                <p className="text-xs text-muted">
                   on {c.contentType}/{c.contentSlug}
                 </p>
-                <p className="text-xs text-marquee-textDim">
+                <p className="text-xs text-muted">
                   {new Date(c.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                 </p>
               </div>
-              <p className="mt-1 whitespace-pre-wrap text-sm text-marquee-text">{c.body}</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm text-ink">{c.body}</p>
             </div>
             <button
               onClick={() => handleDelete(c.id)}
-              className="shrink-0 rounded border border-marquee-line px-3 py-1.5 text-xs text-red-300 hover:border-red-400 focus-ring"
+              className="shrink-0 rounded border border-fog px-3 py-1.5 text-xs text-red-300 hover:border-red-400 focus-ring"
             >
               Delete
             </button>
@@ -66,11 +66,11 @@ export default function CommentModeration() {
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-marquee-textDim">
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-muted">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="rounded border border-marquee-line px-3 py-1 disabled:opacity-40 focus-ring"
+            className="rounded border border-fog px-3 py-1 disabled:opacity-40 focus-ring"
           >
             Prev
           </button>
@@ -80,7 +80,7 @@ export default function CommentModeration() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="rounded border border-marquee-line px-3 py-1 disabled:opacity-40 focus-ring"
+            className="rounded border border-fog px-3 py-1 disabled:opacity-40 focus-ring"
           >
             Next
           </button>

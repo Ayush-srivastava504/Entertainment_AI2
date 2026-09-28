@@ -66,7 +66,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={`Search ${kind} titles...`}
-          className="w-64 rounded border border-marquee-line bg-transparent px-3 py-2 text-sm text-marquee-text placeholder:text-marquee-textDim focus-ring"
+          className="w-64 rounded border border-fog bg-transparent px-3 py-2 text-sm text-ink placeholder:text-muted focus-ring"
         />
         <div className="flex gap-1">
           {FILTERS.map((f) => (
@@ -75,21 +75,21 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
               onClick={() => setFilter(f.value)}
               className={`rounded border px-3 py-1.5 text-xs focus-ring ${
                 filter === f.value
-                  ? "border-marquee-gold text-marquee-gold"
-                  : "border-marquee-line text-marquee-textDim hover:text-marquee-text"
+                  ? "border-beam text-beam"
+                  : "border-fog text-muted hover:text-ink"
               }`}
             >
               {f.label}
             </button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-marquee-textDim">{total.toLocaleString()} titles</span>
+        <span className="ml-auto text-xs text-muted">{total.toLocaleString()} titles</span>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded border border-marquee-line">
+      <div className="mt-4 overflow-hidden rounded border border-fog">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-marquee-line bg-marquee-panel text-left text-xs uppercase tracking-wide text-marquee-textDim">
+            <tr className="border-b border-fog bg-surface text-left text-xs uppercase tracking-wide text-muted">
               <th className="px-4 py-2 font-normal">Title</th>
               <th className="px-4 py-2 font-normal">Year</th>
               <th className="px-4 py-2 font-normal">Score</th>
@@ -100,40 +100,40 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
           <tbody>
             {rows === null && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-marquee-textDim">
+                <td colSpan={5} className="px-4 py-6 text-center text-muted">
                   Loading...
                 </td>
               </tr>
             )}
             {rows?.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-marquee-textDim">
+                <td colSpan={5} className="px-4 py-6 text-center text-muted">
                   No titles match.
                 </td>
               </tr>
             )}
             {rows?.map((row) => (
-              <tr key={row.id} className="border-b border-marquee-line/50 last:border-0">
-                <td className="px-4 py-2 text-marquee-text">{row.title}</td>
-                <td className="px-4 py-2 text-marquee-textDim">{row.year ?? "—"}</td>
-                <td className="px-4 py-2 text-marquee-textDim">{row.score?.toFixed(1) ?? "—"}</td>
+              <tr key={row.id} className="border-b border-fog/50 last:border-0">
+                <td className="px-4 py-2 text-ink">{row.title}</td>
+                <td className="px-4 py-2 text-muted">{row.year ?? "—"}</td>
+                <td className="px-4 py-2 text-muted">{row.score?.toFixed(1) ?? "—"}</td>
                 <td className="px-4 py-2">
                   <div className="flex flex-wrap gap-1">
                     {row.noindex && (
                       <span className="rounded bg-red-950 px-2 py-0.5 text-xs text-red-300">noindex</span>
                     )}
                     {row.featured && (
-                      <span className="rounded bg-marquee-gold/20 px-2 py-0.5 text-xs text-marquee-gold">
+                      <span className="rounded bg-beam/20 px-2 py-0.5 text-xs text-beam">
                         featured
                       </span>
                     )}
                     {row.hasSynopsisOverride && (
-                      <span className="rounded border border-marquee-line px-2 py-0.5 text-xs text-marquee-textDim">
+                      <span className="rounded border border-fog px-2 py-0.5 text-xs text-muted">
                         override
                       </span>
                     )}
                     {row.hasThinDescription && !row.hasSynopsisOverride && (
-                      <span className="rounded border border-marquee-line px-2 py-0.5 text-xs text-marquee-textDim">
+                      <span className="rounded border border-fog px-2 py-0.5 text-xs text-muted">
                         thin
                       </span>
                     )}
@@ -142,7 +142,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
                 <td className="px-4 py-2 text-right">
                   <Link
                     href={`/admin/${kind === "anime" ? "anime" : "movies"}/${row.id}`}
-                    className="text-xs text-marquee-gold hover:underline"
+                    className="text-xs text-beam hover:underline"
                   >
                     Edit
                   </Link>
@@ -154,11 +154,11 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-marquee-textDim">
+        <div className="mt-4 flex items-center justify-center gap-3 text-sm text-muted">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="rounded border border-marquee-line px-3 py-1 disabled:opacity-40 focus-ring"
+            className="rounded border border-fog px-3 py-1 disabled:opacity-40 focus-ring"
           >
             Prev
           </button>
@@ -168,7 +168,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="rounded border border-marquee-line px-3 py-1 disabled:opacity-40 focus-ring"
+            className="rounded border border-fog px-3 py-1 disabled:opacity-40 focus-ring"
           >
             Next
           </button>
