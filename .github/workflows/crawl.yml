@@ -59,8 +59,8 @@ jobs:
       INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
       NEXT_PUBLIC_SITE_URL: https://marquees.site
       # Tried in order; a busy model (503) falls through to the next one.
-      GEMINI_MODEL: gemini-2.5-flash
-      GEMINI_FALLBACK_MODELS: gemini-2.5-flash-lite,gemini-3.5-flash-lite
+      GEMINI_MODEL: gemini-3.8-flash
+      GEMINI_FALLBACK_MODELS: gemini-3.5-flash-lite
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

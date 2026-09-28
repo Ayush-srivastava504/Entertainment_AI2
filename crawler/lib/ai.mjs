@@ -9,7 +9,7 @@ compatible endpoint keeps the crawler configuration small and predictable.
 
 import { withRetry, RetryableError, isRetryableHttpError } from "./retry.mjs";
 
-export const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
+export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
 const TIMEOUT_MS = 90_000;
 const MAX_RETRY_AFTER_MS = 30_000;
 
@@ -32,7 +32,9 @@ async function callProvider(provider, userPrompt, opts) {
       max_tokens: opts.maxTokens ?? 4000,
       temperature: opts.temperature ?? 0.6,
     };
-    if (model.includes("gpt-oss")) body.reasoning_effort = opts.reasoning ?? "low";
+    // Thinking models can spend the whole token budget on reasoning and return
+    // an empty message; keep reasoning light so the answer always fits.
+    if (model.includes("gpt-oss") || model.startsWith("gemini-3")) body.reasoning_effort = opts.reasoning ?? "low";
     if (opts.json) body.response_format = { type: "json_object" };
 
     const res = await fetch(provider.endpoint, {
@@ -57,7 +59,10 @@ async function callProvider(provider, userPrompt, opts) {
 
     const data = await res.json();
     const out = data.choices?.[0]?.message?.content?.trim();
-    if (!out) throw new Error(`${provider.name} returned an empty response.`);
+    if (!out) {
+      const why = data.choices?.[0]?.finish_reason ?? "unknown";
+      throw new RetryableError(`${provider.name} returned an empty response (finish_reason=${why})`, { retryAfterMs: 3_000 });
+    }
     return out;
   } finally {
     clearTimeout(timeout);
@@ -82,7 +87,9 @@ export function getConfiguredModel() {
 // Models are tried in order. A 503/429 on one model is usually that model's
 // capacity pool being busy, so switching models recovers far more often than
 // waiting. Override with GEMINI_MODEL / GEMINI_FALLBACK_MODELS (comma list).
-const DEFAULT_FALLBACKS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+const DEFAULT_FALLBACKS = ["gemini-3.8-flash", "gemini-3.5-flash-lite"];
+// Models the API said do not exist (404) are skipped for the rest of the run.
+const deadModels = new Set();
 let lastModelUsed = null;
 
 export function getLastModelUsed() {
@@ -92,7 +99,9 @@ export function getLastModelUsed() {
 function modelChain(opts) {
   const fromEnv = (process.env.GEMINI_FALLBACK_MODELS ?? "").split(",").map((m) => m.trim()).filter(Boolean);
   const primary = opts.model ?? process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL;
-  return [...new Set([primary, ...(fromEnv.length ? fromEnv : DEFAULT_FALLBACKS)])];
+  const chain = [...new Set([primary, ...(fromEnv.length ? fromEnv : DEFAULT_FALLBACKS)])];
+  const alive = chain.filter((m) => !deadModels.has(m));
+  return alive.length ? alive : chain;
 }
 
 export async function generateWithAI(userPrompt, opts = {}) {
@@ -112,6 +121,7 @@ export async function generateWithAI(userPrompt, opts = {}) {
       return out;
     } catch (err) {
       lastErr = err;
+      if (/responded 404/.test(err.message)) deadModels.add(model);
       console.warn(`    [ai] ${model} unavailable (${err.message}); trying next model.`);
     }
   }
