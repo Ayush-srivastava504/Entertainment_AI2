@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { buildOgImageUrl } from "@/lib/og";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { graph, jsonLdString, organizationNode, websiteNode } from "@/lib/jsonld";
 
 // Google Analytics 4 measurement id. Falls back to the id already wired up
 // on the site; override with NEXT_PUBLIC_GA_MEASUREMENT_ID in Vercel env
@@ -94,24 +95,7 @@ export const metadata: Metadata = {
   },
 };
 
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: SITE_NAME,
-  url: BASE_URL,
-};
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE_NAME,
-  url: BASE_URL,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${BASE_URL}/search?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
-};
+const siteJsonLd = graph(organizationNode(), websiteNode());
 
 export default function RootLayout({
   children,
@@ -124,12 +108,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
-        />
-        <script
-          type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c") }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString(siteJsonLd) }}
         />
         {/* Google tag (gtag.js) — loaded with "lazyOnload" so its ~68 KiB
             downloads during browser idle time, after the page has finished
@@ -149,8 +128,14 @@ export default function RootLayout({
             gtag('config', '${GA_MEASUREMENT_ID}');
           `}
         </Script>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-tape focus:px-4 focus:py-2 focus:font-bold focus:text-ink"
+        >
+          Skip to main content
+        </a>
         <Nav />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

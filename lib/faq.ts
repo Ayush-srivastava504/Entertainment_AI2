@@ -19,8 +19,16 @@ export const HOME_FAQ: FaqItem[] = [
     a: "It lists every entry in a franchise in the order that makes sense to watch them, and notes where release order and story order differ so you do not spoil yourself or get lost.",
   },
   {
+    q: "Should I watch a franchise in release order or story order?",
+    a: "For most first-time viewers, release order is safest because reveals land the way the creators intended. Each watch order guide says when a different order works better and why.",
+  },
+  {
     q: "How are the guides written?",
     a: "Ending explanations are AI-assisted using catalog facts and must pass a minimum-length check before publication. Watch order guides are drafted from catalog data and stay unpublished until a person reviews them.",
+  },
+  {
+    q: "Do I need an account to use Marquee?",
+    a: "No. You can read every guide, like titles, and save titles to your browser without signing up.",
   },
   {
     q: "Can't find the title you are looking for?",
@@ -68,8 +76,20 @@ export const WATCH_ORDER_INDEX_FAQ: FaqItem[] = [
 
 export const ABOUT_FAQ: FaqItem[] = [
   {
-    q: "Who runs Marquee?",
-    a: "Marquee is a guide site for movie and anime endings and franchise watch orders.",
+    q: "What is Marquee?",
+    a: "Marquee is a guide site for movie and anime endings and franchise watch orders. It explains what happened in a finale and tells you the best order to start a series.",
+  },
+  {
+    q: "Are ending explained guides spoiler-free?",
+    a: "No. Guides discuss the ending directly. The ending section sits behind a spoiler control so you choose when to reveal it.",
+  },
+  {
+    q: "Do the guides explain what an ending means?",
+    a: "Yes, where the story supports a clear reading. When an ending is open to interpretation, the guide separates what the story shows from what viewers may take from it.",
+  },
+  {
+    q: "Are the guides written by AI?",
+    a: "AI helps draft ending explanations from catalog facts, and each guide must pass a minimum-length check before publication. Watch orders stay unpublished until a person reviews and approves them.",
   },
   {
     q: "Do I need an account?",
@@ -82,5 +102,9 @@ export const ABOUT_FAQ: FaqItem[] = [
   {
     q: "How can I report a mistake in a guide?",
     a: "Leave a comment on the guide page describing what is wrong. Comments are reviewed and guides are corrected when needed.",
+  },
+  {
+    q: "How do I request a title that is missing?",
+    a: "Use the Request an Ending form on the home page. Requests are reviewed and considered for future guides.",
   },
 ];
