@@ -9,7 +9,7 @@ compatible endpoint keeps the crawler configuration small and predictable.
 
 import { withRetry, RetryableError, isRetryableHttpError } from "./retry.mjs";
 
-export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
+export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-lite";
 const TIMEOUT_MS = 90_000;
 const MAX_RETRY_AFTER_MS = 30_000;
 
