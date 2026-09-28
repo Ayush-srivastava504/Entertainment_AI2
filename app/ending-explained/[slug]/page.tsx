@@ -5,6 +5,7 @@ import { getPublishedMovieBySlugOrId, getSimilarMovies } from "@/lib/api/movies"
 import { getPublishedAnimeBySlugOrId, getSimilarAnime } from "@/lib/api/anime";
 import { buildOgImageUrl } from "@/lib/og";
 import { SimilarTitles } from "@/components/media/SimilarTitles";
+import { BarChart } from "@/components/media/BarChart";
 import LikeButton from "@/components/LikeButton";
 import FavoriteButton from "@/components/FavoriteButton";
 import CommentSection from "@/components/CommentSection";
@@ -100,6 +101,47 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     : [];
   const faq = item.endingExplained?.faq ?? [];
 
+  // Rating chart: this title vs the similar titles shown below (real scores only).
+  const ratingChartItems = [item, ...similar]
+    .filter((t) => typeof t.score === "number" && t.score > 0)
+    .slice(0, 6)
+    .map((t) => ({
+      label: t.title,
+      value: t.score as number,
+      highlight: t.slug === item.slug,
+      href: t.slug === item.slug ? undefined : `/ending-explained/${t.slug}`,
+    }));
+
+  const providers = item.watchProviders;
+  const providerRows = providers
+    ? ([
+        ["Stream", providers.flatrate],
+        ["Rent", providers.rent],
+        ["Buy", providers.buy],
+      ] as const).filter(([, list]) => list.length > 0)
+    : [];
+
+  const factRows: [string, string][] = [
+    ["Type", item.kind === "anime" ? "Anime" : "Movie"],
+    ...(item.year ? ([["Year", String(item.year)]] as [string, string][]) : []),
+    ...(item.genres.length ? ([["Genres", item.genres.join(", ")]] as [string, string][]) : []),
+    ...(item.score ? ([["Rating", `${item.score.toFixed(1)} / 10`]] as [string, string][]) : []),
+    ...(item.ratingCount ? ([["Ratings counted", item.ratingCount.toLocaleString("en-US")]] as [string, string][]) : []),
+    ...(item.castList?.length ? ([["Cast listed", String(item.castList.length)]] as [string, string][]) : []),
+    ...(item.endingExplainedWordCount ? ([["Guide length", `${item.endingExplainedWordCount.toLocaleString("en-US")} words`]] as [string, string][]) : []),
+  ];
+
+  const toc = [
+    item.endingExplained?.recap && ["recap", "Recap"],
+    item.endingExplained?.ending && ["ending", "How it ends"],
+    item.endingExplained?.themes && ["themes", "Themes"],
+    ["facts", "Quick facts"],
+    ratingChartItems.length > 1 && ["ratings", "Ratings compared"],
+    providerRows.length > 0 && ["watch", "Where to watch"],
+    faq.length > 0 && ["faq", "FAQ"],
+    item.castList?.length && ["cast", "Cast"],
+  ].filter(Boolean) as [string, string][];
+
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -189,35 +231,45 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} />
           </div>
 
+          <nav aria-label="On this page" className="mt-6 flex flex-wrap gap-2 text-xs">
+            {toc.map(([id, label]) => (
+              <a key={id} href={`#${id}`} className="rounded-full border border-marquee-line px-3 py-1 text-marquee-textDim hover:border-marquee-gold hover:text-marquee-gold">
+                {label}
+              </a>
+            ))}
+          </nav>
+
           {item.endingExplained ? (
             <div className="mt-8 space-y-8">
               {item.endingExplained.recap && (
-                <section>
+                <section id="recap" className="scroll-mt-24">
                   <h2 className="font-display text-2xl text-marquee-text">Recap</h2>
                   <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.recap}</p>
                 </section>
               )}
               {item.endingExplained.ending && (
-                <section>
+                <section id="ending" className="scroll-mt-24">
                   <h2 className="font-display text-2xl text-marquee-text">How It Ends</h2>
                   <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.ending}</p>
                 </section>
               )}
               {item.endingExplained.themes && (
-                <section>
+                <section id="themes" className="scroll-mt-24">
                   <h2 className="font-display text-2xl text-marquee-text">Themes &amp; Meaning</h2>
                   <p className="mt-2 text-marquee-textDim whitespace-pre-line">{item.endingExplained.themes}</p>
                 </section>
               )}
               {faq.length > 0 && (
-                <section>
-                  <h2 className="font-display text-2xl text-marquee-text">FAQ</h2>
-                  <div className="mt-3 space-y-4">
+                <section id="faq" className="scroll-mt-24">
+                  <h2 className="font-display text-2xl text-marquee-text">{item.title} Ending FAQ</h2>
+                  <div className="mt-3 divide-y divide-marquee-line rounded border border-marquee-line">
                     {faq.map((f, i) => (
-                      <div key={i}>
-                        <p className="font-semibold text-marquee-text">{f.q}</p>
-                        <p className="mt-1 text-marquee-textDim">{f.a}</p>
-                      </div>
+                      <details key={i} className="group p-4" open={i === 0}>
+                        <summary className="cursor-pointer list-none font-semibold text-marquee-text marker:hidden">
+                          {f.q}
+                        </summary>
+                        <p className="mt-2 text-marquee-textDim">{f.a}</p>
+                      </details>
                     ))}
                   </div>
                 </section>
@@ -225,6 +277,59 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             </div>
           ) : (
             <p className="mt-6 text-marquee-textDim">{item.description}</p>
+          )}
+
+          <section id="facts" className="mt-10 scroll-mt-24">
+            <h2 className="font-display text-2xl text-marquee-text">{item.title} quick facts</h2>
+            <table className="mt-3 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
+              <tbody>
+                {factRows.map(([label, value]) => (
+                  <tr key={label} className="border-b border-marquee-line last:border-0">
+                    <th scope="row" className="w-40 bg-marquee-panel px-4 py-2 text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
+                      {label}
+                    </th>
+                    <td className="px-4 py-2 text-marquee-text">{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {ratingChartItems.length > 1 && (
+            <section id="ratings" className="mt-10 scroll-mt-24">
+              <BarChart
+                title={`How ${item.title} rates against similar titles`}
+                items={ratingChartItems}
+                max={10}
+                unit=" / 10"
+                caption="Average audience ratings from the source database; click a title to read its ending explained."
+              />
+            </section>
+          )}
+
+          {providerRows.length > 0 && (
+            <section id="watch" className="mt-10 scroll-mt-24">
+              <h2 className="font-display text-2xl text-marquee-text">Where to watch {item.title}</h2>
+              <table className="mt-3 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
+                <thead className="bg-marquee-panel text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
+                  <tr>
+                    <th className="px-4 py-2">How</th>
+                    <th className="px-4 py-2">Available on</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {providerRows.map(([how, list]) => (
+                    <tr key={how} className="border-t border-marquee-line">
+                      <th scope="row" className="px-4 py-2 text-left text-marquee-text">{how}</th>
+                      <td className="px-4 py-2 text-marquee-textDim">{list.map((p) => p.name).join(", ")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {providers?.region && (
+                <p className="mt-2 text-xs text-marquee-textDim">Availability for region {providers.region}; it varies by country.</p>
+              )}
+            </section>
           )}
 
           {franchise && (
@@ -276,24 +381,34 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       </div>
 
       {item.castList && item.castList.length > 0 && (
-        <div className="mt-14">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-marquee-gold mb-4">Cast</p>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {item.castList.map((member) => (
-              <div key={`${member.name}-${member.role}`} className="flex items-center gap-3 rounded border border-marquee-line bg-marquee-panel p-3">
-                {member.photoUrl ? (
-                  <img src={member.photoUrl} alt={member.name} className="h-12 w-12 shrink-0 rounded-full object-cover" />
-                ) : (
-                  <div className="h-12 w-12 shrink-0 rounded-full bg-marquee-line" />
-                )}
-                <div className="min-w-0">
-                  <p className="truncate text-sm text-marquee-text">{member.name}</p>
-                  <p className="truncate text-xs text-marquee-textDim">{member.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <section id="cast" className="mt-14 scroll-mt-24">
+          <h2 className="font-display text-2xl text-marquee-text">{item.title} cast</h2>
+          <table className="mt-4 w-full border-collapse overflow-hidden rounded border border-marquee-line text-sm">
+            <thead className="bg-marquee-panel text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
+              <tr>
+                <th className="px-4 py-2">{item.kind === "anime" ? "Character" : "Actor"}</th>
+                <th className="px-4 py-2">{item.kind === "anime" ? "Role" : "Character"}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {item.castList.map((member) => (
+                <tr key={`${member.name}-${member.role}`} className="border-t border-marquee-line">
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-3">
+                      {member.photoUrl ? (
+                        <img src={member.photoUrl} alt={member.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-10 w-10 shrink-0 rounded-full bg-marquee-line" />
+                      )}
+                      <span className="text-marquee-text">{member.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 text-marquee-textDim">{member.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
       )}
 
       <SimilarTitles items={similar} basePath="/ending-explained" />

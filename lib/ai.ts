@@ -82,7 +82,7 @@ export async function generateWithGroq(
     );
   }
 
-  const model = opts.model ?? process.env.GROQ_MODEL ?? "llama-3.1-8b-instant";
+  const model = opts.model ?? process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 

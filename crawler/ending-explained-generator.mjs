@@ -23,7 +23,10 @@ if (tableArg && !["movies", "anime"].includes(tableArg)) {
 const TABLES = tableArg ? [tableArg] : ["movies", "anime"];
 const LIMIT = Number(argValue("limit") ?? 25);
 const MIN_WORDS = 700;
-const REQUEST_DELAY_MS = 1500;
+// Groq's free tier caps tokens per minute, and each guide is ~2-3K tokens,
+// so space requests out. Lower it via GROQ_DELAY_MS if your limits allow.
+const REQUEST_DELAY_MS = Number(process.env.GROQ_DELAY_MS ?? 15_000);
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 const wordCount = (text) => text.trim().split(/\s+/).filter(Boolean).length;
 
@@ -77,6 +80,7 @@ async function processTable(pool, table) {
 
   console.log(`[ending-explained] ${table}: ${rows.length} queued (limit ${LIMIT})`);
   const stats = { queued: rows.length, published: 0, tooShort: 0, failed: 0 };
+  let consecutiveFailures = 0;
 
   for (const row of rows) {
     try {
@@ -93,7 +97,7 @@ async function processTable(pool, table) {
         query: (row.synopsis ?? "No synopsis available.").slice(0, 1500),
       });
 
-      const text = await generateWithGroq(prompt, { maxTokens: 2200, temperature: 0.6 });
+      const text = await generateWithGroq(prompt, { maxTokens: 4500, temperature: 0.6 });
       const words = wordCount(text);
       const content = parseGeneration(text);
 
@@ -110,11 +114,17 @@ async function processTable(pool, table) {
           [JSON.stringify(content), words, row.id]
         );
         stats.published++;
+        consecutiveFailures = 0;
         console.log(`[ending-explained] ${table}:${row.id} "${row.title}" published (${words} words).`);
       }
     } catch (err) {
       stats.failed++;
+      consecutiveFailures++;
       console.warn(`[ending-explained] ${table}:${row.id} failed: ${err.message}`);
+      if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+        console.warn("[ending-explained] too many failures in a row (likely the free-tier daily limit) — stopping this table.");
+        break;
+      }
     }
     await sleep(REQUEST_DELAY_MS);
   }

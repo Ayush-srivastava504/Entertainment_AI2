@@ -36,7 +36,7 @@ import { generateWithGroq } from "./lib/ai.mjs";
 
 const defsPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "franchise-defs.json");
 const onlySlug = process.argv.slice(2).find((a) => a.startsWith("--slug="))?.split("=")[1];
-const REQUEST_DELAY_MS = 1500;
+const REQUEST_DELAY_MS = Number(process.env.GROQ_DELAY_MS ?? 15_000);
 
 function loadDefinitions() {
   try {
@@ -103,7 +103,7 @@ async function processDefinition(pool, def) {
   const label = (e) => `${e.title}${e.year ? ` (${e.year})` : ""}`;
   const draftText = await generateWithGroq(
     buildPrompt("watch-order-draft", { title: def.title, query: resolved.map(label).join("; ") }),
-    { maxTokens: 1200, temperature: 0.5 }
+    { maxTokens: 3000, temperature: 0.5 }
   );
   const { intro, order, notes } = parseDraft(draftText);
 

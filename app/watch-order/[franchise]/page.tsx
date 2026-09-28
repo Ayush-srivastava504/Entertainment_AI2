@@ -3,6 +3,7 @@ import { getBaseUrl } from "@/lib/site";
 import { notFound } from "next/navigation";
 import { getPublishedFranchiseBySlug, getFranchiseEntries, getAllPublishedFranchises } from "@/lib/api/franchises";
 import { buildOgImageUrl } from "@/lib/og";
+import { BarChart } from "@/components/media/BarChart";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 
@@ -47,6 +48,15 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
 
   const entries = await getFranchiseEntries(franchise.id, "recommended");
   const releaseEntries = entries.length > 0 ? entries : await getFranchiseEntries(franchise.id, "release");
+
+  const resolvedEntries = releaseEntries.filter((e) => e.title);
+  const ratingItems = resolvedEntries
+    .filter((e) => typeof e.title!.score === "number" && e.title!.score! > 0)
+    .map((e) => ({
+      label: e.title!.title,
+      value: e.title!.score as number,
+      href: e.title!.endingExplained ? `/ending-explained/${e.title!.slug}` : undefined,
+    }));
 
   const related = (await getAllPublishedFranchises(12)).filter((f) => f.slug !== franchise.slug).slice(0, 4);
 
@@ -155,6 +165,57 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
           Back to all watch orders
         </Link>
       </div>
+
+      {resolvedEntries.length > 1 && (
+        <section className="mt-14">
+          <h2 className="font-display text-2xl text-marquee-text">{franchise.title} at a glance</h2>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[32rem] border-collapse overflow-hidden rounded border border-marquee-line text-sm">
+              <thead className="bg-marquee-panel text-left font-mono text-xs uppercase tracking-wider text-marquee-textDim">
+                <tr>
+                  <th className="px-4 py-2">#</th>
+                  <th className="px-4 py-2">Title</th>
+                  <th className="px-4 py-2">Type</th>
+                  <th className="px-4 py-2">Year</th>
+                  <th className="px-4 py-2">Rating</th>
+                  <th className="px-4 py-2">Guide</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resolvedEntries.map((e, i) => (
+                  <tr key={e.title!.slug} className="border-t border-marquee-line">
+                    <td className="px-4 py-2 text-marquee-gold">{i + 1}</td>
+                    <td className="px-4 py-2 text-marquee-text">{e.title!.title}</td>
+                    <td className="px-4 py-2 text-marquee-textDim">{e.mediaType === "anime" ? "Anime" : "Movie"}</td>
+                    <td className="px-4 py-2 text-marquee-textDim">{e.title!.year ?? "—"}</td>
+                    <td className="px-4 py-2 text-marquee-textDim">{e.title!.score ? `★ ${e.title!.score.toFixed(1)}` : "—"}</td>
+                    <td className="px-4 py-2">
+                      {e.title!.endingExplained ? (
+                        <Link href={`/ending-explained/${e.title!.slug}`} className="text-marquee-gold hover:underline">
+                          Ending explained
+                        </Link>
+                      ) : (
+                        <span className="text-marquee-textDim">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {ratingItems.length > 1 && (
+            <div className="mt-6">
+              <BarChart
+                title={`${franchise.title} entries by rating`}
+                items={ratingItems}
+                max={10}
+                unit=" / 10"
+                caption="Average audience ratings, in watch order."
+              />
+            </div>
+          )}
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="mt-14">
