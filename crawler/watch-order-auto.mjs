@@ -390,6 +390,12 @@ async function draftAndPublish(pool) {
       }
       consecutive = 0;
     } catch (err) {
+      if (err.blocked) {
+        stats.rejected++;
+        if (!DRY_RUN) await pool.query("update franchises set attempted_at = now(), skip_reason = $2 where id = $1", [fr.id, "blocked by the model's safety filter"]);
+        console.warn(`[watch-order] ${fr.slug} skipped: blocked by the model's safety filter.`);
+        continue;
+      }
       stats.failed++;
       consecutive++;
       console.warn(`[watch-order] ${fr.slug} failed: ${err.message}`);

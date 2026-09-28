@@ -11,6 +11,15 @@ import { withRetry, RetryableError, isRetryableHttpError } from "./retry.mjs";
 
 export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
 const TIMEOUT_MS = 90_000;
+
+/** The model's safety filter refused this prompt. Retrying or switching models will not help. */
+export class ContentBlockedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ContentBlockedError";
+    this.blocked = true;
+  }
+}
 const MAX_RETRY_AFTER_MS = 30_000;
 
 async function callProvider(provider, userPrompt, opts) {
@@ -61,6 +70,9 @@ async function callProvider(provider, userPrompt, opts) {
     const out = data.choices?.[0]?.message?.content?.trim();
     if (!out) {
       const why = data.choices?.[0]?.finish_reason ?? "unknown";
+      if (String(why).toLowerCase().startsWith("content_filter")) {
+        throw new ContentBlockedError(`${provider.name} blocked the prompt (${why})`);
+      }
       throw new RetryableError(`${provider.name} returned an empty response (finish_reason=${why})`, { retryAfterMs: 3_000 });
     }
     return out;
@@ -120,6 +132,7 @@ export async function generateWithAI(userPrompt, opts = {}) {
       lastModelUsed = model;
       return out;
     } catch (err) {
+      if (err.blocked) throw err;
       lastErr = err;
       if (/responded 404/.test(err.message)) deadModels.add(model);
       console.warn(`    [ai] ${model} unavailable (${err.message}); trying next model.`);

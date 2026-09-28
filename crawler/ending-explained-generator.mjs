@@ -221,6 +221,15 @@ async function processTable(pool, table) {
       }
       consecutiveFailures = 0;
     } catch (err) {
+      if (err.blocked) {
+        // Safety filter refusal: deterministic, so record it and move on.
+        // Not counted as an API failure and not retried on every run.
+        stats.skipped++;
+        await markSkipped(pool, table, row.id, "blocked by the model's safety filter");
+        console.warn(`[ending-explained] ${label} skipped: blocked by the model's safety filter.`);
+        await sleep(REQUEST_DELAY_MS);
+        continue;
+      }
       // Transient/API failures: do not mark the title, so it is retried next run.
       stats.failed++;
       consecutiveFailures++;
