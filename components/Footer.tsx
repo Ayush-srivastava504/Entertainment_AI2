@@ -19,11 +19,7 @@ const columns = [
   },
 ];
 
-const storyQuotes = [
-  "Every ending leaves a door open.",
-  "The right order makes the reveals land.",
-  "One more clue can change the whole story.",
-];
+const footerQuote = "Every ending leaves a door open.";
 
 export default function Footer() {
   return (
@@ -52,10 +48,10 @@ export default function Footer() {
         ))}
       </div>
       <div className="border-t border-white/15">
-        <div className="mx-auto grid max-w-6xl gap-3 px-6 py-5 text-sm italic text-white/60 sm:grid-cols-3">
-          {storyQuotes.map((quote) => (
-            <blockquote key={quote}>“{quote}”</blockquote>
-          ))}
+        <div className="mx-auto max-w-6xl px-6 py-5">
+          <blockquote className="text-sm italic text-white/60">
+            <p>&ldquo;{footerQuote}&rdquo;</p>
+          </blockquote>
         </div>
       </div>
     </footer>
