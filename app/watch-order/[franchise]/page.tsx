@@ -3,6 +3,7 @@ import { getBaseUrl } from "@/lib/site";
 import { notFound } from "next/navigation";
 import { getPublishedFranchiseBySlug, getFranchiseEntries, getAllPublishedFranchises } from "@/lib/api/franchises";
 import { buildOgImageUrl } from "@/lib/og";
+import { posterSrc, posterSrcSet } from "@/lib/image";
 import { BarChart } from "@/components/media/BarChart";
 import { Faq } from "@/components/ui/Faq";
 import { Slate } from "@/components/ui/Slate";
@@ -198,7 +199,12 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
                     <div className="flex min-w-0 flex-1 gap-4">
                       {entry.title.posterUrl && (
                         <img
-                          src={entry.title.posterUrl}
+                          src={posterSrc(entry.title.posterUrl, 185)}
+                          srcSet={posterSrcSet(entry.title.posterUrl)}
+                          sizes="64px"
+                          width={64}
+                          height={96}
+                          decoding="async"
                           alt={`${entry.title.title} poster`}
                           loading="lazy"
                           className="h-24 w-16 shrink-0 rounded-lg border-2 border-ink object-cover"

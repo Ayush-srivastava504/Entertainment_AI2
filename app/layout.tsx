@@ -104,6 +104,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="preconnect" href="https://cdn.myanimelist.net" />
+      </head>
       <body className="font-display min-h-screen flex flex-col bg-paper text-ink antialiased">
         <script
           type="application/ld+json"
@@ -116,16 +120,32 @@ export default function RootLayout({
             path (this is what Lighthouse's "Reduce unused JavaScript" /
             "Legacy JavaScript" diagnostics were flagging). Analytics
             firing a beat later is imperceptible to users. */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="lazyOnload"
-        />
-        <Script id="ga4-init" strategy="lazyOnload">
+        {/* GA4 is loaded on the first user interaction (or after 8s). It is
+            ~70 KiB of JS that does nothing for the first paint, and
+            deferring it removes it from the Lighthouse "unused JavaScript"
+            and "3rd parties" costs. The page view is still recorded once
+            it loads, so real visitors are counted as before. */}
+        <Script id="ga4-loader" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
+            (function () {
+              var loaded = false;
+              function load() {
+                if (loaded) return;
+                loaded = true;
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function () { window.dataLayer.push(arguments); };
+                window.gtag('js', new Date());
+                window.gtag('config', '${GA_MEASUREMENT_ID}');
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';
+                document.head.appendChild(s);
+              }
+              ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (e) {
+                window.addEventListener(e, load, { once: true, passive: true });
+              });
+              setTimeout(load, 8000);
+            })();
           `}
         </Script>
         <a

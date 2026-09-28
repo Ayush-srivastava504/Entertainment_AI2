@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { MediaItem } from "@/lib/api/normalize";
+import { posterSrc, posterSrcSet } from "@/lib/image";
 
 export function MediaCard({ item, href }: { item: MediaItem; href: string }) {
   return (
@@ -10,9 +11,14 @@ export function MediaCard({ item, href }: { item: MediaItem; href: string }) {
       <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-ink bg-fog">
         {item.posterUrl ? (
           <img
-            src={item.posterUrl}
+            src={posterSrc(item.posterUrl)}
+            srcSet={posterSrcSet(item.posterUrl)}
+            sizes="(min-width: 1024px) 270px, (min-width: 768px) 30vw, 46vw"
+            width={342}
+            height={513}
             alt={`${item.title} poster`}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         ) : (

@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { getPublishedMovieBySlugOrId, getSimilarMovies } from "@/lib/api/movies";
 import { getPublishedAnimeBySlugOrId, getSimilarAnime } from "@/lib/api/anime";
 import { buildOgImageUrl } from "@/lib/og";
+import { posterSrc, posterSrcSet } from "@/lib/image";
 import { SimilarTitles } from "@/components/media/SimilarTitles";
 import { BarChart } from "@/components/media/BarChart";
 import { Faq } from "@/components/ui/Faq";
@@ -248,7 +249,17 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
           </div>
           <div className="mx-auto w-48 rotate-2 overflow-hidden rounded-xl border-4 border-white bg-fog shadow-block lg:w-full">
             {item.posterUrl ? (
-              <img src={item.posterUrl} alt={`${item.title} poster`} className="aspect-[2/3] w-full object-cover" />
+              <img
+                src={posterSrc(item.posterUrl, 342)}
+                srcSet={posterSrcSet(item.posterUrl)}
+                sizes="(min-width: 1024px) 360px, 192px"
+                width={342}
+                height={513}
+                fetchPriority="high"
+                decoding="async"
+                alt={`${item.title} poster`}
+                className="aspect-[2/3] w-full object-cover"
+              />
             ) : (
               <div className="flex aspect-[2/3] items-center justify-center p-6 text-center text-sm text-muted">No poster yet</div>
             )}
