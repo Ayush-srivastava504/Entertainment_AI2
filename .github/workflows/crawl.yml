@@ -1,0 +1,63 @@
+# Runs the crawlers on GitHub's servers so you don't have to run them by hand.
+# Add these under the repo's Settings -> Secrets and variables -> Actions:
+#   DATABASE_URL, TMDB_API_READ_ACCESS_TOKEN, GROQ_API_KEY
+# You can also run any job manually from the Actions tab ("Run workflow").
+name: Crawl and generate
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # daily at 03:00 UTC: refresh catalog data
+    - cron: "0 5 * * *"   # daily at 05:00 UTC: write new guides
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "What to run"
+        type: choice
+        default: both
+        options: [both, crawl, generate]
+      limit:
+        description: "Max guides to generate per table"
+        default: "20"
+
+concurrency:
+  group: crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    if: >
+      github.event_name == 'workflow_dispatch' && inputs.job != 'generate' ||
+      github.event_name == 'schedule' && github.event.schedule == '0 3 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TMDB_API_READ_ACCESS_TOKEN: ${{ secrets.TMDB_API_READ_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run crawl:all
+
+  generate:
+    if: >
+      github.event_name == 'workflow_dispatch' && inputs.job != 'crawl' ||
+      github.event_name == 'schedule' && github.event.schedule == '0 5 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GROQ_MODEL: openai/gpt-oss-120b
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Generate ending-explained guides
+        run: node crawler/ending-explained-generator.mjs --limit=${{ inputs.limit || 20 }}
