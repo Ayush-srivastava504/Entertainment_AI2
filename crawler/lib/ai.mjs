@@ -3,13 +3,13 @@ Plain-Node mirror of the crawler AI client. Crawler scripts run via `node`
 (no TypeScript build), so they can't import lib/ai.ts — same reason
 lib/slug.mjs mirrors lib/slug.ts. Keep the two in sync.
 
-DeepSeek is the only provider used by the offline generators. Its OpenAI-
+Gemini is the only provider used by the offline generators. Its OpenAI-
 compatible endpoint keeps the crawler configuration small and predictable.
 */
 
 import { withRetry, RetryableError, isRetryableHttpError } from "./retry.mjs";
 
-export const DEFAULT_DEEPSEEK_MODEL = "deepseek-chat";
+export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 const TIMEOUT_MS = 90_000;
 const MAX_RETRY_AFTER_MS = 30_000;
 
@@ -66,11 +66,11 @@ async function callProvider(provider, userPrompt, opts) {
 
 const PROVIDERS = [
   {
-    name: "deepseek",
-    keyEnv: "DEEPSEEK_API_KEY",
-    modelEnv: "DEEPSEEK_MODEL",
-    defaultModel: DEFAULT_DEEPSEEK_MODEL,
-    endpoint: "https://api.deepseek.com/chat/completions",
+    name: "gemini",
+    keyEnv: "GEMINI_API_KEY",
+    modelEnv: "GEMINI_MODEL",
+    defaultModel: DEFAULT_GEMINI_MODEL,
+    endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
   },
 ];
 
@@ -82,7 +82,7 @@ export function getConfiguredModel() {
 export async function generateWithAI(userPrompt, opts = {}) {
   const configured = PROVIDERS.filter((provider) => process.env[provider.keyEnv]);
   if (!configured.length) {
-    throw new Error("DEEPSEEK_API_KEY is not configured.");
+    throw new Error("GEMINI_API_KEY is not configured.");
   }
 
   return withRetry(() => callProvider(configured[0], userPrompt, opts), {
@@ -93,6 +93,6 @@ export async function generateWithAI(userPrompt, opts = {}) {
   });
 }
 
-export function generateWithDeepSeek(userPrompt, opts = {}) {
+export function generateWithGemini(userPrompt, opts = {}) {
   return generateWithAI(userPrompt, opts);
 }

@@ -32,7 +32,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getPool, recordSync, sleep } from "./db.mjs";
 import { buildPrompt } from "./lib/prompts.mjs";
-import { generateWithDeepSeek } from "./lib/ai.mjs";
+import { generateWithGemini } from "./lib/ai.mjs";
 
 const defsPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "franchise-defs.json");
 const onlySlug = process.argv.slice(2).find((a) => a.startsWith("--slug="))?.split("=")[1];
@@ -101,7 +101,7 @@ async function processDefinition(pool, def) {
   resolved.sort((a, b) => a.releaseOrder - b.releaseOrder);
 
   const label = (e) => `${e.title}${e.year ? ` (${e.year})` : ""}`;
-  const draftText = await generateWithDeepSeek(
+  const draftText = await generateWithGemini(
     buildPrompt("watch-order-draft", { title: def.title, query: resolved.map(label).join("; ") }),
     { maxTokens: 3000, temperature: 0.5 }
   );
