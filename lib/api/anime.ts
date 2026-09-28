@@ -10,6 +10,17 @@ import { cached, invalidate } from "@/lib/cache";
 import type { EndingExplained, MediaItem } from "@/lib/api/normalize";
 import { buildMediaSlug } from "@/lib/slug";
 
+function normalizeWatchProviders(value: any) {
+  if (!value || typeof value !== "object") return null;
+  return {
+    region: typeof value.region === "string" ? value.region : null,
+    link: typeof value.link === "string" ? value.link : null,
+    flatrate: Array.isArray(value.flatrate) ? value.flatrate : [],
+    rent: Array.isArray(value.rent) ? value.rent : [],
+    buy: Array.isArray(value.buy) ? value.buy : [],
+  };
+}
+
 function rowToMedia(row: any): MediaItem {
   const title = row.title_english || row.title;
   return {
@@ -25,14 +36,17 @@ function rowToMedia(row: any): MediaItem {
     year: row.year ?? undefined,
     score: row.score !== null && row.score !== undefined ? Number(row.score) : undefined,
     ratingCount: row.scored_by !== null && row.scored_by !== undefined ? Number(row.scored_by) : undefined,
-    genres: row.genres ?? [],
+    genres: Array.isArray(row.genres) ? row.genres.filter((genre: any) => typeof genre === "string") : [],
     source: row.source ?? "jikan",
-    tags: row.tags ?? [],
-    castList: row.cast_list ?? undefined,
+    tags: Array.isArray(row.tags) ? row.tags.filter((tag: any) => typeof tag === "string") : [],
+    castList: Array.isArray(row.cast_list) ? row.cast_list.filter((member: any) => member?.name) : undefined,
+    watchProviders: normalizeWatchProviders(row.watch_providers),
     noindex: row.noindex ?? false,
     endingExplained: (row.synopsis_override
       ? { recap: row.synopsis_override, ending: "", themes: "", faq: [] }
-      : row.ending_explained_content) as EndingExplained | undefined,
+      : row.ending_explained_content && typeof row.ending_explained_content === "object"
+        ? { ...row.ending_explained_content, faq: Array.isArray(row.ending_explained_content.faq) ? row.ending_explained_content.faq : [] }
+        : undefined) as EndingExplained | undefined,
     endingExplainedWordCount: row.ending_explained_word_count ?? undefined,
     endingExplainedPublishedAt: row.ending_explained_published_at
       ? new Date(row.ending_explained_published_at).toISOString()
