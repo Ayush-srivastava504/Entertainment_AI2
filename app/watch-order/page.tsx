@@ -9,6 +9,8 @@ import { WATCH_ORDER_INDEX_FAQ } from "@/lib/faq";
 import { WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 
+export const revalidate = 3600;
+
 const BASE_URL = getBaseUrl();
 
 export const metadata = {

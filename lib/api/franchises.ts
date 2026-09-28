@@ -31,6 +31,7 @@ export interface Franchise {
   noindex: boolean;
   featured: boolean;
   likes: number;
+  faq: { q: string; a: string }[];
   publishedAt: string;
   updatedAt: string;
 }
@@ -46,6 +47,7 @@ function rowToFranchise(row: any): Franchise {
     noindex: row.noindex,
     featured: row.featured,
     likes: row.likes ?? 0,
+    faq: Array.isArray(row.faq) ? row.faq.filter((x: any) => x?.q && x?.a) : [],
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
   };

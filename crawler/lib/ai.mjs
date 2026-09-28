@@ -47,7 +47,7 @@ async function callProvider(provider, userPrompt, opts) {
       throw new RetryableError(`${provider.name} responded ${res.status}`, {
         retryAfterMs: Number.isFinite(retryAfter) && retryAfter > 0
           ? Math.min(retryAfter * 1000, MAX_RETRY_AFTER_MS)
-          : 15_000,
+          : 8_000,
       });
     }
     if (!res.ok) {
@@ -79,18 +79,43 @@ export function getConfiguredModel() {
   return provider ? process.env[provider.modelEnv] ?? provider.defaultModel : "unconfigured";
 }
 
-export async function generateWithAI(userPrompt, opts = {}) {
-  const configured = PROVIDERS.filter((provider) => process.env[provider.keyEnv]);
-  if (!configured.length) {
-    throw new Error("GEMINI_API_KEY is not configured.");
-  }
+// Models are tried in order. A 503/429 on one model is usually that model's
+// capacity pool being busy, so switching models recovers far more often than
+// waiting. Override with GEMINI_MODEL / GEMINI_FALLBACK_MODELS (comma list).
+const DEFAULT_FALLBACKS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+let lastModelUsed = null;
 
-  return withRetry(() => callProvider(configured[0], userPrompt, opts), {
-    retries: 2,
-    maxDelayMs: MAX_RETRY_AFTER_MS,
-    label: configured[0].name,
-    isRetryable: isRetryableHttpError,
-  });
+export function getLastModelUsed() {
+  return lastModelUsed ?? getConfiguredModel();
+}
+
+function modelChain(opts) {
+  const fromEnv = (process.env.GEMINI_FALLBACK_MODELS ?? "").split(",").map((m) => m.trim()).filter(Boolean);
+  const primary = opts.model ?? process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL;
+  return [...new Set([primary, ...(fromEnv.length ? fromEnv : DEFAULT_FALLBACKS)])];
+}
+
+export async function generateWithAI(userPrompt, opts = {}) {
+  const provider = PROVIDERS.find((candidate) => process.env[candidate.keyEnv]);
+  if (!provider) throw new Error("GEMINI_API_KEY is not configured.");
+
+  let lastErr;
+  for (const model of modelChain(opts)) {
+    try {
+      const out = await withRetry(() => callProvider(provider, userPrompt, { ...opts, model }), {
+        retries: 1,
+        maxDelayMs: MAX_RETRY_AFTER_MS,
+        label: model,
+        isRetryable: isRetryableHttpError,
+      });
+      lastModelUsed = model;
+      return out;
+    } catch (err) {
+      lastErr = err;
+      console.warn(`    [ai] ${model} unavailable (${err.message}); trying next model.`);
+    }
+  }
+  throw lastErr;
 }
 
 export function generateWithGemini(userPrompt, opts = {}) {

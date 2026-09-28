@@ -13,6 +13,8 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { buildOgImageUrl } from "@/lib/og";
 import { graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
 
+export const revalidate = 3600;
+
 const BASE_URL = getBaseUrl();
 
 const TITLE = `${SITE_NAME}: Movie & Anime Endings Explained, Plus Watch Order Guides`;

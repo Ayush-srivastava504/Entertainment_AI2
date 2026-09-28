@@ -11,6 +11,8 @@ import { ENDING_INDEX_FAQ } from "@/lib/faq";
 import { ENDING_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 
+export const revalidate = 3600;
+
 const BASE_URL = getBaseUrl();
 
 export const metadata = {

@@ -10,6 +10,8 @@ import { CtaBand } from "@/components/ui/CtaBand";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 
+export const revalidate = 3600;
+
 const BASE_URL = getBaseUrl();
 
 export async function generateMetadata({ params }: { params: Promise<{ franchise: string }> }) {
@@ -18,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
   if (!franchise) return {};
 
   const url = `${BASE_URL}/watch-order/${franchise.slug}`;
-  const title = `${franchise.title} Watch Order: The Complete Guide | Marquees`;
+  const title = `${franchise.title} Watch Order: The Complete Guide`;
   const description =
     franchise.metaDescription || franchise.intro?.slice(0, 155) || `The best order to watch ${franchise.title}.`;
 
@@ -74,6 +76,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
   const years = resolvedEntries.map((e) => e.title!.year).filter((y): y is number => typeof y === "number");
 
   const faq = [
+    ...franchise.faq,
     ...(orderedTitles.length > 0
       ? [
           {

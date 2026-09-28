@@ -21,7 +21,8 @@ Ending Explained generator (v2). Built for accuracy first:
 */
 
 import { getPool, recordSync, sleep } from "./db.mjs";
-import { generateWithGemini, getConfiguredModel } from "./lib/ai.mjs";
+import { generateWithGemini, getConfiguredModel, getLastModelUsed } from "./lib/ai.mjs";
+import { pingIndexNow } from "./lib/indexnow.mjs";
 import { fetchPlot } from "./lib/wikipedia.mjs";
 import {
   GUIDE_SYSTEM_PROMPT,
@@ -76,9 +77,9 @@ async function markSkipped(pool, table, id, reason) {
 function loadQueue(pool, table) {
   const isAnime = table === "anime";
   const select = isAnime
-    ? `id, coalesce(title_english, title) as title, year, genres, cast_list,
+    ? `id, slug, coalesce(title_english, title) as title, year, genres, cast_list,
        coalesce(synopsis_override, synopsis) as synopsis`
-    : `id, title, year, genres, cast_list,
+    : `id, slug, title, year, genres, cast_list,
        coalesce(synopsis_override, description, tagline) as synopsis`;
   const order = isAnime ? "popularity asc nulls last" : "watchers desc nulls last";
 
@@ -168,6 +169,7 @@ async function processTable(pool, table) {
   console.log(`[ending-explained] ${table}: ${rows.length} queued (limit ${LIMIT}, verify=${VERIFY}, model=${MODEL})`);
 
   const stats = { queued: rows.length, published: 0, skipped: 0, rejected: 0, failed: 0 };
+  const publishedUrls = [];
   let consecutiveFailures = 0;
 
   for (const row of rows) {
@@ -192,7 +194,7 @@ async function processTable(pool, table) {
         const content = {
           ...result.guide,
           meta: {
-            model: MODEL,
+            model: getLastModelUsed(),
             generatedAt: new Date().toISOString(),
             sources: facts.sources,
             verified: Boolean(result.verified),
@@ -214,6 +216,7 @@ async function processTable(pool, table) {
           );
         }
         stats.published++;
+        if (!DRY_RUN && row.slug) publishedUrls.push(`/ending-explained/${row.slug}`);
         console.log(`[ending-explained] ${label} ${DRY_RUN ? "passed (dry run)" : "published"} (${words} words, sources: ${facts.sources.join("+")}, verified=${Boolean(result.verified)}).`);
       }
       consecutiveFailures = 0;
@@ -229,6 +232,7 @@ async function processTable(pool, table) {
     }
     await sleep(REQUEST_DELAY_MS);
   }
+  if (!DRY_RUN) await pingIndexNow(publishedUrls);
   return stats;
 }
 

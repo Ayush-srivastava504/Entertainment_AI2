@@ -15,6 +15,8 @@ import CommentSection from "@/components/CommentSection";
 import { getFranchiseForTitle, getFranchiseEntries } from "@/lib/api/franchises";
 import type { MediaItem } from "@/lib/api/normalize";
 
+export const revalidate = 3600;
+
 const BASE_URL = getBaseUrl();
 
 /**
@@ -41,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { item } = resolved;
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
-  const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained: What Really Happens | Marquees`;
+  const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained: What Really Happens`;
   const description =
     item.endingExplained?.metaDescription ||
     item.endingExplained?.ending?.slice(0, 155) ||
