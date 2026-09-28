@@ -64,6 +64,7 @@ need `HF_SPACE_URL` set (step 3) to return a result.
 ## 2. Set up the backend (Postgres + crawlers)
 
 1. Create a free Postgres (Neon or Supabase), run `db/schema.sql` against it.
+   For an existing database, run `npm run db:migrate:title-requests` to add the homepage request queue without touching existing comments.
 2. Put `DATABASE_URL` in Vercel's env vars **and** as a GitHub Actions
    secret (Settings → Secrets and variables → Actions) for the same repo —
    `.github/workflows/sync.yml` runs the crawlers on a schedule using it.

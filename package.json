@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "node crawler/migrate.mjs",
+    "db:migrate:title-requests": "node crawler/migrate-title-requests.mjs",
     "crawl:anime": "node crawler/anime-sync.mjs",
     "crawl:anime:full": "node crawler/anime-sync.mjs --full",
     "crawl:anime:jikan-only": "node crawler/jikan-crawler.mjs",

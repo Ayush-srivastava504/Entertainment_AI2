@@ -19,6 +19,12 @@ const columns = [
   },
 ];
 
+const storyQuotes = [
+  "Every ending leaves a door open.",
+  "The right order makes the reveals land.",
+  "One more clue can change the whole story.",
+];
+
 export default function Footer() {
   return (
     <footer className="mt-24 border-t-2 border-ink bg-ink text-white">
@@ -46,9 +52,11 @@ export default function Footer() {
         ))}
       </div>
       <div className="border-t border-white/15">
-        <p className="mx-auto max-w-6xl px-6 py-5 text-sm text-white/60">
-          Guides are AI-assisted. Movie data from TMDB; anime data from public anime databases.
-        </p>
+        <div className="mx-auto grid max-w-6xl gap-3 px-6 py-5 text-sm italic text-white/60 sm:grid-cols-3">
+          {storyQuotes.map((quote) => (
+            <blockquote key={quote}>“{quote}”</blockquote>
+          ))}
+        </div>
       </div>
     </footer>
   );

@@ -62,3 +62,17 @@ export async function addComment(
   );
   return rows[0];
 }
+
+export interface TitleRequestRow {
+  id: string;
+  title: string;
+  created_at: string;
+}
+
+export async function addTitleRequest(title: string): Promise<TitleRequestRow> {
+  const { rows } = await getPool().query<TitleRequestRow>(
+    `insert into title_requests (title) values ($1) returning id, title, created_at`,
+    [title]
+  );
+  return rows[0];
+}

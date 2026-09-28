@@ -226,3 +226,21 @@ export async function listAdminComments(page = 1, limit = 30): Promise<{ rows: A
 export async function deleteAdminComment(id: string): Promise<void> {
   await getPool().query(`delete from comments where id = $1`, [id]);
 }
+
+export interface AdminTitleRequestRow {
+  id: string;
+  title: string;
+  createdAt: string;
+}
+
+export async function listAdminTitleRequests(limit = 100): Promise<AdminTitleRequestRow[]> {
+  const { rows } = await getPool().query(
+    `select id, title, created_at from title_requests order by created_at desc limit $1`,
+    [limit]
+  );
+  return rows.map((row: any) => ({ id: row.id, title: row.title, createdAt: row.created_at }));
+}
+
+export async function deleteAdminTitleRequest(id: string): Promise<void> {
+  await getPool().query(`delete from title_requests where id = $1`, [id]);
+}

@@ -6,6 +6,7 @@ import { MediaGrid } from "@/components/media/MediaGrid";
 import { SearchBar } from "@/components/media/SearchBar";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
+import { TitleRequestForm } from "@/components/TitleRequestForm";
 import { HOME_FAQ } from "@/lib/faq";
 
 const steps = [
@@ -13,6 +14,8 @@ const steps = [
   { title: "Read the guide", text: "Get a recap, the ending itself, what it means, and answers to the usual questions." },
   { title: "Watch in the right order", text: "Follow the franchise's watch order so nothing is spoiled or missed." },
 ];
+
+const popularSearches = ["Attack on Titan", "Interstellar", "Jujutsu Kaisen", "Oppenheimer", "Chainsaw Man", "Dune: Part Two"];
 
 export default async function HomePage() {
   const [movies, anime, franchises] = await Promise.all([
@@ -44,6 +47,21 @@ export default async function HomePage() {
             </p>
             <div className="mt-9 max-w-xl">
               <SearchBar path="/search" size="lg" />
+            </div>
+            <div className="mt-5 max-w-xl" aria-label="Popular title searches">
+              <p className="mb-2 text-sm font-bold text-white/80">Popular searches</p>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {popularSearches.map((title) => (
+                  <Link
+                    key={title}
+                    href={`/search?q=${encodeURIComponent(title)}`}
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-tape hover:bg-tape hover:text-ink"
+                  >
+                    <span aria-hidden="true" className="text-tape">★</span>
+                    {title}
+                  </Link>
+                ))}
+              </div>
             </div>
             <p className="mt-5 text-base text-white/80">
               Or browse{" "}
@@ -89,6 +107,34 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {franchises.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold uppercase text-beam">Start a series</p>
+              <h2 className="mt-2 font-display text-4xl font-extrabold tracking-tight">Featured watch orders</h2>
+            </div>
+            <Link href="/watch-order" className="rounded-full border-2 border-ink px-5 py-2 font-bold hover:bg-tape">
+              See all watch orders
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {franchises.map((f) => (
+              <Link
+                key={f.id}
+                href={`/watch-order/${f.slug}`}
+                className="group flex flex-col rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
+              >
+                <h3 className="font-display text-2xl font-extrabold leading-tight group-hover:text-beam">
+                  {f.title} watch order
+                </h3>
+                {f.intro && <p className="mt-3 line-clamp-3 font-body text-base leading-relaxed text-muted">{f.intro}</p>}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {latestGuides.length > 0 && (
         <section className="mx-auto max-w-6xl px-6 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -120,31 +166,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {franchises.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="font-display text-4xl font-extrabold tracking-tight">Watch order guides</h2>
-            <Link href="/watch-order" className="rounded-full border-2 border-ink px-5 py-2 font-bold hover:bg-tape">
-              See all watch orders
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {franchises.map((f) => (
-              <Link
-                key={f.id}
-                href={`/watch-order/${f.slug}`}
-                className="group flex flex-col rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
-              >
-                <h3 className="font-display text-2xl font-extrabold leading-tight group-hover:text-beam">
-                  {f.title} watch order
-                </h3>
-                {f.intro && <p className="mt-3 line-clamp-3 font-body text-base leading-relaxed text-muted">{f.intro}</p>}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section className="mx-auto max-w-6xl px-6 pb-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
           <div>
@@ -153,14 +174,23 @@ export default async function HomePage() {
               What the guides are, how they are made, and what to expect.
             </p>
           </div>
-          <Faq items={HOME_FAQ} title="About the guides" id="faq" />
+          <div>
+            <Faq items={HOME_FAQ} title="About the guides" id="faq" headingLevel={3} />
+            <div className="mt-8 border-t-2 border-ink pt-6">
+              <h3 className="font-display text-2xl font-bold text-ink">Request an Ending</h3>
+              <p className="mt-2 font-body text-base leading-relaxed text-muted">
+                Have a movie or anime in mind? Send the title for consideration in a future guide.
+              </p>
+              <TitleRequestForm />
+            </div>
+          </div>
         </div>
       </section>
 
       <CtaBand
-        title="Not sure what to read first?"
-        text="Search by title, or start with a franchise's watch order and read each ending as you go."
-        primary={{ href: "/search", label: "Search guides" }}
+        title="Never be confused by a finale again."
+        text="Find a clear explanation for the story you finished, or follow a franchise in the order it unfolds."
+        primary={{ href: "/ending-explained", label: "Explore ending guides" }}
         secondary={{ href: "/watch-order", label: "Browse watch orders" }}
       />
     </>

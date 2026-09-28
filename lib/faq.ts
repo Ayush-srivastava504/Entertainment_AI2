@@ -12,7 +12,7 @@ export const HOME_FAQ: FaqItem[] = [
   },
   {
     q: "Are the guides full of spoilers?",
-    a: "Yes. The recap is written to stay light, but the ending section is spoiler-forward by design. On each guide the ending is blurred until you choose to reveal it.",
+    a: "Recaps are labeled spoiler-light. The ending explanation is spoiler-forward and hidden behind a reveal control, so you can stop before the spoilers.",
   },
   {
     q: "What is a watch order guide?",
@@ -20,11 +20,11 @@ export const HOME_FAQ: FaqItem[] = [
   },
   {
     q: "How are the guides written?",
-    a: "Ending explained guides are generated with AI from catalog facts such as plot summaries and cast, and must pass a minimum-length check before they are published. Watch order guides stay hidden until a person has approved them.",
+    a: "Ending explanations are AI-assisted using catalog facts and must pass a minimum-length check before publication. Watch order guides are drafted from catalog data and stay unpublished until a person reviews them.",
   },
   {
     q: "Can't find the title you are looking for?",
-    a: "Use search to check by title. If a guide does not exist yet, it usually means it has not been published; new guides are added on a regular schedule.",
+    a: "Search by title to check for an existing guide. If it is not here yet, send a title request using the form below.",
   },
 ];
 
