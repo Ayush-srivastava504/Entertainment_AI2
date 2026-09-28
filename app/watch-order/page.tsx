@@ -6,6 +6,8 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { WATCH_ORDER_INDEX_FAQ } from "@/lib/faq";
+import { WATCH_ORDER_TOPICS } from "@/lib/topics";
+import { TopicLinks } from "@/components/topics/TopicLinks";
 
 const BASE_URL = getBaseUrl();
 
@@ -28,6 +30,8 @@ export default async function WatchOrderIndexPage() {
       >
         <SearchBar path="/search" placeholder="Search a franchise" />
       </PageHero>
+
+      <TopicLinks topics={WATCH_ORDER_TOPICS} basePath="/watch-order" />
 
       <div className="mx-auto max-w-6xl px-6 py-14">
         {franchises.length === 0 ? (

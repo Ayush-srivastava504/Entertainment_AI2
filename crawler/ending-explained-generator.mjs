@@ -21,7 +21,7 @@ Ending Explained generator (v2). Built for accuracy first:
 */
 
 import { getPool, recordSync, sleep } from "./db.mjs";
-import { generateWithGroq } from "./lib/ai.mjs";
+import { generateWithGroq, getConfiguredModel } from "./lib/ai.mjs";
 import { fetchPlot } from "./lib/wikipedia.mjs";
 import {
   GUIDE_SYSTEM_PROMPT,
@@ -50,7 +50,7 @@ const REQUEST_DELAY_MS = Number(process.env.GROQ_DELAY_MS ?? 15_000);
 const MAX_CONSECUTIVE_FAILURES = 3;
 const RETRY_AFTER_DAYS = 14;
 const MIN_GROUNDING_CHARS = 500; // total source text needed to write about a title
-const MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
+const MODEL = getConfiguredModel();
 
 const call = (prompt, opts = {}) =>
   generateWithGroq(prompt, { system: GUIDE_SYSTEM_PROMPT, json: true, maxTokens: 5000, temperature: 0.4, ...opts });

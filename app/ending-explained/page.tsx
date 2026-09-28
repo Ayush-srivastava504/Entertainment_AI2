@@ -8,6 +8,8 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { ENDING_INDEX_FAQ } from "@/lib/faq";
+import { ENDING_TOPICS } from "@/lib/topics";
+import { TopicLinks } from "@/components/topics/TopicLinks";
 
 const BASE_URL = getBaseUrl();
 
@@ -48,6 +50,8 @@ export default async function EndingExplainedIndexPage({
       >
         <SearchBar path="/search" />
       </PageHero>
+
+      <TopicLinks topics={ENDING_TOPICS} basePath="/ending-explained" />
 
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="flex flex-wrap items-center gap-3" role="group" aria-label="Filter guides">
