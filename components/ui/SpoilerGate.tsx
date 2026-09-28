@@ -11,17 +11,17 @@ export function SpoilerGate({ children, label = "Spoilers: how it ends" }: { chi
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="relative">
+    <div className={`relative ${revealed ? "" : "min-h-[9rem]"}`}>
       <div className={revealed ? "spoiler-clear" : "spoiler-blur"} aria-hidden={false}>
         {children}
       </div>
       {!revealed && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center p-3">
           <button
             type="button"
             onClick={() => setRevealed(true)}
             aria-expanded={false}
-            className="rounded-full border-2 border-ink bg-cue px-6 py-3 font-display text-base font-bold text-white shadow-block transition hover:-translate-y-0.5"
+            className="min-h-11 max-w-full rounded-full border-2 border-ink bg-cue px-5 py-3 text-center font-display text-base font-bold text-white shadow-block transition hover:-translate-y-0.5"
           >
             {label}. Tap to reveal
           </button>

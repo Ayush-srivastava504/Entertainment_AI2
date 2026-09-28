@@ -27,11 +27,11 @@ export function MediaCard({ item, href }: { item: MediaItem; href: string }) {
           </span>
         ) : null}
       </div>
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-display text-xl font-bold leading-tight text-ink group-hover:text-beam">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <h3 className="font-display text-base font-bold leading-tight text-ink group-hover:text-beam sm:text-xl">
           {item.title} ending explained
         </h3>
-        {item.description && <p className="mt-2 line-clamp-3 font-body text-sm leading-relaxed text-muted">{item.description}</p>}
+        {item.description && <p className="mt-2 hidden line-clamp-3 font-body text-sm sm:block leading-relaxed text-muted">{item.description}</p>}
         <p className="mt-auto pt-3 text-xs font-semibold text-muted">
           {[item.year, ...item.genres.slice(0, 2)].filter(Boolean).join(", ")}
         </p>

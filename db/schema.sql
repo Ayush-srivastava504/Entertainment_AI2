@@ -75,6 +75,8 @@ alter table anime add column if not exists likes integer not null default 0;
 alter table anime add column if not exists ending_explained_content jsonb;
 alter table anime add column if not exists ending_explained_word_count integer;
 alter table anime add column if not exists ending_explained_published_at timestamptz;
+alter table anime add column if not exists ending_explained_attempted_at timestamptz;
+alter table anime add column if not exists ending_explained_skip_reason text;
 
 create index if not exists idx_anime_noindex on anime (noindex) where noindex = true;
 create index if not exists idx_anime_tags on anime using gin (tags);
@@ -134,6 +136,8 @@ alter table movies add column if not exists likes integer not null default 0;
 alter table movies add column if not exists ending_explained_content jsonb;
 alter table movies add column if not exists ending_explained_word_count integer;
 alter table movies add column if not exists ending_explained_published_at timestamptz;
+alter table movies add column if not exists ending_explained_attempted_at timestamptz;
+alter table movies add column if not exists ending_explained_skip_reason text;
 
 create index if not exists idx_movies_noindex on movies (noindex) where noindex = true;
 create index if not exists idx_movies_tags on movies using gin (tags);

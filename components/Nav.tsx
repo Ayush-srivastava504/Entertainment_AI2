@@ -70,7 +70,7 @@ export default function Nav() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink text-ink md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink text-ink md:hidden"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             {open ? (
@@ -90,7 +90,7 @@ export default function Nav() {
               href={l.href}
               onClick={() => setOpen(false)}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={`rounded-lg px-3 py-3 text-lg font-semibold ${isActive(l.href) ? "bg-ink text-white" : "text-ink hover:bg-tape"}`}
+              className={`rounded-lg px-4 py-3.5 text-lg font-semibold ${isActive(l.href) ? "bg-ink text-white" : "text-ink hover:bg-tape"}`}
             >
               {l.label}
             </Link>

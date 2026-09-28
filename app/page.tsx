@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="border-b-2 border-ink bg-beam text-white">
+      <section className="overflow-hidden border-b-2 border-ink bg-beam text-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-24 lg:grid-cols-[1.25fr_1fr]">
           <div>
             <h1 className="font-display text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-7xl">

@@ -48,3 +48,83 @@ export function buildPrompt(task, input) {
       throw new Error(`Unknown task: ${task}`);
   }
 }
+
+// ---------------------------------------------------------------------
+// v2 prompts used by ending-explained-generator.mjs (grounded, JSON mode,
+// with a separate fact-check pass). The task above is kept for older
+// callers; the crawler now uses these.
+// ---------------------------------------------------------------------
+
+export const GUIDE_SYSTEM_PROMPT = [
+  "You are a careful film and anime editor writing 'Ending Explained' guides.",
+  "Accuracy matters more than flair. Use ONLY the source facts you are given.",
+  "Never invent characters, scenes, deaths, twists or dialogue. If the sources",
+  "do not say how something resolves, say the story leaves it open instead of",
+  "guessing. Rewrite everything in your own words; never copy sentences from",
+  "the sources. Plain prose only: no markdown, no headings, no bullet symbols.",
+  "Interpretations of meaning are allowed but must be phrased as interpretation",
+  "(for example: 'one reading is...'), never as established fact.",
+].join(" ");
+
+export function buildGuidePrompt(input) {
+  return [
+    `Write an Ending Explained guide for the ${input.kind} "${input.title}"${input.year ? ` (${input.year})` : ""}.`,
+    "",
+    "Return ONE JSON object with exactly these keys:",
+    '  "metaDescription": string, 110-155 characters, a search snippet that says what the guide answers (no spoilers about who dies).',
+    '  "keyTakeaways": array of 3-4 short strings (each one sentence) summarizing the ending and its meaning.',
+    '  "recap": string, 110-180 words, spoiler-light summary of the setup and conflict up to the final act.',
+    '  "ending": string, 260-400 words, a specific scene-by-scene account of the final act and closing scenes: what happens, to whom, and the final image or line of the story.',
+    '  "themes": string, 130-220 words on what the ending means and the main themes it resolves.',
+    '  "faq": array of 5 objects {"q","a"}: questions people really search after finishing it (who/what/why/does/is), each answer 30-70 words, each question ending with "?".',
+    "",
+    "Use the character and place names exactly as in the sources. Mention the title in the text.",
+    "",
+    `TITLE: ${input.title}`,
+    input.genres ? `GENRES: ${input.genres}` : "",
+    input.cast ? `KEY CAST / CHARACTERS: ${input.cast}` : "",
+    input.catalogSynopsis ? `CATALOG SYNOPSIS:\n${input.catalogSynopsis}` : "",
+    input.plot ? `DETAILED PLOT (source facts, do not copy wording):\n${input.plot}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function buildVerifyPrompt(input, draft) {
+  return [
+    "You are a fact-checker. Compare the DRAFT guide against the SOURCES.",
+    "List every specific claim in the draft (events, character fates, names,",
+    "outcomes) that the sources do NOT support or that contradicts them.",
+    "Interpretation phrased as opinion ('one reading is...') is allowed.",
+    'Return ONE JSON object: {"unsupported":[{"claim":string,"reason":string}]}.',
+    'If everything is supported, return {"unsupported":[]}.',
+    "",
+    `SOURCES for "${input.title}":`,
+    input.catalogSynopsis ? `CATALOG SYNOPSIS:\n${input.catalogSynopsis}` : "",
+    input.plot ? `DETAILED PLOT:\n${input.plot}` : "",
+    "",
+    "DRAFT:",
+    JSON.stringify(draft),
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function buildRevisePrompt(input, draft, issues) {
+  return [
+    `Revise this Ending Explained guide for "${input.title}". Fix every issue below,`,
+    "using only the SOURCES. Remove or correct any unsupported claim. Keep the same",
+    "JSON keys and length targets, plain prose, no markdown. Return ONE JSON object.",
+    "",
+    "ISSUES TO FIX:",
+    ...issues.map((i, n) => `${n + 1}. ${i}`),
+    "",
+    input.catalogSynopsis ? `CATALOG SYNOPSIS:\n${input.catalogSynopsis}` : "",
+    input.plot ? `DETAILED PLOT:\n${input.plot}` : "",
+    "",
+    "CURRENT DRAFT:",
+    JSON.stringify(draft),
+  ]
+    .filter(Boolean)
+    .join("\n");
+}

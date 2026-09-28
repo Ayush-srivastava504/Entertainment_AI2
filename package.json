@@ -20,7 +20,8 @@
     "generate:ending-explained:anime": "node crawler/ending-explained-generator.mjs --table=anime",
     "build:watch-order": "node crawler/franchise-watch-order-builder.mjs",
     "crawl:all": "npm run crawl:anime && npm run crawl:movies && npm run crawl:watch-providers && npm run crawl:anime-cast",
-    "crawl:all:full": "npm run crawl:anime:full && npm run crawl:movies:full && npm run crawl:watch-providers && npm run crawl:anime-cast"
+    "crawl:all:full": "npm run crawl:anime:full && npm run crawl:movies:full && npm run crawl:watch-providers && npm run crawl:anime-cast",
+    "test:crawler": "node --test crawler/test/quality.test.mjs"
   },
   "dependencies": {
     "next": "16.2.10",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Bricolage_Grotesque, Literata } from "next/font/google";
 import "./globals.css";
@@ -26,6 +26,13 @@ const body = Literata({
   variable: "--font-body",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#2A3FF0",
+};
 
 const BASE_URL = getBaseUrl();
 

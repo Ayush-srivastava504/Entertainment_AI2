@@ -4,9 +4,14 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
+  overflow-x: clip;
+  overflow-wrap: anywhere;
   background-color: #f6f7fb;
   color: #0d1030;
   font-size: 17px;

@@ -87,7 +87,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
       </div>
 
       <div className="mt-4 overflow-hidden rounded border border-fog">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto"><table className="w-full min-w-[40rem] text-sm">
           <thead>
             <tr className="border-b border-fog bg-surface text-left text-xs uppercase tracking-wide text-muted">
               <th className="px-4 py-2 font-normal">Title</th>
@@ -150,7 +150,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {totalPages > 1 && (

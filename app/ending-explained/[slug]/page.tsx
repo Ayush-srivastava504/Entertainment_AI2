@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained: What Really Happens | Marquees`;
   const description =
+    item.endingExplained?.metaDescription ||
     item.endingExplained?.ending?.slice(0, 155) ||
     item.description ||
     `A full breakdown of how ${item.title} ends.`;
@@ -217,7 +218,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       />
 
       {/* Title card */}
-      <section className="border-b-2 border-ink bg-beam text-white">
+      <section className="overflow-hidden border-b-2 border-ink bg-beam text-white">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1fr_260px]">
           <div>
             <nav aria-label="Breadcrumb" className="text-sm text-white/80">
@@ -276,6 +277,16 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
                   <h2 className="font-display text-3xl font-bold tracking-tight">How {item.title} ends</h2>
                   <div className="mt-4">
                     <SpoilerGate>
+                      {ee.keyTakeaways && ee.keyTakeaways.length > 0 && (
+                        <div className="mb-6 rounded-2xl border-2 border-ink bg-tape p-5">
+                          <p className="font-display text-lg font-bold">Key takeaways</p>
+                          <ul className="mt-2 list-disc space-y-1.5 pl-5 font-body text-base text-ink">
+                            {ee.keyTakeaways.map((t) => (
+                              <li key={t}>{t}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <p className="guide-prose whitespace-pre-line">{ee.ending}</p>
                     </SpoilerGate>
                   </div>

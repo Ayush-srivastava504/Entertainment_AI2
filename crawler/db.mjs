@@ -17,6 +17,15 @@ export function getPool() {
     if (!connectionString) {
       throw new Error("DATABASE_URL is not set. Export it or add it to .env and run with --env-file=.env");
     }
+    // GitHub Actions runners have no IPv6. Supabase's direct host
+    // (db.<ref>.supabase.co) resolves to IPv6 only, so it fails there with
+    // ENETUNREACH. Use the pooler URL (…pooler.supabase.com) instead.
+    if (process.env.GITHUB_ACTIONS && /@db\.[a-z0-9]+\.supabase\.co/.test(connectionString)) {
+      console.warn(
+        "[db] DATABASE_URL uses Supabase's IPv6-only direct host, which GitHub Actions cannot reach. " +
+          "Set the secret to the Session pooler connection string (aws-…pooler.supabase.com:5432)."
+      );
+    }
     pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false }, max: 4 });
   }
   return pool;

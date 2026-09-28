@@ -36,7 +36,9 @@ async function callGroq(userPrompt, opts) {
       temperature: opts.temperature ?? 0.6,
     };
     // gpt-oss models think before answering; keep it short to save tokens.
-    if (model.includes("gpt-oss")) body.reasoning_effort = "low";
+    if (model.includes("gpt-oss")) body.reasoning_effort = opts.reasoning ?? "low";
+    // JSON mode: the model must return one valid JSON object.
+    if (opts.json) body.response_format = { type: "json_object" };
 
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
