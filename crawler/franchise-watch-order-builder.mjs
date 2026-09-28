@@ -32,11 +32,11 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getPool, recordSync, sleep } from "./db.mjs";
 import { buildPrompt } from "./lib/prompts.mjs";
-import { generateWithGroq } from "./lib/ai.mjs";
+import { generateWithDeepSeek } from "./lib/ai.mjs";
 
 const defsPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "franchise-defs.json");
 const onlySlug = process.argv.slice(2).find((a) => a.startsWith("--slug="))?.split("=")[1];
-const REQUEST_DELAY_MS = Number(process.env.GROQ_DELAY_MS ?? 15_000);
+const REQUEST_DELAY_MS = Number(process.env.AI_DELAY_MS ?? 15_000);
 
 function loadDefinitions() {
   try {
@@ -101,7 +101,7 @@ async function processDefinition(pool, def) {
   resolved.sort((a, b) => a.releaseOrder - b.releaseOrder);
 
   const label = (e) => `${e.title}${e.year ? ` (${e.year})` : ""}`;
-  const draftText = await generateWithGroq(
+  const draftText = await generateWithDeepSeek(
     buildPrompt("watch-order-draft", { title: def.title, query: resolved.map(label).join("; ") }),
     { maxTokens: 3000, temperature: 0.5 }
   );

@@ -1,6 +1,6 @@
 # Runs the crawlers on GitHub's servers so you don't have to run them by hand.
 # Add these under the repo's Settings -> Secrets and variables -> Actions:
-#   DATABASE_URL, TMDB_API_READ_ACCESS_TOKEN, GROQ_API_KEY
+#   DATABASE_URL, TMDB_API_READ_ACCESS_TOKEN, DEEPSEEK_API_KEY
 # DATABASE_URL must be IPv4-reachable: GitHub runners have no IPv6. On
 # Supabase use the "Session pooler" string, not the "Direct connection".
 # You can also run any job manually from the Actions tab ("Run workflow").
@@ -52,8 +52,8 @@ jobs:
     timeout-minutes: 120
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      GROQ_MODEL: openai/gpt-oss-120b
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      DEEPSEEK_MODEL: deepseek-chat
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

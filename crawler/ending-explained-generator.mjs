@@ -17,11 +17,11 @@ Ending Explained generator (v2). Built for accuracy first:
   node crawler/ending-explained-generator.mjs [--table=movies|anime] [--limit=20]
        [--id=<row id>] [--no-verify] [--no-wikipedia] [--dry-run]
 
---dry-run prints the result without saving. GROQ_MODEL / GROQ_DELAY_MS apply.
+--dry-run prints the result without saving. DEEPSEEK_MODEL / AI_DELAY_MS apply.
 */
 
 import { getPool, recordSync, sleep } from "./db.mjs";
-import { generateWithGroq, getConfiguredModel } from "./lib/ai.mjs";
+import { generateWithDeepSeek, getConfiguredModel } from "./lib/ai.mjs";
 import { fetchPlot } from "./lib/wikipedia.mjs";
 import {
   GUIDE_SYSTEM_PROMPT,
@@ -46,14 +46,14 @@ const ONLY_ID = argValue("id");
 const VERIFY = !flag("no-verify");
 const USE_WIKIPEDIA = !flag("no-wikipedia");
 const DRY_RUN = flag("dry-run");
-const REQUEST_DELAY_MS = Number(process.env.GROQ_DELAY_MS ?? 15_000);
+const REQUEST_DELAY_MS = Number(process.env.AI_DELAY_MS ?? 15_000);
 const MAX_CONSECUTIVE_FAILURES = 3;
 const RETRY_AFTER_DAYS = 14;
 const MIN_GROUNDING_CHARS = 500; // total source text needed to write about a title
 const MODEL = getConfiguredModel();
 
 const call = (prompt, opts = {}) =>
-  generateWithGroq(prompt, { system: GUIDE_SYSTEM_PROMPT, json: true, maxTokens: 5000, temperature: 0.4, ...opts });
+  generateWithDeepSeek(prompt, { system: GUIDE_SYSTEM_PROMPT, json: true, maxTokens: 5000, temperature: 0.4, ...opts });
 
 async function ensureColumns(pool) {
   for (const table of ["movies", "anime"]) {
