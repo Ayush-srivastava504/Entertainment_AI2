@@ -18,6 +18,40 @@ a request to it fails, so this is a safe drop-in — no behavior change unless
 the env vars are set.
 */
 
+import https from "node:https";
+
+/*
+Upstash calls use node:https instead of fetch on purpose. Next patches the
+global fetch and treats a no-store / revalidate:0 fetch inside a statically
+rendered page (e.g. the topic hubs, or ISR pages) as "dynamic server usage":
+it throws DYNAMIC_SERVER_USAGE, which was caught below and logged as
+"redis cache get failed" on every build. A cache lookup is not a reason to
+make a page dynamic, so it goes through a client Next does not instrument.
+*/
+function upstash(path: string, method: "GET" | "POST" = "GET"): Promise<{ ok: boolean; json: () => any }> {
+  return new Promise((resolve, reject) => {
+    const url = new URL(`${UPSTASH_URL}${path}`);
+    const req = https.request(
+      url,
+      { method, headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }, timeout: 4000 },
+      (res) => {
+        let body = "";
+        res.setEncoding("utf8");
+        res.on("data", (c) => (body += c));
+        res.on("end", () =>
+          resolve({
+            ok: (res.statusCode ?? 500) >= 200 && (res.statusCode ?? 500) < 300,
+            json: () => JSON.parse(body),
+          })
+        );
+      }
+    );
+    req.on("timeout", () => req.destroy(new Error("upstash timeout")));
+    req.on("error", reject);
+    req.end();
+  });
+}
+
 interface Entry<T> {
   value: T;
   expiresAt: number;
@@ -46,12 +80,9 @@ function memorySet<T>(key: string, value: T, ttlSeconds: number) {
 
 async function redisGet<T>(key: string): Promise<T | undefined> {
   try {
-    const res = await fetch(`${UPSTASH_URL}/get/${encodeURIComponent(key)}`, {
-      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-      cache: "no-store",
-    });
+    const res = await upstash(`/get/${encodeURIComponent(key)}`);
     if (!res.ok) return undefined;
-    const { result } = await res.json();
+    const { result } = res.json();
     return result != null ? (JSON.parse(result) as T) : undefined;
   } catch (err) {
     console.error("redis cache get failed, falling back to memory:", err);
@@ -61,9 +92,9 @@ async function redisGet<T>(key: string): Promise<T | undefined> {
 
 async function redisSet<T>(key: string, value: T, ttlSeconds: number): Promise<boolean> {
   try {
-    const res = await fetch(
-      `${UPSTASH_URL}/set/${encodeURIComponent(key)}/${encodeURIComponent(JSON.stringify(value))}?EX=${ttlSeconds}`,
-      { headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }, method: "POST" }
+    const res = await upstash(
+      `/set/${encodeURIComponent(key)}/${encodeURIComponent(JSON.stringify(value))}?EX=${ttlSeconds}`,
+      "POST"
     );
     return res.ok;
   } catch (err) {
@@ -108,19 +139,13 @@ export async function invalidate(prefix: string) {
     // Upstash REST doesn't support KEYS/SCAN-by-prefix deletion in one call
     // on the free tier reliably, so this is best-effort: entries will still
     // expire on their own via TTL even if this scan is skipped or partial.
-    const res = await fetch(`${UPSTASH_URL}/keys/${encodeURIComponent(prefix)}*`, {
-      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-      cache: "no-store",
-    });
+    const res = await upstash(`/keys/${encodeURIComponent(prefix)}*`);
     if (!res.ok) return;
-    const { result } = (await res.json()) as { result?: string[] };
+    const { result } = res.json() as { result?: string[] };
     if (!result?.length) return;
     await Promise.all(
       result.map((k) =>
-        fetch(`${UPSTASH_URL}/del/${encodeURIComponent(k)}`, {
-          headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-          method: "POST",
-        }).catch(() => undefined)
+        upstash(`/del/${encodeURIComponent(k)}`, "POST").catch(() => undefined)
       )
     );
   } catch (err) {
