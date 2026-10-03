@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
   const topic = findTopic(ENDING_TOPICS, slug);
   if (!topic) return {};
   return {
-    title: `${topic.title} | Ending Explained | Marquees`,
+    title: `${topic.title}: Ending Explained Guides`,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/ending-explained/topic/${topic.slug}` },
   };

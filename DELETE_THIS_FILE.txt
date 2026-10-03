@@ -1,0 +1,3 @@
+Delete from your repo:  app/sitemap.ts
+(It is replaced by app/sitemap.xml/route.ts + app/sitemaps/[name]/route.ts + lib/sitemap.ts.
+Leaving both would make two handlers fight over /sitemap.xml.)

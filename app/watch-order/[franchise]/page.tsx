@@ -10,6 +10,10 @@ import { Slate } from "@/components/ui/Slate";
 import { CtaBand } from "@/components/ui/CtaBand";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
+import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
+import { WATCH_ORDER_TOPICS, matchesFranchiseTopic } from "@/lib/topics";
+import { formatDate, snippet } from "@/lib/seo";
+import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -22,8 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
 
   const url = `${BASE_URL}/watch-order/${franchise.slug}`;
   const title = `${franchise.title} Watch Order: The Complete Guide`;
-  const description =
-    franchise.metaDescription || franchise.intro?.slice(0, 155) || `The best order to watch ${franchise.title}.`;
+  const description = snippet(
+    franchise.metaDescription || franchise.intro || `The best order to watch ${franchise.title}: release order, chronological order and which entries you can skip.`
+  );
 
   const ogImage = buildOgImageUrl({
     title: franchise.title,
@@ -41,7 +46,11 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
       description,
       url,
       type: "article",
-      images: [{ url: ogImage, width: 1200, height: 630, alt: franchise.title }],
+      publishedTime: franchise.publishedAt ? new Date(franchise.publishedAt).toISOString() : undefined,
+      modifiedTime: franchise.updatedAt ? new Date(franchise.updatedAt).toISOString() : undefined,
+      authors: [SITE_NAME],
+      section: "Watch Order",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${franchise.title} watch order` }],
     },
     twitter: { card: "summary_large_image", title, description, images: [ogImage] },
   };
@@ -64,7 +73,9 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
       href: e.title!.endingExplained ? `/ending-explained/${e.title!.slug}` : undefined,
     }));
 
-  const related = (await getAllPublishedFranchises(12)).filter((f) => f.slug !== franchise.slug).slice(0, 4);
+  const allFranchises = await getAllPublishedFranchises(60);
+  const related = allFranchises.filter((f) => f.slug !== franchise.slug).slice(0, 8);
+  const relatedTopics = WATCH_ORDER_TOPICS.filter((t) => matchesFranchiseTopic(franchise, t)).slice(0, 3);
 
   const url = `${BASE_URL}/watch-order/${franchise.slug}`;
 
@@ -117,53 +128,53 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
     ...(withGuides.length ? ([["Ending guides", String(withGuides.length)]] as [string, string][]) : []),
   ];
 
-  const itemListLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `${franchise.title} Watch Order`,
-    itemListElement: releaseEntries
-      .filter((e) => e.title)
-      .map((e, i) => ({
+  const iso = (v?: string) => {
+    if (!v) return undefined;
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+  };
+  const published = iso(franchise.publishedAt);
+  const modified = iso(franchise.updatedAt);
+
+  const watchLd = graph(
+    articleNode({
+      url,
+      headline: `${franchise.title} Watch Order: The Complete Guide`,
+      description: snippet(franchise.metaDescription || franchise.intro || `The best order to watch ${franchise.title}.`),
+      datePublished: published,
+      dateModified: modified,
+      section: "Watch Order",
+      keywords: [`${franchise.title} watch order`, `how to watch ${franchise.title}`],
+      about: { "@type": "CreativeWork", name: franchise.title },
+    }),
+    {
+      "@type": "ItemList",
+      "@id": `${url}#list`,
+      name: `${franchise.title} Watch Order`,
+      itemListOrder: "https://schema.org/ItemListOrderAscending",
+      numberOfItems: resolvedEntries.length,
+      itemListElement: resolvedEntries.map((e, i) => ({
         "@type": "ListItem",
         position: i + 1,
         name: e.title!.title,
         url: `${BASE_URL}/ending-explained/${e.title!.slug}`,
       })),
-  };
-
-  const articleLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: `${franchise.title} Watch Order`,
-    about: franchise.title,
-    datePublished: franchise.publishedAt,
-  };
-
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Watch Order", item: `${BASE_URL}/watch-order` },
-      { "@type": "ListItem", position: 2, name: franchise.title, item: url },
-    ],
-  };
+    },
+    breadcrumbNode([
+      { name: "Home", path: "/" },
+      { name: "Watch Order", path: "/watch-order" },
+      { name: franchise.title, path: `/watch-order/${franchise.slug}` },
+    ])
+  );
+  const publishedLabel = formatDate(published);
+  const updatedLabel = formatDate(modified);
 
   return (
     <>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd).replace(/</g, "\\u003c") }}
-      />
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd).replace(/</g, "\\u003c") }}
-      />
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(watchLd) }}
       />
 
       <section className="border-b-2 border-ink bg-beam text-white">
@@ -176,6 +187,23 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
           <h1 className="mt-5 max-w-4xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
             {franchise.title} watch order
           </h1>
+          <p className="mt-4 text-sm font-semibold text-white/85">
+            By <Link href="/about" className="underline underline-offset-2">{SITE_NAME} Editorial</Link>
+            {publishedLabel && published ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <time dateTime={published}>Published {publishedLabel}</time>
+              </>
+            ) : null}
+            {updatedLabel && modified && updatedLabel !== publishedLabel ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <time dateTime={modified}>Updated {updatedLabel}</time>
+              </>
+            ) : null}
+            <span aria-hidden="true"> · </span>
+            {resolvedEntries.length} {resolvedEntries.length === 1 ? "entry" : "entries"}
+          </p>
           {franchise.intro && (
             <p className="mt-5 max-w-2xl font-body text-xl leading-relaxed text-white/90">{franchise.intro}</p>
           )}
@@ -188,7 +216,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-14 lg:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0 space-y-14">
           <section id="order" className="scroll-mt-24">
-            <h2 className="font-display text-3xl font-bold tracking-tight">The order, step by step</h2>
+            <h2 className="font-display text-3xl font-bold tracking-tight">How to watch {franchise.title} in order</h2>
             <ol className="mt-6 space-y-4">
               {releaseEntries.map((entry, i) => (
                 <li key={i} className="flex gap-4 rounded-2xl border-2 border-ink bg-surface p-4 sm:p-5">
@@ -320,6 +348,25 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
                     </Link>
                   </li>
                 ))}
+              </ul>
+              <ul className="mt-4 space-y-1.5 border-t-2 border-ink/20 pt-3">
+                {relatedTopics.map((t) => (
+                  <li key={t.slug}>
+                    <Link href={`/watch-order/topic/${t.slug}`} className="font-semibold underline underline-offset-2">
+                      More {t.title.toLowerCase()}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/watch-order" className="font-semibold underline underline-offset-2">
+                    All watch order guides
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ending-explained" className="font-semibold underline underline-offset-2">
+                    Ending explained guides
+                  </Link>
+                </li>
               </ul>
             </div>
           )}

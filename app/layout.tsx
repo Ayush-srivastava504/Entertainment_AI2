@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     "movie recap",
     "anime recap",
   ],
-  alternates: {
-    canonical: BASE_URL,
-  },
+  // No site-wide canonical here: a root-level canonical is inherited by every
+  // page that doesn't set its own (favorites, admin...) and would point them
+  // all at the homepage. Each page sets its own alternates.canonical.
   openGraph: {
     siteName: SITE_NAME,
     type: "website",
@@ -92,6 +92,15 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  // Optional site-verification tags. Set these in Vercel env vars after
+  // copying the content value from Bing Webmaster Tools / Search Console.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
   },
 };
 

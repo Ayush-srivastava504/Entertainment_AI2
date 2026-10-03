@@ -15,6 +15,11 @@ import FavoriteButton from "@/components/FavoriteButton";
 import CommentSection from "@/components/CommentSection";
 import { getFranchiseForTitle, getFranchiseEntries } from "@/lib/api/franchises";
 import type { MediaItem } from "@/lib/api/normalize";
+import { getAdjacentGuides } from "@/lib/api/guides";
+import { ENDING_TOPICS, matchesMediaTopic } from "@/lib/topics";
+import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
+import { formatDate, readingMinutes, snippet, toParagraphs } from "@/lib/seo";
+import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -44,12 +49,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { item } = resolved;
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
-  const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained: What Really Happens`;
-  const description =
+  // The root layout appends " | Marquee". "& Meaning" targets the second
+  // half of the intent ("ending explained" + "what does the ending mean").
+  const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained & Meaning`;
+  const description = snippet(
     item.endingExplained?.metaDescription ||
-    item.endingExplained?.ending?.slice(0, 155) ||
-    item.description ||
-    `A full breakdown of how ${item.title} ends.`;
+      item.endingExplained?.keyTakeaways?.[0] ||
+      item.endingExplained?.ending ||
+      item.description ||
+      `A full breakdown of how ${item.title} ends.`
+  );
 
   const ogImage = buildOgImageUrl({
     title: item.title,
@@ -69,7 +78,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       url,
       type: "article",
-      images: [{ url: ogImage, width: 1200, height: 630, alt: item.title }],
+      publishedTime: item.endingExplainedPublishedAt,
+      modifiedTime: item.endingExplainedPublishedAt,
+      authors: [SITE_NAME],
+      section: "Ending Explained",
+      tags: item.tags,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${item.title} ending explained` }],
     },
     twitter: {
       card: "summary_large_image",
@@ -95,8 +109,10 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   const similar =
     item.kind === "movie"
-      ? await getSimilarMovies(item.id, item.genres)
-      : await getSimilarAnime(item.id, item.genres);
+      ? await getSimilarMovies(item.id, item.genres, 8)
+      : await getSimilarAnime(item.id, item.genres, 8);
+  const { newer, older } = await getAdjacentGuides(item.kind, item.id);
+  const relatedTopics = ENDING_TOPICS.filter((t) => matchesMediaTopic(item, t)).slice(0, 4);
 
   const franchise = await getFranchiseForTitle(item.kind, item.id);
   // Other guides in the same franchise, so each guide links to its siblings.
@@ -151,16 +167,6 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
           },
         ]
       : []),
-    ...(item.score
-      ? [
-          {
-            q: `How is ${item.title} rated?`,
-            a: `${item.title} has an average rating of ${item.score.toFixed(1)} out of 10${
-              item.ratingCount ? ` from ${item.ratingCount.toLocaleString("en-US")} ratings` : ""
-            }.`,
-          },
-        ]
-      : []),
     ...(franchise
       ? [
           {
@@ -182,27 +188,36 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     item.castList?.length && ["cast", "Cast"],
   ].filter(Boolean) as [string, string][];
 
-  const articleLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: `${item.title} Ending Explained`,
-    image: item.posterUrl || undefined,
-    datePublished: item.endingExplainedPublishedAt || undefined,
-    about: item.title,
-    genre: item.genres,
-    ...(item.castList && item.castList.length > 0
-      ? { mentions: item.castList.map((m) => ({ "@type": "Person", name: m.name })) }
-      : {}),
-  };
-
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Ending Explained", item: `${BASE_URL}/ending-explained` },
-      { "@type": "ListItem", position: 2, name: item.title, item: url },
-    ],
-  };
+  const ee0 = item.endingExplained;
+  const published = item.endingExplainedPublishedAt;
+  const guideLd = graph(
+    articleNode({
+      url,
+      headline: `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained & Meaning`,
+      description: snippet(ee0?.metaDescription || ee0?.keyTakeaways?.[0] || item.description),
+      images: item.posterUrl ? [item.posterUrl] : undefined,
+      datePublished: published,
+      wordCount: item.endingExplainedWordCount,
+      section: "Ending Explained",
+      keywords: [`${item.title} ending explained`, `${item.title} ending meaning`, ...(item.tags ?? [])].slice(0, 8),
+      about: {
+        "@type": item.kind === "movie" ? "Movie" : "CreativeWork",
+        name: item.title,
+        ...(item.year ? { dateCreated: String(item.year) } : {}),
+        genre: item.genres,
+        ...(item.castList && item.castList.length > 0
+          ? { actor: item.castList.slice(0, 10).map((m) => ({ "@type": "Person", name: m.name })) }
+          : {}),
+      },
+    }),
+    breadcrumbNode([
+      { name: "Home", path: "/" },
+      { name: "Ending Explained", path: "/ending-explained" },
+      { name: item.title, path: `/ending-explained/${item.slug}` },
+    ])
+  );
+  const publishedLabel = formatDate(published);
+  const minutes = readingMinutes(item.endingExplainedWordCount);
 
   const ee = item.endingExplained;
   const kindLabel = item.kind === "anime" ? "Anime" : "Movie";
@@ -212,12 +227,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd).replace(/</g, "\\u003c") }}
-      />
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(guideLd) }}
       />
 
       {/* Title card */}
@@ -235,6 +245,17 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
               {item.title} ending explained
             </h1>
+            <p className="mt-4 text-sm font-semibold text-white/85">
+              By <Link href="/about" className="underline underline-offset-2">{SITE_NAME} Editorial</Link>
+              {publishedLabel && published ? (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <time dateTime={published}>Published {publishedLabel}</time>
+                </>
+              ) : null}
+              <span aria-hidden="true"> · </span>
+              {minutes} min read
+            </p>
             <div className="mt-6 flex flex-wrap items-center gap-2 text-sm font-semibold">
               {item.year ? <span className="rounded-full bg-white/15 px-3 py-1">{item.year}</span> : null}
               {item.score ? <span className="rounded-full bg-white/15 px-3 py-1">★ {item.score.toFixed(1)}</span> : null}
@@ -257,7 +278,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
                 height={513}
                 fetchPriority="high"
                 decoding="async"
-                alt={`${item.title} poster`}
+                alt={`${item.title}${item.year ? ` (${item.year})` : ""} poster`}
                 className="aspect-[2/3] w-full object-cover"
               />
             ) : (
@@ -281,13 +302,15 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             <>
               {ee.recap && (
                 <section id="recap" className="scroll-mt-24">
-                  <h2 className="font-display text-3xl font-bold tracking-tight">Recap, spoiler-light</h2>
-                  <p className="guide-prose mt-4 whitespace-pre-line">{ee.recap}</p>
+                  <h2 className="font-display text-3xl font-bold tracking-tight">{item.title} plot recap, spoiler-light</h2>
+                  {toParagraphs(ee.recap).map((para, i) => (
+                    <p key={i} className="guide-prose mt-4">{para}</p>
+                  ))}
                 </section>
               )}
               {ee.ending && (
                 <section id="ending" className="scroll-mt-24">
-                  <h2 className="font-display text-3xl font-bold tracking-tight">How {item.title} ends</h2>
+                  <h2 className="font-display text-3xl font-bold tracking-tight">What happens at the end of {item.title}?</h2>
                   <div className="mt-4">
                     <SpoilerGate>
                       {ee.keyTakeaways && ee.keyTakeaways.length > 0 && (
@@ -300,15 +323,19 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
                           </ul>
                         </div>
                       )}
-                      <p className="guide-prose whitespace-pre-line">{ee.ending}</p>
+                      {toParagraphs(ee.ending).map((para, i) => (
+                        <p key={i} className={`guide-prose ${i > 0 ? "mt-4" : ""}`}>{para}</p>
+                      ))}
                     </SpoilerGate>
                   </div>
                 </section>
               )}
               {ee.themes && (
                 <section id="themes" className="scroll-mt-24">
-                  <h2 className="font-display text-3xl font-bold tracking-tight">Themes and meaning</h2>
-                  <p className="guide-prose mt-4 whitespace-pre-line">{ee.themes}</p>
+                  <h2 className="font-display text-3xl font-bold tracking-tight">What does the ending of {item.title} mean?</h2>
+                  {toParagraphs(ee.themes).map((para, i) => (
+                    <p key={i} className="guide-prose mt-4">{para}</p>
+                  ))}
                 </section>
               )}
             </>
@@ -402,7 +429,9 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
         </article>
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <Slate title={`${item.title}, at a glance`} rows={factRows} />
+          <div id="facts" className="scroll-mt-24">
+            <Slate title={`${item.title}, at a glance`} rows={factRows} />
+          </div>
 
           <nav aria-label="On this page" className="hidden rounded-2xl border-2 border-ink bg-surface p-5 lg:block">
             <p className="font-display text-lg font-bold">On this page</p>
@@ -442,7 +471,58 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       </div>
 
       <div className="mx-auto max-w-6xl px-6 pb-16">
-        <SimilarTitles items={similar} basePath="/ending-explained" />
+        {(newer || older) && (
+          <nav aria-label="More ending explained guides" className="mt-16 grid gap-4 sm:grid-cols-2">
+            {older ? (
+              <Link
+                href={`/ending-explained/${older.slug}`}
+                rel="prev"
+                className="rounded-2xl border-2 border-ink bg-surface p-5 transition hover:-translate-y-1 hover:shadow-block"
+              >
+                <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted">Previous guide</span>
+                <span className="mt-1 block font-display text-xl font-bold leading-tight">{older.title} ending explained</span>
+              </Link>
+            ) : <span />}
+            {newer ? (
+              <Link
+                href={`/ending-explained/${newer.slug}`}
+                rel="next"
+                className="rounded-2xl border-2 border-ink bg-surface p-5 text-left transition hover:-translate-y-1 hover:shadow-block sm:text-right"
+              >
+                <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted">Next guide</span>
+                <span className="mt-1 block font-display text-xl font-bold leading-tight">{newer.title} ending explained</span>
+              </Link>
+            ) : <span />}
+          </nav>
+        )}
+
+        <SimilarTitles items={similar} basePath="/ending-explained" max={8} />
+
+        <section className="mt-12" aria-label="Keep exploring">
+          <p className="font-display text-xl font-bold">Keep exploring</p>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {relatedTopics.map((t) => (
+              <li key={t.slug}>
+                <Link
+                  href={`/ending-explained/topic/${t.slug}`}
+                  className="rounded-full border-2 border-ink bg-surface px-4 py-2 text-sm font-bold hover:bg-tape"
+                >
+                  More {t.title.toLowerCase()}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link href="/ending-explained" className="rounded-full border-2 border-ink bg-tape px-4 py-2 text-sm font-bold">
+                All ending explained guides
+              </Link>
+            </li>
+            <li>
+              <Link href="/watch-order" className="rounded-full border-2 border-ink bg-surface px-4 py-2 text-sm font-bold hover:bg-tape">
+                Franchise watch orders
+              </Link>
+            </li>
+          </ul>
+        </section>
         <CommentSection type="ending-explained" slug={item.slug} />
       </div>
     </>

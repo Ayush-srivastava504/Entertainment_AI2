@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Streaming metadata puts <title>/<meta> in <body> for normal browsers.
+  // For these crawlers (and link-preview bots) Next waits for metadata and
+  // writes it into <head>, which is the safest form for indexing. Googlebot
+  // and Bingbot are listed explicitly so they always get a real <head>.
+  htmlLimitedBots:
+    /Googlebot|Google-InspectionTool|Storebot-Google|GoogleOther|Bingbot|BingPreview|msnbot|AdIdxBot|DuckDuckBot|Slurp|YandexBot|Baiduspider|Applebot|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|redditbot|Mediapartners-Google/i,
   experimental: {
     // Inlines the CSS actually needed for above-the-fold content directly
     // into the HTML and loads the rest of the stylesheet asynchronously,
@@ -13,6 +19,21 @@ const nextConfig = {
   // WITHOUT using Next's Node/Edge runtime for /app/api routes (see README:
   // "Deploying without a Node server").
   // output: 'export',
+
+  // One host only. GSC crawl stats show ~1,600 requests going to
+  // www.marquees.site vs ~120 to marquees.site: every www hit is a wasted
+  // redirect. Also set marquees.site as the primary domain in Vercel
+  // (Settings -> Domains) so the redirect happens at the edge.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.marquees.site" }],
+        destination: "https://marquees.site/:path*",
+        permanent: true,
+      },
+    ];
+  },
 
   async headers() {
     return [

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
   const topic = findTopic(WATCH_ORDER_TOPICS, slug);
   if (!topic) return {};
   return {
-    title: `${topic.title} | Watch Orders | Marquees`,
+    title: `${topic.title}: Watch Order Guides`,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/watch-order/topic/${topic.slug}` },
   };

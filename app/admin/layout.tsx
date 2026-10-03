@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import LogoutButton from "@/components/admin/LogoutButton";
 
@@ -8,6 +9,8 @@ const NAV = [
   { href: "/admin/comments", label: "Comments" },
   { href: "/admin/title-requests", label: "Title requests" },
 ];
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
-import { getRecentPublishedMovies } from "@/lib/api/movies";
-import { getRecentPublishedAnime } from "@/lib/api/anime";
+import { countGuides, getGuidesPage, GUIDES_PER_PAGE, type GuideType } from "@/lib/api/guides";
+import { Pagination } from "@/components/ui/Pagination";
+import type { Metadata } from "next";
 import { MediaGrid } from "@/components/media/MediaGrid";
 import { SearchBar } from "@/components/media/SearchBar";
 import { PageHero } from "@/components/ui/PageHero";
@@ -15,11 +17,31 @@ export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
-export const metadata = {
-  title: "Ending Explained Guides | Marquee",
-  description: "Spoiler-forward breakdowns of how your favorite movies and anime actually end.",
-  alternates: { canonical: `${BASE_URL}/ending-explained` },
-};
+type SearchParams = Promise<{ type?: string; page?: string }>;
+
+function parse(sp: { type?: string; page?: string }) {
+  const active: GuideType = sp.type === "movie" || sp.type === "anime" ? sp.type : "all";
+  const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
+  return { active, page };
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const { active, page } = parse(await searchParams);
+  const qs = new URLSearchParams();
+  if (active !== "all") qs.set("type", active);
+  if (page > 1) qs.set("page", String(page));
+  const canonical = `${BASE_URL}/ending-explained${qs.toString() ? `?${qs}` : ""}`;
+  const label = active === "movie" ? "Movie " : active === "anime" ? "Anime " : "";
+  return {
+    title: `${label}Ending Explained Guides${page > 1 ? `, Page ${page}` : ""}`,
+    description:
+      "Spoiler-forward breakdowns of how your favorite movies and anime actually end: a recap, the final scene explained, what it means, and a quick FAQ for each title.",
+    alternates: { canonical },
+    // Filtered views are subsets of the main list: keep them out of the index
+    // but let crawlers follow every link on them.
+    robots: active !== "all" ? { index: false, follow: true } : undefined,
+  };
+}
 
 const filters = [
   { key: "all", label: "All" },
@@ -27,21 +49,13 @@ const filters = [
   { key: "anime", label: "Anime" },
 ] as const;
 
-export default async function EndingExplainedIndexPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ type?: string }>;
-}) {
-  const { type } = await searchParams;
-  const active = type === "movie" || type === "anime" ? type : "all";
+export default async function EndingExplainedIndexPage({ searchParams }: { searchParams: SearchParams }) {
+  const { active, page } = parse(await searchParams);
 
-  const [movies, anime] = await Promise.all([getRecentPublishedMovies(60), getRecentPublishedAnime(60)]);
-
-  const items = [...(active === "anime" ? [] : movies), ...(active === "movie" ? [] : anime)].sort((a, b) => {
-    const at = a.endingExplainedPublishedAt ? new Date(a.endingExplainedPublishedAt).getTime() : 0;
-    const bt = b.endingExplainedPublishedAt ? new Date(b.endingExplainedPublishedAt).getTime() : 0;
-    return bt - at;
-  });
+  const total = await countGuides(active);
+  const totalPages = Math.max(1, Math.ceil(total / GUIDES_PER_PAGE));
+  if (page > totalPages) notFound();
+  const items = await getGuidesPage(active, page);
 
   return (
     <>
@@ -69,7 +83,7 @@ export default async function EndingExplainedIndexPage({
               {f.label}
             </Link>
           ))}
-          <p className="ml-auto text-sm font-semibold text-muted">{items.length} guides</p>
+          <p className="ml-auto text-sm font-semibold text-muted">{total.toLocaleString("en-US")} guides, page {page} of {totalPages}</p>
         </div>
 
         {items.length === 0 ? (
@@ -86,6 +100,12 @@ export default async function EndingExplainedIndexPage({
         ) : (
           <div className="mt-8">
             <MediaGrid items={items} basePath="/ending-explained" />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              basePath="/ending-explained"
+              params={active === "all" ? {} : { type: active }}
+            />
           </div>
         )}
 
