@@ -1,4 +1,4 @@
-# Runs the crawlers on GitHub's servers so you don't have to run them by hand.
+openssl rand -hex 16# Runs the crawlers on GitHub's servers so you don't have to run them by hand.
 # Add these under the repo's Settings -> Secrets and variables -> Actions:
 #   DATABASE_URL, TMDB_API_READ_ACCESS_TOKEN, GEMINI_API_KEY, INDEXNOW_KEY (optional)
 # DATABASE_URL must be IPv4-reachable: GitHub runners have no IPv6. On
