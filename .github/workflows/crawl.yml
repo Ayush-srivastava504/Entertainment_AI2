@@ -1,4 +1,4 @@
-openssl rand -hex 16# Runs the crawlers on GitHub's servers so you don't have to run them by hand.
+# Runs the crawlers on GitHub's servers so you don't have to run them by hand.
 # Add these under the repo's Settings -> Secrets and variables -> Actions:
 #   DATABASE_URL, TMDB_API_READ_ACCESS_TOKEN, GEMINI_API_KEY, INDEXNOW_KEY (optional)
 # DATABASE_URL must be IPv4-reachable: GitHub runners have no IPv6. On
@@ -12,13 +12,14 @@ on:
     - cron: "0 5 * * *"   # daily at 05:00 UTC: write new guides
     - cron: "0 13 * * *"  # second pass: retries titles the model was too busy for
     - cron: "0 21 * * *"  # third pass
+    - cron: "30 22 * * *" # push everything new/changed today to Bing (IndexNow)
   workflow_dispatch:
     inputs:
       job:
         description: "What to run"
         type: choice
         default: both
-        options: [both, crawl, generate]
+        options: [both, crawl, generate, indexnow]
       limit:
         description: "Max guides to generate per table"
         default: "20"
@@ -30,13 +31,16 @@ concurrency:
 jobs:
   crawl:
     if: >
-      github.event_name == 'workflow_dispatch' && inputs.job != 'generate' ||
+      github.event_name == 'workflow_dispatch' && (inputs.job == 'both' || inputs.job == 'crawl') ||
       github.event_name == 'schedule' && github.event.schedule == '0 3 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       TMDB_API_READ_ACCESS_TOKEN: ${{ secrets.TMDB_API_READ_ACCESS_TOKEN }}
+      # The watch-providers step pings IndexNow when a guide's streaming info changes.
+      INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+      NEXT_PUBLIC_SITE_URL: https://marquees.site
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,8 +52,8 @@ jobs:
 
   generate:
     if: >
-      github.event_name == 'workflow_dispatch' && inputs.job != 'crawl' ||
-      github.event_name == 'schedule' && github.event.schedule != '0 3 * * *'
+      github.event_name == 'workflow_dispatch' && (inputs.job == 'both' || inputs.job == 'generate') ||
+      github.event_name == 'schedule' && github.event.schedule != '0 3 * * *' && github.event.schedule != '30 22 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -73,3 +77,22 @@ jobs:
       - name: Discover franchises and write Watch Order guides
         if: always()
         run: node crawler/watch-order-auto.mjs --limit=10
+
+  # Reads the live sitemaps and pushes every URL whose <lastmod> changed in the
+  # last 36h to IndexNow (Bing, Yandex, Seznam, Naver). Safety net on top of the
+  # per-run pings above; needs INDEXNOW_KEY set on Vercel too (the key file).
+  indexnow:
+    if: >
+      github.event_name == 'workflow_dispatch' && inputs.job == 'indexnow' ||
+      github.event_name == 'schedule' && github.event.schedule == '30 22 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+      NEXT_PUBLIC_SITE_URL: https://marquees.site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node crawler/indexnow-bulk.mjs --since-hours=36

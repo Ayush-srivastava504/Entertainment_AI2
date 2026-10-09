@@ -1,5 +1,9 @@
 import { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/site";
+import { listSitemapUrls } from "@/lib/sitemap";
+
+// Hourly, same as the sitemap itself.
+export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
@@ -25,7 +29,17 @@ const NAMED_BOTS = [
   "YandexBot",
 ];
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  // List the index AND every child sitemap. Google then finds the children
+  // straight from robots.txt instead of depending on one index fetch, which
+  // is what was leaving Search Console at "0 discovered pages". If the DB is
+  // down, fall back to the index alone rather than failing robots.txt.
+  let sitemaps = [`${BASE_URL}/sitemap.xml`];
+  try {
+    sitemaps = [`${BASE_URL}/sitemap.xml`, ...(await listSitemapUrls())];
+  } catch (err) {
+    console.error("robots.txt: could not list child sitemaps, using index only:", err);
+  }
   return {
     rules: [
       { userAgent: "*", allow: ALLOW, disallow: DISALLOW },
@@ -33,6 +47,6 @@ export default function robots(): MetadataRoute.Robots {
     ],
     // `host:` was removed on purpose: only Yandex ever read it, and Google
     // Search Console flags it as "Rule ignored by Googlebot (line 8)".
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    sitemap: sitemaps,
   };
 }

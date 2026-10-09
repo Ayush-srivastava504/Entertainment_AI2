@@ -29,16 +29,16 @@ export function Pagination({
   for (let p = page - 2; p <= page + 2; p++) if (p >= 1 && p <= totalPages) nums.add(p);
   const sorted = [...nums].sort((a, b) => a - b);
 
-  const base = "rounded-full border-2 border-ink px-4 py-2 font-bold transition";
+  const base = "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-ink px-4 py-2 font-bold transition";
   return (
-    <nav aria-label="Pagination" className="mt-12 flex flex-wrap items-center justify-center gap-2">
+    <nav aria-label="Pagination" className="mt-12 flex flex-wrap items-center justify-center gap-3">
       {page > 1 && (
         <Link href={href(page - 1)} rel="prev" className={`${base} bg-surface hover:bg-tape`}>
           Newer
         </Link>
       )}
       {sorted.map((p, i) => (
-        <span key={p} className="flex items-center gap-2">
+        <span key={p} className="flex items-center gap-3">
           {i > 0 && p - sorted[i - 1] > 1 && <span aria-hidden="true">…</span>}
           <Link
             href={href(p)}

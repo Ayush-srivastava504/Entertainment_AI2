@@ -57,7 +57,7 @@ export function Faq({
             open={openFirst && i === 0}
             className="group rounded-xl border-2 border-ink bg-surface open:shadow-blockSm"
           >
-            <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-lg font-semibold text-ink">
+            <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-lg font-semibold text-ink">
               <span>{f.q}</span>
               <span
                 aria-hidden="true"

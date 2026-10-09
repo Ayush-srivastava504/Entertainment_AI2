@@ -234,10 +234,10 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       <section className="overflow-hidden border-b-2 border-ink bg-beam text-white">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1fr_260px]">
           <div>
-            <nav aria-label="Breadcrumb" className="text-sm text-white/80">
-              <Link href="/" className="hover:underline">Home</Link>
-              <span aria-hidden="true"> / </span>
-              <Link href="/ending-explained" className="hover:underline">Ending explained</Link>
+            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-x-2 text-sm text-white/80">
+              <Link href="/" className="inline-flex min-h-11 min-w-11 items-center pr-1 hover:underline">Home</Link>
+              <span aria-hidden="true">/</span>
+              <Link href="/ending-explained" className="inline-flex min-h-11 items-center px-1 hover:underline">Ending explained</Link>
             </nav>
             <p className="mt-5 inline-block rounded-full border-2 border-ink bg-tape px-3 py-1 text-sm font-bold text-ink">
               {kindLabel} guide, contains spoilers
@@ -290,9 +290,9 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
 
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-14 lg:grid-cols-[minmax(0,1fr)_330px]">
         <article className="min-w-0 space-y-14">
-          <nav aria-label="On this page" className="flex flex-wrap gap-2 lg:hidden">
+          <nav aria-label="On this page" className="flex flex-wrap gap-3 lg:hidden">
             {toc.map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="rounded-full border-2 border-ink bg-surface px-3 py-1 text-sm font-semibold hover:bg-tape">
+              <a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-surface px-4 py-2 text-sm font-semibold hover:bg-tape">
                 {label}
               </a>
             ))}

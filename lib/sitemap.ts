@@ -58,9 +58,9 @@ export function indexXml(items: { loc: string; lastmod?: Date }[]): string {
 
 async function load() {
   const [movies, anime, franchises] = await Promise.all([
-    getPublishedMovieSlugs(),
-    getPublishedAnimeSlugs(),
-    getPublishedFranchiseSlugs(),
+    getPublishedMovieSlugs({ strict: true }),
+    getPublishedAnimeSlugs({ strict: true }),
+    getPublishedFranchiseSlugs({ strict: true }),
   ]);
   return { movies: movies as Row[], anime: anime as Row[], franchises: franchises as Row[] };
 }

@@ -7,6 +7,11 @@ import { breadcrumbNode, graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/j
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
+import { getLatestGuideLinks, getTopRatedGuides } from "@/lib/api/hub";
+import { getFeaturedFranchises } from "@/lib/api/franchises";
+import { ENDING_TOPICS } from "@/lib/topics";
+
+export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 const PATH = "/about";
@@ -191,7 +196,20 @@ function Check() {
   );
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [latest, topMovies, topAnime, franchises] = await Promise.all([
+    getLatestGuideLinks(5),
+    getTopRatedGuides("movie", 3),
+    getTopRatedGuides("anime", 3),
+    getFeaturedFranchises(5),
+  ]);
+  const readingLinks = [
+    { label: "Newest guides", list: latest.map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
+    { label: "Reader favorites", list: [...topMovies, ...topAnime].map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
+    { label: "Watch orders", list: franchises.map((f) => ({ href: `/watch-order/${f.slug}`, text: `${f.title} watch order` })) },
+    { label: "Collections", list: ENDING_TOPICS.slice(0, 5).map((t) => ({ href: `/ending-explained/topic/${t.slug}`, text: t.title })) },
+  ].filter((c) => c.list.length > 0);
+
   return (
     <>
       <script
@@ -408,6 +426,31 @@ export default function AboutPage() {
             </p>
           </div>
           <Faq items={ABOUT_FAQ} title="Frequently Asked Questions" id="faq" headingLevel={3} />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6" aria-labelledby="start-reading">
+        <h2 id="start-reading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Start reading
+        </h2>
+        <p className="mt-3 max-w-2xl font-body text-lg text-muted">
+          The best way to see how {SITE_NAME} guides work is to open one.
+        </p>
+        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {readingLinks.map((col) => (
+            <div key={col.label}>
+              <h3 className="font-display text-xl font-bold">{col.label}</h3>
+              <ul className="mt-2">
+                {col.list.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="inline-flex min-h-11 items-center py-1 font-semibold text-beam underline-offset-4 hover:underline">
+                      {l.text}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 

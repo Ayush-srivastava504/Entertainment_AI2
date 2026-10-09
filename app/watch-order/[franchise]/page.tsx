@@ -256,7 +256,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
                         {entry.title.endingExplained && (
                           <Link
                             href={`/ending-explained/${entry.title.slug}`}
-                            className="mt-3 inline-block rounded-full border-2 border-ink px-3 py-1 text-sm font-bold hover:bg-tape"
+                            className="mt-3 inline-flex min-h-11 items-center rounded-full border-2 border-ink px-4 py-2 text-sm font-bold hover:bg-tape"
                           >
                             Read the ending explained
                           </Link>

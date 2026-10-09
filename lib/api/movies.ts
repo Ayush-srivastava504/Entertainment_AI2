@@ -99,8 +99,12 @@ export async function getMovieRow(id: string): Promise<MediaItem | null> {
  * to build the ending-explained sitemap. Intentionally selects only a few
  * columns (not `select *`) since this can run over thousands of rows.
  */
-export async function getPublishedMovieSlugs(): Promise<{ slug: string; updatedAt: Date }[]> {
-  return cached("movies:published-slugs", 3600, async () => {
+export async function getPublishedMovieSlugs(
+  opts: { strict?: boolean } = {}
+): Promise<{ slug: string; updatedAt: Date }[]> {
+  // strict = sitemap use: a DB error must surface (so the route can answer
+  // 503 and be retried) instead of being cached for an hour as "no guides".
+  return cached(opts.strict ? "movies:published-slugs:strict" : "movies:published-slugs", 3600, async () => {
     try {
       const { rows } = await getPool().query(
         `select id, slug, title, year, ending_explained_published_at, updated_at
@@ -114,6 +118,7 @@ export async function getPublishedMovieSlugs(): Promise<{ slug: string; updatedA
       }));
     } catch (err) {
       console.error("published movie slug list query failed:", err);
+      if (opts.strict) throw err;
       return [];
     }
   });

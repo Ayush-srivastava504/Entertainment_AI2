@@ -30,7 +30,7 @@ export default function FavoriteButton({ id, type, title, tone = "onLight" }: Fa
         });
       }}
       aria-pressed={saved}
-      className={`rounded-full border-2 px-4 py-1.5 text-sm font-bold transition ${
+      className={`inline-flex min-h-11 items-center rounded-full border-2 px-5 py-2 text-sm font-bold transition ${
         saved
           ? "border-ink bg-tape text-ink"
           : tone === "onDark"

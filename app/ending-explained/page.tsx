@@ -12,6 +12,9 @@ import { CtaBand } from "@/components/ui/CtaBand";
 import { ENDING_INDEX_FAQ } from "@/lib/faq";
 import { ENDING_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
+import { getTopRatedGuides } from "@/lib/api/hub";
+import { getFeaturedFranchises } from "@/lib/api/franchises";
+import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 
 export const revalidate = 3600;
 
@@ -56,9 +59,48 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
   const totalPages = Math.max(1, Math.ceil(total / GUIDES_PER_PAGE));
   if (page > totalPages) notFound();
   const items = await getGuidesPage(active, page);
+  const [topMovies, topAnime, franchises] = await Promise.all([
+    getTopRatedGuides("movie", 6),
+    getTopRatedGuides("anime", 6),
+    getFeaturedFranchises(8),
+  ]);
+
+  // CollectionPage + ItemList + breadcrumb: tells search engines this is the
+  // hub for every guide, and which guides sit on this page.
+  const hubUrl = `${BASE_URL}/ending-explained`;
+  const hubLd = graph(
+    {
+      "@type": "CollectionPage",
+      "@id": `${hubUrl}#webpage`,
+      url: hubUrl,
+      name: "Ending Explained Guides for Movies and Anime",
+      inLanguage: "en",
+      isPartOf: { "@id": `${BASE_URL}/#website` },
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: total,
+        itemListElement: items.map((g, i) => ({
+          "@type": "ListItem",
+          position: (page - 1) * GUIDES_PER_PAGE + i + 1,
+          url: `${BASE_URL}/ending-explained/${g.slug}`,
+          name: `${g.title} ending explained`,
+        })),
+      },
+    },
+    breadcrumbNode([
+      { name: "Home", path: "/" },
+      { name: "Ending Explained", path: "/ending-explained" },
+    ])
+  );
+  const showIntro = page === 1 && active === "all";
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: jsonLdString(hubLd) }}
+      />
       <PageHero
         kicker="Ending explained"
         title="Every ending, actually explained"
@@ -69,14 +111,34 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
 
       <TopicLinks topics={ENDING_TOPICS} basePath="/ending-explained" />
 
-      <div className="mx-auto max-w-6xl px-6 py-14">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+        {showIntro && (
+          <section className="mb-12 max-w-3xl" aria-labelledby="hub-intro">
+            <h2 id="hub-intro" className="font-display text-3xl font-extrabold tracking-tight">
+              How the ending explained guides work
+            </h2>
+            <p className="mt-4 font-body text-lg leading-relaxed text-muted">
+              Every guide on Marquee covers one movie or anime in the same four parts: a spoiler-light recap, what
+              actually happens at the end, what the ending means, and answers to the questions viewers ask most.
+              Spoilers stay blurred until you tap reveal, and each guide separates what the story confirms from
+              what fans read into it. Not sure where to begin? Pick a collection above, start with the{" "}
+              <Link href="/ending-explained/topic/anime-finales" className="font-semibold text-beam underline underline-offset-4">anime finales</Link>{" "}
+              or the{" "}
+              <Link href="/ending-explained/topic/mind-bending-endings" className="font-semibold text-beam underline underline-offset-4">mind-bending endings</Link>,
+              or read a franchise{" "}
+              <Link href="/watch-order" className="font-semibold text-beam underline underline-offset-4">watch order</Link>{" "}
+              first. You can also{" "}
+              <Link href="/about" className="font-semibold text-beam underline underline-offset-4">see how every guide is researched and checked</Link>.
+            </p>
+          </section>
+        )}
         <div className="flex flex-wrap items-center gap-3" role="group" aria-label="Filter guides">
           {filters.map((f) => (
             <Link
               key={f.key}
               href={f.key === "all" ? "/ending-explained" : `/ending-explained?type=${f.key}`}
               aria-current={active === f.key ? "true" : undefined}
-              className={`rounded-full border-2 border-ink px-5 py-2 font-bold transition ${
+              className={`inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 py-2 font-bold transition ${
                 active === f.key ? "bg-ink text-white" : "bg-surface hover:bg-tape"
               }`}
             >
@@ -107,6 +169,36 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
               params={active === "all" ? {} : { type: active }}
             />
           </div>
+        )}
+
+        {showIntro && (topMovies.length > 0 || topAnime.length > 0 || franchises.length > 0) && (
+          <section className="mt-20" aria-labelledby="hub-next">
+            <h2 id="hub-next" className="font-display text-3xl font-extrabold tracking-tight">
+              Popular places to start
+            </h2>
+            <div className="mt-6 grid gap-8 md:grid-cols-3">
+              {[
+                { label: "Top-rated movie endings", list: topMovies.map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
+                { label: "Top-rated anime finales", list: topAnime.map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
+                { label: "Featured watch orders", list: franchises.map((f) => ({ href: `/watch-order/${f.slug}`, text: `${f.title} watch order` })) },
+              ].map((col) =>
+                col.list.length > 0 ? (
+                  <div key={col.label}>
+                    <h3 className="font-display text-xl font-bold">{col.label}</h3>
+                    <ul className="mt-2">
+                      {col.list.map((l) => (
+                        <li key={l.href}>
+                          <Link href={l.href} className="inline-flex min-h-11 items-center py-1 font-semibold text-beam underline-offset-4 hover:underline">
+                            {l.text}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null
+              )}
+            </div>
+          </section>
         )}
 
         <div className="mt-24">

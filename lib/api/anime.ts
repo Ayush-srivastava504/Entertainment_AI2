@@ -99,8 +99,10 @@ export async function getAnimeRow(id: string): Promise<MediaItem | null> {
  * Lightweight slug/updated_at list for every *published* anime guide, used
  * to build the ending-explained sitemap.
  */
-export async function getPublishedAnimeSlugs(): Promise<{ slug: string; updatedAt: Date }[]> {
-  return cached("anime:published-slugs", 3600, async () => {
+export async function getPublishedAnimeSlugs(
+  opts: { strict?: boolean } = {}
+): Promise<{ slug: string; updatedAt: Date }[]> {
+  return cached(opts.strict ? "anime:published-slugs:strict" : "anime:published-slugs", 3600, async () => {
     try {
       const { rows } = await getPool().query(
         `select id, slug, title, title_english, year, ending_explained_published_at, updated_at
@@ -114,6 +116,7 @@ export async function getPublishedAnimeSlugs(): Promise<{ slug: string; updatedA
       }));
     } catch (err) {
       console.error("published anime slug list query failed:", err);
+      if (opts.strict) throw err;
       return [];
     }
   });

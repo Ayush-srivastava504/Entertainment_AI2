@@ -57,7 +57,7 @@ export default function LikeButton({ type, slug, initialLikes, tone = "onLight" 
       onClick={handleLike}
       disabled={liked || pending}
       aria-pressed={liked}
-      className={`rounded-full border-2 px-4 py-1.5 text-sm font-bold transition ${
+      className={`inline-flex min-h-11 items-center rounded-full border-2 px-5 py-2 text-sm font-bold transition ${
         liked
           ? "border-ink bg-tape text-ink"
           : tone === "onDark"

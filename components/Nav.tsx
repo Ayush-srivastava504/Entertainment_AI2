@@ -28,7 +28,7 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b-2 border-ink bg-surface/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded">
+        <Link href="/" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded">
           <CueMark />
           <span className="font-display text-2xl font-extrabold tracking-tight text-ink">Marquee</span>
         </Link>
@@ -48,14 +48,14 @@ export default function Nav() {
           ))}
           <Link
             href="/favorites"
-            className="ml-1 rounded-full border-2 border-ink px-4 py-1.5 text-[15px] font-semibold text-ink transition-colors hover:bg-tape"
+            className="ml-1 inline-flex min-h-11 items-center rounded-full border-2 border-ink px-4 py-1.5 text-[15px] font-semibold text-ink transition-colors hover:bg-tape"
           >
             Saved
           </Link>
           <Link
             href="/search"
             aria-label="Search"
-            className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-beam text-white transition-colors hover:bg-beamDeep"
+            className="ml-1 flex h-11 w-11 items-center justify-center rounded-full bg-beam text-white transition-colors hover:bg-beamDeep"
           >
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" strokeWidth="2" />

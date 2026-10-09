@@ -10,6 +10,8 @@ to stay well inside TMDB's rate limits — run it as often as the main sync.
 */
 
 import { getPool, sleep } from "./db.mjs";
+import { pingIndexNow } from "./lib/indexnow.mjs";
+import { buildMediaSlug } from "./lib/slug.mjs";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const IMG_BASE = "https://image.tmdb.org/t/p/original";
@@ -64,7 +66,9 @@ async function main() {
 
   const pool = getPool();
   const { rows: movies } = await pool.query(
-    `select id from movies
+    `select id, slug, title, year, watch_providers,
+            (ending_explained_content is not null and noindex = false) as published
+     from movies
      order by watch_providers_synced_at asc nulls first
      limit $1`,
     [BATCH_SIZE]
@@ -76,7 +80,9 @@ async function main() {
   }
 
   let updated = 0;
-  for (const { id } of movies) {
+  // Published guides whose "Where to watch / Stream" block actually changed.
+  const changedUrls = [];
+  for (const { id, slug, title, year, watch_providers: before, published } of movies) {
     try {
       const data = await fetchProviders(id);
       const results = data?.results ?? {};
@@ -91,13 +97,18 @@ async function main() {
         id,
       ]);
       updated += 1;
+      if (published && JSON.stringify(before ?? null) !== JSON.stringify(normalized)) {
+        changedUrls.push(`/ending-explained/${slug || buildMediaSlug(title, year, id)}`);
+      }
     } catch (err) {
       console.warn(`  watch-providers: skipping movie ${id} — ${err.message}`);
     }
     await sleep(REQUEST_DELAY_MS);
   }
 
-  console.log(`watch-providers: updated ${updated}/${movies.length} movie(s).`);
+  console.log(`watch-providers: updated ${updated}/${movies.length} movie(s); ${changedUrls.length} guide(s) with changed streaming data.`);
+  // Tell Bing straight away that these guides' streaming info changed.
+  await pingIndexNow(changedUrls);
   await pool.end();
 }
 

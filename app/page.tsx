@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getRecentPublishedMovies } from "@/lib/api/movies";
 import { getRecentPublishedAnime } from "@/lib/api/anime";
-import { getFeaturedFranchises } from "@/lib/api/franchises";
+import { getAllPublishedFranchises, getFeaturedFranchises } from "@/lib/api/franchises";
+import { getHubCounts, getTopRatedGuides, type GuideLink } from "@/lib/api/hub";
+import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { MediaGrid } from "@/components/media/MediaGrid";
 import { SearchBar } from "@/components/media/SearchBar";
 import { Faq } from "@/components/ui/Faq";
@@ -70,11 +72,47 @@ const quotes = [
 const popularSearches = ["Attack on Titan", "Interstellar", "Jujutsu Kaisen", "Oppenheimer", "Chainsaw Man", "Dune: Part Two"];
 
 export default async function HomePage() {
-  const [movies, anime, franchises] = await Promise.all([
+  const [movies, anime, franchises, topMovies, topAnime, counts, allFranchises] = await Promise.all([
     getRecentPublishedMovies(8),
     getRecentPublishedAnime(8),
     getFeaturedFranchises(6),
+    getTopRatedGuides("movie", 8),
+    getTopRatedGuides("anime", 8),
+    getHubCounts(),
+    getAllPublishedFranchises(60),
   ]);
+
+  // Hero chips link straight to real guides (indexable, crawlable). /search is
+  // blocked in robots.txt, so search links pass no link equity; they are only
+  // the fallback while the catalog is empty.
+  const popularGuides = [...topMovies.slice(0, 3), ...topAnime.slice(0, 3)];
+  const moreFranchises = allFranchises.filter((f) => !franchises.some((x) => x.slug === f.slug)).slice(0, 24);
+  const browseCards = [
+    {
+      href: "/ending-explained",
+      kicker: "After you watch",
+      title: "Movie endings explained",
+      text: "Recap, ending and meaning for films that left you with questions.",
+      count: counts.movies,
+      unit: "movie guides",
+    },
+    {
+      href: "/ending-explained/topic/anime-finales",
+      kicker: "After the finale",
+      title: "Anime finales explained",
+      text: "What the last episode meant, who survived, and what stayed open.",
+      count: counts.anime,
+      unit: "anime guides",
+    },
+    {
+      href: "/watch-order",
+      kicker: "Before you start",
+      title: "Franchise watch orders",
+      text: "Release, story and recommended order for movie and anime franchises.",
+      count: counts.franchises,
+      unit: "watch orders",
+    },
+  ];
 
   const latestGuides = [...movies, ...anime]
     .sort((a, b) => {
@@ -169,17 +207,20 @@ export default async function HomePage() {
             <div className="mt-8 max-w-xl">
               <SearchBar path="/search" size="lg" />
             </div>
-            <nav className="mt-5 max-w-xl" aria-label="Popular title searches">
-              <p className="mb-2 text-sm font-bold text-white/80">Popular searches</p>
-              <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-                {popularSearches.map((title) => (
-                  <li key={title} className="shrink-0">
+            <nav className="mt-5 max-w-xl" aria-label={popularGuides.length ? "Popular guides" : "Popular title searches"}>
+              <p className="mb-2 text-sm font-bold text-white/80">{popularGuides.length ? "Popular guides" : "Popular searches"}</p>
+              <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+                {(popularGuides.length
+                  ? popularGuides.map((g) => ({ key: `${g.kind}-${g.slug}`, label: g.title, href: `/ending-explained/${g.slug}` }))
+                  : popularSearches.map((t) => ({ key: t, label: t, href: `/search?q=${encodeURIComponent(t)}` }))
+                ).map((c) => (
+                  <li key={c.key} className="shrink-0">
                     <Link
-                      href={`/search?q=${encodeURIComponent(title)}`}
+                      href={c.href}
                       className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-tape hover:bg-tape hover:text-ink"
                     >
                       <span aria-hidden="true" className="text-tape">★</span>
-                      {title}
+                      {c.label}
                     </Link>
                   </li>
                 ))}
@@ -235,6 +276,108 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="browse-heading">
+        <p className="text-sm font-bold uppercase text-beam">Start here</p>
+        <h2 id="browse-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Browse Marquee by what you need
+        </h2>
+        <ul className="mt-8 grid gap-5 md:grid-cols-3">
+          {browseCards.map((c) => (
+            <li key={c.href}>
+              <Link
+                href={c.href}
+                className="group flex h-full flex-col rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
+              >
+                <span className="text-sm font-bold uppercase text-beam">{c.kicker}</span>
+                <span className="mt-2 font-display text-2xl font-extrabold leading-tight group-hover:text-beam">{c.title}</span>
+                <span className="mt-2 font-body text-base leading-relaxed text-muted">{c.text}</span>
+                <span className="mt-auto pt-4 text-sm font-bold">
+                  {c.count > 0 ? `${c.count.toLocaleString("en-US")} ${c.unit}` : "Browse the collection"}
+                  <span aria-hidden="true"> →</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="topics-heading">
+        <h2 id="topics-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Find a guide by topic
+        </h2>
+        <div className="mt-8 grid gap-10 lg:grid-cols-2">
+          <div>
+            <h3 className="font-display text-xl font-bold">Ending explained collections</h3>
+            <ul className="mt-4 grid gap-3">
+              {ENDING_TOPICS.map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    href={`/ending-explained/topic/${t.slug}`}
+                    className="group block rounded-xl border-2 border-ink bg-surface px-4 py-3 transition hover:bg-tape"
+                  >
+                    <span className="block font-display text-lg font-bold">{t.title}</span>
+                    <span className="mt-0.5 block font-body text-sm leading-snug text-muted group-hover:text-ink">{t.description}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-display text-xl font-bold">Watch order collections</h3>
+            <ul className="mt-4 grid gap-3">
+              {WATCH_ORDER_TOPICS.map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    href={`/watch-order/topic/${t.slug}`}
+                    className="group block rounded-xl border-2 border-ink bg-surface px-4 py-3 transition hover:bg-tape"
+                  >
+                    <span className="block font-display text-lg font-bold">{t.title}</span>
+                    <span className="mt-0.5 block font-body text-sm leading-snug text-muted group-hover:text-ink">{t.description}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {(topMovies.length > 0 || topAnime.length > 0) && (
+        <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="top-heading">
+          <h2 id="top-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Top-rated endings explained
+          </h2>
+          <div className="mt-8 grid gap-10 md:grid-cols-2">
+            {([
+              ["Movies", topMovies],
+              ["Anime", topAnime],
+            ] as [string, GuideLink[]][]).map(([label, list]) =>
+              list.length > 0 ? (
+                <div key={label}>
+                  <h3 className="font-display text-xl font-bold">{label}</h3>
+                  <ol className="mt-4 divide-y-2 divide-ink overflow-hidden rounded-2xl border-2 border-ink bg-surface">
+                    {list.map((g, i) => (
+                      <li key={`${g.kind}-${g.slug}`}>
+                        <Link
+                          href={`/ending-explained/${g.slug}`}
+                          className="flex min-h-[52px] items-center gap-3 px-4 py-2.5 transition hover:bg-tape"
+                        >
+                          <span className="w-6 shrink-0 font-display text-lg font-extrabold text-beam">{i + 1}</span>
+                          <span className="min-w-0 flex-1 font-semibold leading-snug">
+                            {g.title} ending explained
+                            {g.year ? <span className="font-normal text-muted"> ({g.year})</span> : null}
+                          </span>
+                          {g.score ? <span className="shrink-0 text-sm font-bold">★ {g.score.toFixed(1)}</span> : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null
+            )}
+          </div>
+        </section>
+      )}
+
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16" aria-labelledby="promise-heading">
         <p className="text-sm font-bold uppercase text-beam">Why readers trust Marquee</p>
         <h2 id="promise-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
@@ -280,6 +423,26 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+        </section>
+      )}
+
+      {moreFranchises.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 sm:pb-16" aria-labelledby="more-orders-heading">
+          <h2 id="more-orders-heading" className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+            More franchise watch orders
+          </h2>
+          <ul className="mt-6 flex flex-wrap gap-3">
+            {moreFranchises.map((f) => (
+              <li key={f.slug}>
+                <Link
+                  href={`/watch-order/${f.slug}`}
+                  className="inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-surface px-4 py-2 text-sm font-bold transition hover:bg-tape"
+                >
+                  {f.title} watch order
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

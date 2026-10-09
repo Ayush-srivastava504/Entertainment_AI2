@@ -4,7 +4,7 @@ import type { GuideTopic } from "@/lib/topics";
 export function TopicLinks({ topics, basePath }: { topics: GuideTopic[]; basePath: string }) {
   return (
     <section className="border-y-2 border-ink bg-tape">
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.12em] text-beam">Browse by topic</p>

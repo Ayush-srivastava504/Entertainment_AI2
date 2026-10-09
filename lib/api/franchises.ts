@@ -95,8 +95,10 @@ export async function getFranchiseEntries(
   }
 }
 
-export async function getPublishedFranchiseSlugs(): Promise<{ slug: string; updatedAt: Date }[]> {
-  return cached("franchises:published-slugs", 3600, async () => {
+export async function getPublishedFranchiseSlugs(
+  opts: { strict?: boolean } = {}
+): Promise<{ slug: string; updatedAt: Date }[]> {
+  return cached(opts.strict ? "franchises:published-slugs:strict" : "franchises:published-slugs", 3600, async () => {
     try {
       const { rows } = await getPool().query(
         `select slug, updated_at from franchises
@@ -106,6 +108,7 @@ export async function getPublishedFranchiseSlugs(): Promise<{ slug: string; upda
       return rows.map((row: any) => ({ slug: row.slug, updatedAt: row.updated_at }));
     } catch (err) {
       console.error("published franchise slug list query failed:", err);
+      if (opts.strict) throw err;
       return [];
     }
   });

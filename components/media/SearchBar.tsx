@@ -40,13 +40,13 @@ export function SearchBar({
         onChange={(event) => setQuery(event.target.value)}
         placeholder={placeholder}
         className={`min-w-0 flex-1 bg-transparent px-4 font-display font-medium text-ink placeholder:text-muted/70 focus:outline-none ${
-          big ? "py-3 text-base sm:text-xl" : "py-2 text-base"
+          big ? "min-h-12 py-3 text-base sm:text-xl" : "min-h-11 py-2 text-base"
         }`}
       />
       <button
         type="submit"
         className={`shrink-0 rounded-full border-2 border-ink bg-tape font-bold text-ink transition hover:bg-ink hover:text-tape ${
-          big ? "px-4 py-3 text-base sm:px-6 sm:text-lg" : "px-4 py-2 sm:px-5"
+          big ? "min-h-12 px-4 py-3 text-base sm:px-6 sm:text-lg" : "min-h-11 px-4 py-2 sm:px-5"
         }`}
       >
         Search
