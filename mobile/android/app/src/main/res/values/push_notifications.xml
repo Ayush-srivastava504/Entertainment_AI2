@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Referenced from AndroidManifest.xml (com.google.firebase.messaging.default_notification_channel_id).
+         Created in code on first run by MainActivity so it exists before the first push arrives
+         (see createDefaultPushChannel() in MainActivity.java); this string is just its id. -->
+    <string name="default_notification_channel_id" translatable="false">marquee_default</string>
+</resources>

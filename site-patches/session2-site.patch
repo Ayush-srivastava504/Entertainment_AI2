@@ -1,0 +1,96 @@
+--- a/lib/analytics.ts
++++ b/lib/analytics.ts
+@@ -17,6 +17,7 @@
+   | "add_to_favorites"
+   | "remove_from_favorites"
+   | "like_content"
++  | "share"
+   | "post_comment"
+   | "quiz_start"
+   | "quiz_answer"
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -4,6 +4,7 @@
+ import "./globals.css";
+ import Nav from "@/components/Nav";
+ import Footer from "@/components/Footer";
++import AppBridge from "@/components/AppBridge";
+ import { buildOgImageUrl } from "@/lib/og";
+ import { getBaseUrl, SITE_NAME } from "@/lib/site";
+ import { graph, jsonLdString, organizationNode, websiteNode } from "@/lib/jsonld";
+@@ -163,6 +164,7 @@
+         >
+           Skip to main content
+         </a>
++        <AppBridge />
+         <Nav />
+         <main id="main-content" className="flex-1">{children}</main>
+         <Footer />
+--- a/app/ending-explained/[slug]/page.tsx
++++ b/app/ending-explained/[slug]/page.tsx
+@@ -12,6 +12,7 @@
+ import { SpoilerGate } from "@/components/ui/SpoilerGate";
+ import LikeButton from "@/components/LikeButton";
+ import FavoriteButton from "@/components/FavoriteButton";
++import ShareButton from "@/components/ShareButton";
+ import CommentSection from "@/components/CommentSection";
+ import { getFranchiseForTitle, getFranchiseEntries } from "@/lib/api/franchises";
+ import type { MediaItem } from "@/lib/api/normalize";
+@@ -266,6 +267,7 @@
+             <div className="mt-6 flex flex-wrap gap-3">
+               <LikeButton type={item.kind} slug={item.slug} initialLikes={item.likes} tone="onDark" />
+               <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} tone="onDark" />
++              <ShareButton title={`${item.title} ending explained`} text={`${item.title} ending explained on Marquee`} contentType={item.kind} tone="onDark" />
+             </div>
+           </div>
+           <div className="mx-auto w-48 rotate-2 overflow-hidden rounded-xl border-4 border-white bg-fog shadow-block lg:w-full">
+--- a/app/watch-order/[franchise]/page.tsx
++++ b/app/watch-order/[franchise]/page.tsx
+@@ -9,6 +9,7 @@
+ import { Slate } from "@/components/ui/Slate";
+ import { CtaBand } from "@/components/ui/CtaBand";
+ import LikeButton from "@/components/LikeButton";
++import ShareButton from "@/components/ShareButton";
+ import CommentSection from "@/components/CommentSection";
+ import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
+ import { WATCH_ORDER_TOPICS, matchesFranchiseTopic } from "@/lib/topics";
+@@ -207,8 +208,9 @@
+           {franchise.intro && (
+             <p className="mt-5 max-w-2xl font-body text-xl leading-relaxed text-white/90">{franchise.intro}</p>
+           )}
+-          <div className="mt-6">
++          <div className="mt-6 flex flex-wrap gap-3">
+             <LikeButton type="watch-order" slug={franchise.slug} initialLikes={franchise.likes} tone="onDark" />
++            <ShareButton title={`${franchise.title} watch order`} text={`${franchise.title} watch order on Marquee`} contentType="watch-order" tone="onDark" />
+           </div>
+         </div>
+       </section>
+--- a/middleware.ts
++++ b/middleware.ts
+@@ -4,6 +4,15 @@
+ export async function middleware(req: NextRequest) {
+   const { pathname } = req.nextUrl;
+ 
++  // The Android app (user agent contains "MarqueeApp") has no admin UI. This is a
++  // convenience, not a security control: the admin panel is still password protected.
++  if ((req.headers.get("user-agent") || "").includes("MarqueeApp")) {
++    if (pathname.startsWith("/api/admin")) {
++      return NextResponse.json({ error: "Not available in the app." }, { status: 403 });
++    }
++    return NextResponse.redirect(new URL("/", req.url));
++  }
++
+   // Login endpoints must stay reachable while logged out.
+   if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+     return NextResponse.next();
+--- a/.env.example
++++ b/.env.example
+@@ -47,3 +47,8 @@
+ 
+ # Optional: region for crawler/watch-providers-crawler.mjs (default IN).
+ WATCH_PROVIDERS_REGION=
++
++# Android App Links: comma-separated SHA-256 certificate fingerprints for the Marquee app
++# (Play Console > Release > Setup > App signing > "App signing key certificate").
++# Served at /.well-known/assetlinks.json so https://marquees.site links open in the app.
++ANDROID_SHA256_CERT_FINGERPRINTS=

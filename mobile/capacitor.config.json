@@ -1,0 +1,29 @@
+{
+  "appId": "site.marquees.app",
+  "appName": "Marquee",
+  "webDir": "www",
+  "backgroundColor": "#2A3FF0",
+  "appendUserAgent": "MarqueeApp/1.0",
+  "loggingBehavior": "none",
+  "server": {
+    "url": "https://marquees.site",
+    "androidScheme": "https",
+    "errorPath": "offline.html",
+    "allowNavigation": [
+      "marquees.site",
+      "*.marquees.site"
+    ]
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover",
+      "style": "LIGHT"
+    }
+  }
+}
