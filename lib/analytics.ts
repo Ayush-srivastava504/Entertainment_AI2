@@ -13,6 +13,7 @@ declare global {
 
 export type AnalyticsEvent =
   | "search"
+  | "share"
   | "select_content"
   | "add_to_favorites"
   | "remove_from_favorites"
@@ -22,7 +23,12 @@ export type AnalyticsEvent =
   | "quiz_answer"
   | "quiz_complete"
   | "chat_message_sent"
-  | "chat_widget_opened";
+  | "chat_widget_opened"
+  | "push_token_registered"
+  | "push_permission_denied"
+  | "push_notification_received"
+  | "push_notification_opened"
+  | "app_open";
 
 export function trackEvent(
   name: AnalyticsEvent,
