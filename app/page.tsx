@@ -5,6 +5,7 @@ import { getRecentPublishedAnime } from "@/lib/api/anime";
 import { getAllPublishedFranchises, getFeaturedFranchises } from "@/lib/api/franchises";
 import { getHubCounts, getTopRatedGuides, type GuideLink } from "@/lib/api/hub";
 import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
+import { searchGifs } from "@/lib/api/gifs";
 import { MediaGrid } from "@/components/media/MediaGrid";
 import { SearchBar } from "@/components/media/SearchBar";
 import { Faq } from "@/components/ui/Faq";
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: [
       {
-        url: buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "MARQUEE" }),
+        url: buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "ANIMEGIRL4U" }),
         width: 1200,
         height: 630,
         alt: `${SITE_NAME}: endings explained and franchise watch orders`,
@@ -72,7 +73,7 @@ const quotes = [
 const popularSearches = ["Attack on Titan", "Interstellar", "Jujutsu Kaisen", "Oppenheimer", "Chainsaw Man", "Dune: Part Two"];
 
 export default async function HomePage() {
-  const [movies, anime, franchises, topMovies, topAnime, counts, allFranchises] = await Promise.all([
+  const [movies, anime, franchises, topMovies, topAnime, counts, allFranchises, heroGifs] = await Promise.all([
     getRecentPublishedMovies(8),
     getRecentPublishedAnime(8),
     getFeaturedFranchises(6),
@@ -80,6 +81,7 @@ export default async function HomePage() {
     getTopRatedGuides("anime", 8),
     getHubCounts(),
     getAllPublishedFranchises(60),
+    searchGifs("cute anime girl", 12),
   ]);
 
   // Hero chips link straight to real guides (indexable, crawlable). /search is
@@ -142,7 +144,7 @@ export default async function HomePage() {
       about: { "@id": ORG_ID },
       primaryImageOfPage: {
         "@type": "ImageObject",
-        url: `${BASE_URL}${buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "MARQUEE" })}`,
+        url: `${BASE_URL}${buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "ANIMEGIRL4U" })}`,
         width: 1200,
         height: 630,
       },
@@ -276,10 +278,42 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="gifs-heading">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold uppercase text-beam">Fresh off the reel</p>
+            <h2 id="gifs-heading" className="font-display text-2xl font-extrabold sm:text-3xl">
+              Anime girl stickers &amp; GIFs
+            </h2>
+          </div>
+          <Link href="/stickers" className="shrink-0 text-sm font-bold text-beam underline underline-offset-4">
+            Browse all →
+          </Link>
+        </div>
+        <ul className="-mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-6">
+          {heroGifs.map((g) => (
+            <li key={g.id} className="w-32 shrink-0 sm:w-auto">
+              <Link
+                href={`/gif/${g.id}`}
+                className="block overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block transition hover:-translate-y-0.5"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={g.previewUrl}
+                  alt={g.title}
+                  loading="lazy"
+                  className="aspect-square w-full object-cover"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="browse-heading">
         <p className="text-sm font-bold uppercase text-beam">Start here</p>
         <h2 id="browse-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Browse Marquee by what you need
+          Browse Animegirl4u by what you need
         </h2>
         <ul className="mt-8 grid gap-5 md:grid-cols-3">
           {browseCards.map((c) => (
@@ -379,7 +413,7 @@ export default async function HomePage() {
       )}
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16" aria-labelledby="promise-heading">
-        <p className="text-sm font-bold uppercase text-beam">Why readers trust Marquee</p>
+        <p className="text-sm font-bold uppercase text-beam">Why readers trust Animegirl4u</p>
         <h2 id="promise-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
           Clear answers, without ruining the surprise
         </h2>
@@ -468,7 +502,7 @@ export default async function HomePage() {
       <section className="border-y-2 border-ink bg-surface" aria-labelledby="how-heading">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
           <h2 id="how-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-            How Marquee works
+            How Animegirl4u works
           </h2>
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {steps.map((s, i) => (

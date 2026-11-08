@@ -1,7 +1,7 @@
 # What this zip actually is
 
 This is **not your whole repo**. I (the assistant) was never given your full
-Marquee / Next.js codebase in this conversation — only a partial Session 1/2
+Animegirl4u / Next.js codebase in this conversation — only a partial Session 1/2
 output zip, plus what I built in Session 3. This zip is just those two
 combined into one, so you don't have to merge two separate zips by hand.
 
@@ -28,7 +28,7 @@ Every file here is either:
 | `mobile/capacitor.config.json` | Session 1/2, unchanged since | Replace (if not already there) |
 | `mobile/android/app/build.gradle` | Session 2, unchanged since | Replace (if not already there) |
 | `mobile/android/app/src/main/AndroidManifest.xml` | Full file, Session 3 push additions included | Replace |
-| `mobile/android/app/src/main/java/site/marquees/app/MainActivity.java` | Full file, Session 3 push channel additions included | Replace |
+| `mobile/android/app/src/main/java/site/animegirl4u/app/MainActivity.java` | Full file, Session 3 push channel additions included | Replace |
 | `mobile/android/app/src/main/res/values/push_notifications.xml` | Session 3, new | Add |
 | `site-patches/session2-site.patch` | Patch against `lib/analytics.ts` (adds `"share"`) and 1-2 other files I never had in full | `git apply` |
 | `site-patches/session3-site.patch` | Patch against `lib/analytics.ts` (adds 5 push/analytics event names) | `git apply` |
@@ -47,10 +47,10 @@ the `AnalyticsEvent` union type, and add the new event name strings after
 ## Apply order
 
 ```bash
-cd /path/to/your/marquee-repo
-unzip -o marquee-android-combined.zip -d /tmp/marquee-combined
-# copy/overwrite the full files listed above from /tmp/marquee-combined into your repo
-git apply /tmp/marquee-combined/site-patches/session2-site.patch   # if not already applied
-git apply /tmp/marquee-combined/site-patches/session3-site.patch
+cd /path/to/your/animegirl4u-repo
+unzip -o animegirl4u-android-combined.zip -d /tmp/animegirl4u-combined
+# copy/overwrite the full files listed above from /tmp/animegirl4u-combined into your repo
+git apply /tmp/animegirl4u-combined/site-patches/session2-site.patch   # if not already applied
+git apply /tmp/animegirl4u-combined/site-patches/session3-site.patch
 cd mobile && rm -f package-lock.json && npm install && npx cap sync android
 ```

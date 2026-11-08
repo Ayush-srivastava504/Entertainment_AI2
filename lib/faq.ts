@@ -27,7 +27,7 @@ export const HOME_FAQ: FaqItem[] = [
     a: "Ending explanations are AI-assisted using catalog facts and must pass a minimum-length check before publication. Watch order guides are drafted from catalog data and stay unpublished until a person reviews them.",
   },
   {
-    q: "Do I need an account to use Marquee?",
+    q: "Do I need an account to use Animegirl4u?",
     a: "No. You can read every guide, like titles, and save titles to your browser without signing up.",
   },
   {
@@ -76,8 +76,8 @@ export const WATCH_ORDER_INDEX_FAQ: FaqItem[] = [
 
 export const ABOUT_FAQ: FaqItem[] = [
   {
-    q: "What is Marquee?",
-    a: "Marquee is a guide site for movie and anime endings and franchise watch orders. It explains what happened in a finale and tells you the best order to start a series.",
+    q: "What is Animegirl4u?",
+    a: "Animegirl4u is a guide site for movie and anime endings and franchise watch orders. It explains what happened in a finale and tells you the best order to start a series.",
   },
   {
     q: "Are ending explained guides spoiler-free?",

@@ -118,7 +118,7 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
               How the ending explained guides work
             </h2>
             <p className="mt-4 font-body text-lg leading-relaxed text-muted">
-              Every guide on Marquee covers one movie or anime in the same four parts: a spoiler-light recap, what
+              Every guide on Animegirl4u covers one movie or anime in the same four parts: a spoiler-light recap, what
               actually happens at the end, what the ending means, and answers to the questions viewers ask most.
               Spoilers stay blurred until you tap reveal, and each guide separates what the story confirms from
               what fans read into it. Not sure where to begin? Pick a collection above, start with the{" "}

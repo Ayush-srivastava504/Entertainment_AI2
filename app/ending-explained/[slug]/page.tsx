@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { item } = resolved;
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
-  // The root layout appends " | Marquee". "& Meaning" targets the second
+  // The root layout appends " | Animegirl4u". "& Meaning" targets the second
   // half of the intent ("ending explained" + "what does the ending mean").
   const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained & Meaning`;
   const description = snippet(

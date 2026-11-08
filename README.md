@@ -1,4 +1,4 @@
-# Marquee — AI Entertainment Platform
+# Animegirl4u — AI Entertainment Platform
 
 Next.js (App Router, TypeScript, Tailwind) frontend, deployed on Vercel.
 Postgres is the single source of truth for everything the frontend reads —
@@ -46,6 +46,27 @@ entertainment-ai/
 │   └── trivia-crawler.mjs               # trivia quizzes via OpenTDB
 └── db/schema.sql
 ```
+
+## New: Anime stickers & GIFs
+
+The homepage, `/stickers`, and `/gif/[id]` now pull anime GIFs/stickers live
+from the Tenor and Giphy free APIs (not re-hosted — we link their CDN URLs
+directly, per both services' terms). Each `/gif/[id]` page also gets a
+short, original Gemini-written caption, generated once per GIF and cached
+forever in the new `gif_captions` Postgres table — the same `GEMINI_API_KEY`
+already used by the offline `ending-explained` generator powers this, just
+called at request time instead of by a crawler script.
+
+Required for this feature: `TENOR_API_KEY`, `GIPHY_API_KEY` (new — add to
+Vercel env vars), `GEMINI_API_KEY` (already in your env vars). Without the
+Tenor/Giphy keys the stickers section just renders empty rather than
+erroring. Without `GEMINI_API_KEY` set, GIFs still display and download
+fine — only the caption text is skipped.
+
+Not yet done: `/stickers` and `/gif/[id]` aren't in `lib/sitemap.ts` yet
+(they're reachable via the homepage and nav either way, so this only
+affects how fast they get crawled/indexed) — add them there when you're
+ready to prioritize that traffic.
 
 ## 1. Run the frontend locally
 

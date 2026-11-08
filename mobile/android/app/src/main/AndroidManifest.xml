@@ -32,13 +32,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- App Links: https://marquees.site/... opens in the app once
+            <!-- App Links: https://animegirl4u.com/... opens in the app once
                  /.well-known/assetlinks.json lists this app's signing fingerprint. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="marquees.site" />
+                <data android:scheme="https" android:host="animegirl4u.com" />
             </intent-filter>
 
         </activity>

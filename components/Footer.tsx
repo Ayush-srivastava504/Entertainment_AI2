@@ -7,7 +7,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 const footerQuote = "Every ending leaves a door open.";
 
 // Opens Google's "preferred sources" picker for this site, so readers who
-// like Marquee can ask Google to show it more often in Top Stories.
+// like Animegirl4u can ask Google to show it more often in Top Stories.
 const PREFERRED_SOURCE_URL = `https://www.google.com/preferences/source?q=${new URL(getBaseUrl()).host}`;
 
 const linkClass =

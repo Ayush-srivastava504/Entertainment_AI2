@@ -21,15 +21,15 @@ const nextConfig = {
   // output: 'export',
 
   // One host only. GSC crawl stats show ~1,600 requests going to
-  // www.marquees.site vs ~120 to marquees.site: every www hit is a wasted
-  // redirect. Also set marquees.site as the primary domain in Vercel
+  // www.animegirl4u.com vs ~120 to animegirl4u.com: every www hit is a wasted
+  // redirect. Also set animegirl4u.com as the primary domain in Vercel
   // (Settings -> Domains) so the redirect happens at the edge.
   async redirects() {
     return [
       {
         source: "/:path*",
-        has: [{ type: "host", value: "www.marquees.site" }],
-        destination: "https://marquees.site/:path*",
+        has: [{ type: "host", value: "www.animegirl4u.com" }],
+        destination: "https://animegirl4u.com/:path*",
         permanent: true,
       },
     ];

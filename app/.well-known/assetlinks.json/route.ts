@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 /*
-Android App Links verification file for the Marquee app (package site.marquees.app).
+Android App Links verification file for the Animegirl4u app (package com.animegirl4u.app).
 Set ANDROID_SHA256_CERT_FINGERPRINTS in Vercel to a comma-separated list of SHA-256
 fingerprints, for example the Play Console "App signing key certificate" (Release >
 Setup > App signing) and, if you sideload debug builds, your debug key. No code change or
@@ -22,7 +22,7 @@ export function GET() {
           relation: ["delegate_permission/common.handle_all_urls"],
           target: {
             namespace: "android_app",
-            package_name: "site.marquees.app",
+            package_name: "com.animegirl4u.app",
             sha256_cert_fingerprints: fingerprints,
           },
         },

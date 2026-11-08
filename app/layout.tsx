@@ -71,7 +71,7 @@ export const metadata: Metadata = {
         url: buildOgImageUrl({
           title: SITE_NAME,
           subtitle: TAGLINE,
-          badge: "MARQUEE",
+          badge: "ANIMEGIRL4U",
         }),
         width: 1200,
         height: 630,
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
       buildOgImageUrl({
         title: SITE_NAME,
         subtitle: TAGLINE,
-        badge: "MARQUEE",
+        badge: "ANIMEGIRL4U",
       }),
     ],
   },

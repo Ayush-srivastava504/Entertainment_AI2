@@ -17,7 +17,7 @@ const BASE_URL = getBaseUrl();
 const PATH = "/about";
 const TITLE = `About ${SITE_NAME}: How We Explain Endings and Order Franchises`;
 const DESCRIPTION =
-  "Meet Marquee: plain-English ending explained guides for movies and anime, franchise watch orders, and a clear look at how every guide is researched, drafted, checked and corrected.";
+  "Meet Animegirl4u: plain-English ending explained guides for movies and anime, franchise watch orders, and a clear look at how every guide is researched, drafted, checked and corrected.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -68,7 +68,7 @@ const pageJsonLd = graph(
 const linkClass = "font-semibold text-beam underline underline-offset-4";
 
 const jumpLinks = [
-  { id: "what-is-marquee", label: "What we publish" },
+  { id: "what-is-animegirl4u", label: "What we publish" },
   { id: "how-guides-are-made", label: "How guides are made" },
   { id: "find-titles", label: "Finding titles" },
   { id: "your-data", label: "Likes & comments" },
@@ -287,7 +287,7 @@ export default async function AboutPage() {
       </nav>
 
       {/* What we publish */}
-      <section id="what-is-marquee" aria-labelledby="publish-heading" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+      <section id="what-is-animegirl4u" aria-labelledby="publish-heading" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionHeading
           id="publish-heading"
           kicker="What we publish"

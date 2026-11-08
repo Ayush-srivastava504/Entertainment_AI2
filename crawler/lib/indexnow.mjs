@@ -6,7 +6,7 @@ Accepts site-relative paths ("/ending-explained/x") or absolute URLs.
 Dedupes, batches (IndexNow allows 10,000 URLs per request), logs the HTTP
 status and never throws: an indexing ping must not fail a crawl run.
 */
-const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://marquees.site").replace(/^(https?:\/\/)www\./, "$1").replace(/\/$/, "");
+const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://animegirl4u.com").replace(/^(https?:\/\/)www\./, "$1").replace(/\/$/, "");
 const BATCH = 9000;
 
 export async function pingIndexNow(paths) {

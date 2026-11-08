@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getPool } from "@/lib/db";
 
 /*
 Stores an FCM device token so a future campaign (new blog post, etc.) can send
@@ -8,14 +8,10 @@ successfully registers for push (on every cold start with permission already
 granted, not just the first time) — the upsert below keeps last_seen_at fresh
 and is a no-op in cost for repeat calls.
 
-NOTE: this assumes a `query(sql, params)` helper exported from "@/lib/db" that
-runs against the project's existing Postgres pool, matching the pattern used
-elsewhere in the codebase (crawlers, lib/api/*). If the project's actual
-helper has a different name/shape, update the import and the call below —
-nothing else in this route is Postgres-specific beyond that one call.
+Uses getPool() directly (this project's actual Postgres helper, see lib/db.ts)
+rather than a query() wrapper that doesn't exist in this codebase.
 
-Requires the table added in the Session 3 handoff's schema.sql snippet:
-device_tokens (token text primary key, platform text, created_at, last_seen_at).
+Requires the device_tokens table — see db/schema.sql.
 */
 
 export async function POST(req: NextRequest) {
@@ -33,7 +29,8 @@ export async function POST(req: NextRequest) {
   const safePlatform = typeof platform === "string" && platform.length <= 32 ? platform : "android";
 
   try {
-    await query(
+    const pool = getPool();
+    await pool.query(
       `insert into device_tokens (token, platform, created_at, last_seen_at)
        values ($1, $2, now(), now())
        on conflict (token) do update set last_seen_at = now(), platform = excluded.platform`,

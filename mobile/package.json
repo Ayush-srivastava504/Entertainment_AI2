@@ -1,8 +1,8 @@
 {
-  "name": "marquee-android",
+  "name": "animegirl4u-android",
   "version": "1.0.0",
   "private": true,
-  "description": "Android wrapper (Capacitor) for https://marquees.site",
+  "description": "Android wrapper (Capacitor) for https://animegirl4u.com",
   "scripts": {
     "sync": "cap sync android",
     "doctor": "cap doctor",

@@ -12,7 +12,7 @@ grounding rather than guessing.
 */
 
 const API = "https://en.wikipedia.org/w/api.php";
-const USER_AGENT = "MarqueeGuideBot/1.0 (https://marquees.site; content grounding)";
+const USER_AGENT = "Animegirl4uGuideBot/1.0 (https://animegirl4u.com; content grounding)";
 
 const normalize = (s) =>
   s

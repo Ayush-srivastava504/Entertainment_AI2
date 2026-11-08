@@ -13,9 +13,9 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     refresh();
-    window.addEventListener("marquee:favorites-changed", refresh);
+    window.addEventListener("animegirl4u:favorites-changed", refresh);
     return () =>
-      window.removeEventListener("marquee:favorites-changed", refresh);
+      window.removeEventListener("animegirl4u:favorites-changed", refresh);
   }, []);
 
   return (

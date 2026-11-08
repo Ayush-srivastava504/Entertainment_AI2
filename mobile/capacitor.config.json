@@ -1,17 +1,17 @@
 {
-  "appId": "site.marquees.app",
-  "appName": "Marquee",
+  "appId": "com.animegirl4u.app",
+  "appName": "Animegirl4u",
   "webDir": "www",
   "backgroundColor": "#2A3FF0",
-  "appendUserAgent": "MarqueeApp/1.0",
+  "appendUserAgent": "Animegirl4uApp/1.0",
   "loggingBehavior": "none",
   "server": {
-    "url": "https://marquees.site",
+    "url": "https://animegirl4u.com",
     "androidScheme": "https",
     "errorPath": "offline.html",
     "allowNavigation": [
-      "marquees.site",
-      "*.marquees.site"
+      "animegirl4u.com",
+      "*.animegirl4u.com"
     ]
   },
   "android": {

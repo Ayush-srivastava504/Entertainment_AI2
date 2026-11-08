@@ -5,6 +5,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 
 const links = [
+  { href: "/stickers", label: "Stickers & GIFs" },
   { href: "/ending-explained", label: "Ending explained" },
   { href: "/watch-order", label: "Watch order" },
   { href: "/about", label: "About" },
@@ -30,7 +31,7 @@ export default function Nav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link href="/" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded">
           <CueMark />
-          <span className="font-display text-2xl font-extrabold tracking-tight text-ink">Marquee</span>
+          <span className="font-display text-2xl font-extrabold tracking-tight text-ink">Animegirl4u</span>
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">

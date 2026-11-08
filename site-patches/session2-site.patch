@@ -40,7 +40,7 @@
              <div className="mt-6 flex flex-wrap gap-3">
                <LikeButton type={item.kind} slug={item.slug} initialLikes={item.likes} tone="onDark" />
                <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} tone="onDark" />
-+              <ShareButton title={`${item.title} ending explained`} text={`${item.title} ending explained on Marquee`} contentType={item.kind} tone="onDark" />
++              <ShareButton title={`${item.title} ending explained`} text={`${item.title} ending explained on Animegirl4u`} contentType={item.kind} tone="onDark" />
              </div>
            </div>
            <div className="mx-auto w-48 rotate-2 overflow-hidden rounded-xl border-4 border-white bg-fog shadow-block lg:w-full">
@@ -61,7 +61,7 @@
 -          <div className="mt-6">
 +          <div className="mt-6 flex flex-wrap gap-3">
              <LikeButton type="watch-order" slug={franchise.slug} initialLikes={franchise.likes} tone="onDark" />
-+            <ShareButton title={`${franchise.title} watch order`} text={`${franchise.title} watch order on Marquee`} contentType="watch-order" tone="onDark" />
++            <ShareButton title={`${franchise.title} watch order`} text={`${franchise.title} watch order on Animegirl4u`} contentType="watch-order" tone="onDark" />
            </div>
          </div>
        </section>
@@ -71,9 +71,9 @@
  export async function middleware(req: NextRequest) {
    const { pathname } = req.nextUrl;
  
-+  // The Android app (user agent contains "MarqueeApp") has no admin UI. This is a
++  // The Android app (user agent contains "Animegirl4uApp") has no admin UI. This is a
 +  // convenience, not a security control: the admin panel is still password protected.
-+  if ((req.headers.get("user-agent") || "").includes("MarqueeApp")) {
++  if ((req.headers.get("user-agent") || "").includes("Animegirl4uApp")) {
 +    if (pathname.startsWith("/api/admin")) {
 +      return NextResponse.json({ error: "Not available in the app." }, { status: 403 });
 +    }
@@ -90,7 +90,7 @@
  # Optional: region for crawler/watch-providers-crawler.mjs (default IN).
  WATCH_PROVIDERS_REGION=
 +
-+# Android App Links: comma-separated SHA-256 certificate fingerprints for the Marquee app
++# Android App Links: comma-separated SHA-256 certificate fingerprints for the Animegirl4u app
 +# (Play Console > Release > Setup > App signing > "App signing key certificate").
-+# Served at /.well-known/assetlinks.json so https://marquees.site links open in the app.
++# Served at /.well-known/assetlinks.json so https://animegirl4u.com links open in the app.
 +ANDROID_SHA256_CERT_FINGERPRINTS=

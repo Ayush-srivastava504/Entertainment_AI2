@@ -26,7 +26,7 @@ export default async function Image() {
             marginBottom: 20,
           }}
         >
-          🎬 MARQUEE 🍥
+          🎬 ANIMEGIRL4U 🍥
         </div>
         <div
           style={{

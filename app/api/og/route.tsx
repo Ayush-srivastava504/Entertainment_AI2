@@ -3,7 +3,7 @@ Generates a branded 1200x630 Open Graph / Twitter card image on the fly for
 any page on the site — movie/anime detail pages, rankings, quizzes, genre
 pages, blog posts, and the homepage fallback. No static image assets or
 design tool needed: the whole card is composed here with next/og's
-ImageResponse (built into Next.js) and Marquee's existing brand colors.
+ImageResponse (built into Next.js) and Animegirl4u's existing brand colors.
 
 Usage: /api/og?title=...&subtitle=...&badge=...&poster=...&rating=...
 See lib/og.ts for the helper that builds this query string consistently.
@@ -30,9 +30,9 @@ function truncate(value: string, max: number): string {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
-  const title = truncate(searchParams.get("title") || "Marquee", 90);
+  const title = truncate(searchParams.get("title") || "Animegirl4u", 90);
   const subtitle = searchParams.get("subtitle") ? truncate(searchParams.get("subtitle")!, 130) : null;
-  const badge = searchParams.get("badge") || "MARQUEE";
+  const badge = searchParams.get("badge") || "ANIMEGIRL4U";
   const poster = searchParams.get("poster");
   const rating = searchParams.get("rating");
 
@@ -148,7 +148,7 @@ export async function GET(request: Request) {
             }}
           >
             <div style={{ display: "flex", width: 12, height: 12, borderRadius: 999, backgroundColor: COLORS.gold }} />
-            Marquee
+            Animegirl4u
           </div>
         </div>
       </div>

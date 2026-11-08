@@ -8,11 +8,11 @@ push everything:
   INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs --dry
   INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs --since-hours=36   # only URLs whose <lastmod> is recent
 
-Before running, confirm https://marquees.site/<INDEXNOW_KEY>.txt returns the
+Before running, confirm https://animegirl4u.com/<INDEXNOW_KEY>.txt returns the
 key (the INDEXNOW_KEY env var must ALSO be set on Vercel, not only in
 GitHub Actions, or that file 404s and IndexNow rejects every submission).
 */
-const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://marquees.site")
+const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://animegirl4u.com")
   .replace(/^(https?:\/\/)www\./, "$1")
   .replace(/\/$/, "");
 const KEY = process.env.INDEXNOW_KEY;
@@ -23,7 +23,7 @@ const SINCE = sinceArg ? Date.now() - Number(sinceArg.split("=")[1]) * 3600_000 
 const locs = (xml) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/&amp;/g, "&"));
 
 async function get(url) {
-  const res = await fetch(url, { headers: { "User-Agent": "marquee-indexnow-bulk/1.0" } });
+  const res = await fetch(url, { headers: { "User-Agent": "animegirl4u-indexnow-bulk/1.0" } });
   if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
   return res.text();
 }

@@ -24,7 +24,7 @@ export function organizationNode() {
       height: 512,
     },
     description:
-      "Marquee publishes plain-English ending explained guides and franchise watch orders for movies and anime.",
+      "Animegirl4u publishes plain-English ending explained guides and franchise watch orders for movies and anime.",
   };
 }
 

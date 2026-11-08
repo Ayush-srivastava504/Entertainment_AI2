@@ -10,7 +10,7 @@ There is no user table; this is a single shared password gate for /admin
 and /api/admin, matching the "one operator" scale of this project.
 */
 
-export const ADMIN_COOKIE_NAME = "marquee_admin_session";
+export const ADMIN_COOKIE_NAME = "animegirl4u_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 function getSecret(): string {

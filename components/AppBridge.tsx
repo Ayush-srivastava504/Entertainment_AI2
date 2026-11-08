@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 
 /*
-Runs only inside the Marquee Android app (its WebView user agent contains
-"MarqueeApp"). On the normal website it does nothing.
+Runs only inside the Animegirl4u Android app (its WebView user agent contains
+"Animegirl4uApp"). On the normal website it does nothing.
 
 Two things happen here:
 1. Share: Android WebView has no Web Share API, so this wires navigator.share
@@ -19,7 +19,7 @@ Two things happen here:
    to its `link` data field, if the payload has one.
 */
 
-export const APP_UA_TOKEN = "MarqueeApp";
+export const APP_UA_TOKEN = "Animegirl4uApp";
 
 type NativeShare = {
   share: (options: { title?: string; text?: string; url?: string; dialogTitle?: string }) => Promise<unknown>;
@@ -53,7 +53,7 @@ declare global {
   }
 }
 
-export function isMarqueeApp(): boolean {
+export function isAnimegirl4uApp(): boolean {
   return typeof navigator !== "undefined" && navigator.userAgent.includes(APP_UA_TOKEN);
 }
 
@@ -133,7 +133,7 @@ async function installPushBridge() {
 
 export default function AppBridge() {
   useEffect(() => {
-    if (!isMarqueeApp()) return;
+    if (!isAnimegirl4uApp()) return;
 
     document.documentElement.classList.add("is-app");
     trackEvent("app_open", { method: "android_app" });

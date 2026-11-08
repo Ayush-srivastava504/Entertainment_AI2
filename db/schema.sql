@@ -1,5 +1,5 @@
 /*
-This SQL schema defines the complete Postgres database for marquees.site,
+This SQL schema defines the complete Postgres database for animegirl4u.com,
 restructured around two content units: Ending Explained guides (one per
 movie/anime title) and Watch Order guides (one per franchise). `movies` and
 `anime` are internal source data only — they are never rendered or routed
@@ -257,3 +257,26 @@ create table if not exists sync_state (
 );
 
 alter table sync_state add column if not exists details jsonb;
+
+-- ---------------------------------------------------------------------
+-- Anime GIF/sticker captions (Gemini-generated, cached forever per GIF)
+-- ---------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------
+-- Push notification device tokens (Android app, FCM)
+-- ---------------------------------------------------------------------
+
+create table if not exists device_tokens (
+  token          text primary key,
+  platform       text not null default 'android',
+  created_at     timestamptz not null default now(),
+  last_seen_at   timestamptz not null default now()
+);
+
+create table if not exists gif_captions (
+  media_id    text primary key,
+  source      text not null check (source in ('tenor', 'giphy')),
+  title       text,
+  caption     text not null,
+  created_at  timestamptz not null default now()
+);

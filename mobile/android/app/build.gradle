@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "site.marquees.app"
+    namespace = "com.animegirl4u.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "site.marquees.app"
+        applicationId "com.animegirl4u.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // CI passes VERSION_CODE (the GitHub run number) so every upload to Play

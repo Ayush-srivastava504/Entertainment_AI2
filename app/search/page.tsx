@@ -8,7 +8,7 @@ import { getBaseUrl } from "@/lib/site";
 const BASE_URL = getBaseUrl();
 
 export const metadata = {
-  title: "Search | Marquee",
+  title: "Search | Animegirl4u",
   description: "Search ending explained guides and watch order guides by title.",
   alternates: { canonical: `${BASE_URL}/search` },
   robots: { index: false, follow: true },

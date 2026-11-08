@@ -3,16 +3,16 @@
 Paste this file at the start of the next session. Supersedes the Session 2 handoff.
 
 ## Project
-Marquee (https://marquees.site): Next.js 16 / Postgres / Vercel site. Android app lives in `mobile/`
-(Capacitor 8, appId `site.marquees.app`), loads the live site. Brand: blue #2A3FF0, yellow #FFD84A.
+Animegirl4u (https://animegirl4u.com): Next.js 16 / Postgres / Vercel site. Android app lives in `mobile/`
+(Capacitor 8, appId `com.animegirl4u.app`), loads the live site. Brand: blue #2A3FF0, yellow #FFD84A.
 GA4 id G-ZEZ5BF0QF4 (helper: lib/analytics.ts `trackEvent`).
 
 ## ⚠️ Blocking step — only you can do this, before any of this works
 Session 3 wires the app up to receive push and to apply/report a `google-services.json`, but it
 **cannot create the Firebase project itself** — that needs your Google account in a browser:
 
-1. https://console.firebase.google.com → Add project (any name, e.g. "Marquee").
-2. Inside it: Add app → Android → package name `site.marquees.app` (must match exactly).
+1. https://console.firebase.google.com → Add project (any name, e.g. "Animegirl4u").
+2. Inside it: Add app → Android → package name `com.animegirl4u.app` (must match exactly).
 3. Download the generated `google-services.json` and put it at `mobile/android/app/google-services.json`
    (same folder as `build.gradle` — already git-ignored? if not, add it; it has no secret in it that
    matters more than your Android SDK key restrictions, but keep it out of a public repo to be safe).
@@ -41,7 +41,7 @@ Firebase Analytics events specifically.
 Native (`mobile/android/app/src/main/...`):
 - `AndroidManifest.xml`: added `POST_NOTIFICATIONS` permission (Android 13+) and two `<meta-data>` entries
   pointing FCM at a default notification channel + icon.
-- `res/values/push_notifications.xml` (new): defines `default_notification_channel_id` = `marquee_default`.
+- `res/values/push_notifications.xml` (new): defines `default_notification_channel_id` = `animegirl4u_default`.
 - `MainActivity.java`: added `createDefaultPushChannel()`, called from `onCreate()` before the existing
   back-handler/pull-to-refresh setup, so the channel exists natively even if a push arrives before any JS
   has run. (Capacitor's docs warn that without this, FCM silently falls back to its own default channel.)
@@ -127,7 +127,7 @@ ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_K
 
 ## Apply to repo (from repo root)
 ```
-unzip -o marquee-android-session3.zip
+unzip -o animegirl4u-android-session3.zip
 git apply site-patches/session3-site.patch        # Session 1 + 2 patches must already be applied
 # then manually replace/add:
 #   components/AppBridge.tsx        (full replace)

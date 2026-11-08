@@ -8,7 +8,7 @@ export interface FavoriteItem {
   savedAt: string; // ISO
 }
 
-const KEY = "marquee:favorites";
+const KEY = "animegirl4u:favorites";
 
 function readAll(): FavoriteItem[] {
   if (typeof window === "undefined") return [];
@@ -24,7 +24,7 @@ function writeAll(items: FavoriteItem[]) {
   window.localStorage.setItem(KEY, JSON.stringify(items));
   // Let other components on the page (e.g. a header counter) react without
   // a shared state library.
-  window.dispatchEvent(new CustomEvent("marquee:favorites-changed"));
+  window.dispatchEvent(new CustomEvent("animegirl4u:favorites-changed"));
 }
 
 export function getFavorites(): FavoriteItem[] {

@@ -40,7 +40,7 @@ jobs:
       TMDB_API_READ_ACCESS_TOKEN: ${{ secrets.TMDB_API_READ_ACCESS_TOKEN }}
       # The watch-providers step pings IndexNow when a guide's streaming info changes.
       INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-      NEXT_PUBLIC_SITE_URL: https://marquees.site
+      NEXT_PUBLIC_SITE_URL: https://animegirl4u.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -61,7 +61,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       TMDB_API_READ_ACCESS_TOKEN: ${{ secrets.TMDB_API_READ_ACCESS_TOKEN }}
       INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-      NEXT_PUBLIC_SITE_URL: https://marquees.site
+      NEXT_PUBLIC_SITE_URL: https://animegirl4u.com
       # Tried in order; a busy model (503) falls through to the next one.
       GEMINI_MODEL: gemini-3.8-flash
       GEMINI_FALLBACK_MODELS: gemini-3.5-flash-lite
@@ -89,7 +89,7 @@ jobs:
     timeout-minutes: 20
     env:
       INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-      NEXT_PUBLIC_SITE_URL: https://marquees.site
+      NEXT_PUBLIC_SITE_URL: https://animegirl4u.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
