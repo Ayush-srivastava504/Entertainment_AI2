@@ -22,9 +22,9 @@ export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
-const TITLE = `${SITE_NAME}: Movie & Anime Endings Explained, Plus Watch Order Guides`;
+const TITLE = `${SITE_NAME}: Free Anime Girl GIFs & Stickers, Ending Explained, Watch Order`;
 const DESCRIPTION =
-  "Finished a movie or anime and still confused? Read plain-English ending explained guides, then follow the right watch order for every franchise. Spoilers stay hidden until you choose.";
+  "Download free anime girl GIFs and stickers for reactions, chats, and more. Plus plain-English ending explained guides and the right watch order for every franchise.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: [
       {
-        url: buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "ANIMEGIRL4U" }),
+        url: buildOgImageUrl({ title: SITE_NAME, subtitle: "Anime girl GIFs & stickers, free.", badge: "ANIMEGIRL4U" }),
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME}: endings explained and franchise watch orders`,
+        alt: `${SITE_NAME}: free anime girl GIFs and stickers`,
       },
     ],
   },
@@ -194,20 +194,20 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
           <div>
             <p className="inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">
-              Movies and anime, explained
+              Free anime girl GIFs & stickers
             </p>
             <h1
               id="home-heading"
               className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
             >
-              Finished it and still confused?
+              Anime girl GIFs & stickers, ready to send
             </h1>
             <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-white/90 sm:text-xl">
-              Plain-English ending explained guides for movies and anime, plus the right watch order for every
-              franchise. Spoilers stay hidden until you say so.
+              Download free anime girl reaction GIFs and stickers. Plus, when you finish the show: plain-English
+              ending explained guides and the right watch order for every franchise.
             </p>
             <div className="mt-8 max-w-xl">
-              <SearchBar path="/search" size="lg" />
+              <SearchBar path="/stickers" size="lg" />
             </div>
             <nav className="mt-5 max-w-xl" aria-label={popularGuides.length ? "Popular guides" : "Popular title searches"}>
               <p className="mb-2 text-sm font-bold text-white/80">{popularGuides.length ? "Popular guides" : "Popular searches"}</p>

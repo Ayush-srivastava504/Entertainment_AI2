@@ -37,7 +37,7 @@ export const viewport: Viewport = {
 
 const BASE_URL = getBaseUrl();
 
-const TAGLINE = "Ending Explained and Watch Order guides for movies and anime";
+const TAGLINE = "Anime Girl GIFs & Stickers, Plus Ending Explained and Watch Order Guides";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -46,15 +46,17 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Spoiler-forward Ending Explained breakdowns for movies and anime, plus Watch Order guides for the right order to watch every franchise.",
+    "Free anime girl GIFs and stickers to download, plus spoiler-forward Ending Explained breakdowns and Watch Order guides for every anime and movie franchise.",
   keywords: [
+    "anime girl gif",
+    "anime girl stickers",
+    "anime gif download",
+    "cute anime gif",
+    "anime sticker pack",
     "ending explained",
     "watch order",
-    "movie ending explained",
     "anime ending explained",
     "franchise watch order",
-    "movie recap",
-    "anime recap",
   ],
   // No site-wide canonical here: a root-level canonical is inherited by every
   // page that doesn't set its own (favorites, admin...) and would point them
@@ -65,7 +67,7 @@ export const metadata: Metadata = {
     url: BASE_URL,
     title: `${SITE_NAME} — ${TAGLINE}`,
     description:
-      "Spoiler-forward Ending Explained breakdowns for movies and anime, plus Watch Order guides for the right order to watch every franchise.",
+      "Free anime girl GIFs and stickers to download, plus Ending Explained breakdowns and Watch Order guides for every franchise.",
     images: [
       {
         url: buildOgImageUrl({
