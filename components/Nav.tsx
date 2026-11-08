@@ -11,16 +11,6 @@ const links = [
   { href: "/about", label: "About" },
 ];
 
-function CueMark() {
-  // Two changeover cue marks, as burned into the corner of a film reel.
-  return (
-    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-      <circle cx="9" cy="13" r="7.5" fill="#2A3FF0" stroke="#0D1030" strokeWidth="2" />
-      <circle cx="18" cy="13" r="4.5" fill="#FFD23F" stroke="#0D1030" strokeWidth="2" />
-    </svg>
-  );
-}
-
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -30,7 +20,14 @@ export default function Nav() {
     <header className="sticky top-0 z-40 border-b-2 border-ink bg-surface/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link href="/" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 rounded">
-          <CueMark />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Animegirl4u logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full border-2 border-ink object-cover"
+          />
           <span className="font-display text-2xl font-extrabold tracking-tight text-ink">Animegirl4u</span>
         </Link>
 
