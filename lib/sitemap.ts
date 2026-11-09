@@ -15,7 +15,7 @@ import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
 import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { getBaseUrl } from "@/lib/site";
-import { getTrendingLeads } from "@/lib/characters";
+import { getCharacterSitemapRows } from "@/lib/characters-db";
 import { WALLPAPERS, WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 
 const BASE_URL = getBaseUrl();
@@ -108,13 +108,19 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/stickers` },
       { loc: `${BASE_URL}/wallpapers` },
       { loc: `${BASE_URL}/characters/leads` },
-      ...getTrendingLeads().items.map((l) => ({ loc: `${BASE_URL}/characters/leads/${l.character.slug}` })),
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),
       ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];
     try {
       for (const g of await listOriginalGifs()) entries.push({ loc: `${BASE_URL}/gif/${g.id}` });
     } catch {}
+    // Character profiles (Supabase). A DB error must not take the whole
+    // "pages" sitemap down, so just leave them out of this build.
+    try {
+      for (const c of await getCharacterSitemapRows()) entries.push({ loc: `${BASE_URL}/characters/${c.slug}`, lastmod: c.updatedAt });
+    } catch (err) {
+      console.error("sitemap: character rows unavailable:", err);
+    }
     // Topic hubs only once they have real content behind them.
     if (guides.length >= 10) {
       for (const t of ENDING_TOPICS) entries.push({ loc: `${BASE_URL}/ending-explained/topic/${t.slug}`, lastmod: newest(guides) });

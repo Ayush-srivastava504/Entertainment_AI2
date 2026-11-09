@@ -3,6 +3,34 @@ import Link from "next/link";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/characters";
+import { getPopularCharacters, getTrendingCharacters, type DbCharacter } from "@/lib/characters-db";
+
+function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "trendingRank" | "popularRank" }) {
+  return (
+    <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      {items.map((c) => (
+        <li key={c.id}>
+          <Link
+            href={`/characters/${c.slug}`}
+            className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
+          >
+            {c.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={c.image} alt={c.name} width={230} height={325} loading="lazy" className="aspect-[3/4] w-full object-cover" />
+            )}
+            <div className="p-3">
+              <p className="font-semibold leading-tight">
+                <span className="text-beam">#{c[rankKey]}</span> {c.name}
+              </p>
+              {c.anime[0] && <p className="text-sm text-muted">{c.anime[0].title}</p>}
+              <p className="mt-1 text-sm text-muted">♥ {c.favourites.toLocaleString()}</p>
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 const BASE_URL = getBaseUrl();
 const TITLE = `Anime Characters — Profiles, Voice Actors & Fans' Favorites | ${SITE_NAME}`;
@@ -22,6 +50,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const q = (sp.q ?? "").trim().slice(0, 80);
   const page = Math.max(1, Math.min(200, Number(sp.page) || 1));
   const data = q ? await searchCharacters(q, page) : await getTopCharacters(page);
+  const [trending, popular] = !q && page === 1 ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
 
   const href = (p: number) => `/characters?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
 
@@ -51,7 +80,21 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
       </div>
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <h2 className="font-display text-xl font-bold">{q ? `Results for “${q}”` : "Most loved characters"}</h2>
+        {trending.length > 0 && (
+          <section className="mb-12">
+            <h2 className="font-display text-2xl font-bold">Trending anime characters</h2>
+            <p className="mt-1 text-muted">Main characters of the anime everyone is watching right now.</p>
+            <CharacterGrid items={trending} rankKey="trendingRank" />
+          </section>
+        )}
+        {popular.length > 0 && (
+          <section className="mb-12">
+            <h2 className="font-display text-2xl font-bold">Top 100 most loved anime characters</h2>
+            <p className="mt-1 text-muted">Ranked by how many fans have favourited them.</p>
+            <CharacterGrid items={popular} rankKey="popularRank" />
+          </section>
+        )}
+        <h2 className="font-display text-xl font-bold">{q ? `Results for “${q}”` : popular.length ? "Browse more characters" : "Most loved characters"}</h2>
 
         {data.items.length === 0 ? (
           <p className="mt-6 text-muted">No characters found{q ? " — try another spelling." : " right now. Please try again shortly."}</p>

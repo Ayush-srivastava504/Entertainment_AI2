@@ -26,7 +26,7 @@ export default function TrendingLeadsPage() {
       itemListElement: items.map((l) => ({
         "@type": "ListItem",
         position: l.rank,
-        url: `${BASE_URL}/characters/leads/${l.character.slug}`,
+        url: `${BASE_URL}/characters/${l.character.slug}`,
         name: `${l.character.name} (${l.anime.title})`,
       })),
     },
@@ -59,7 +59,7 @@ export default function TrendingLeadsPage() {
             {items.map((l) => (
               <li key={l.character.id}>
                 <Link
-                  href={`/characters/leads/${l.character.slug}`}
+                  href={`/characters/${l.character.slug}`}
                   className="relative block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
                 >
                   <span className="absolute left-2 top-2 z-10 rounded-full border-2 border-ink bg-beam px-2 text-sm font-bold text-white">
