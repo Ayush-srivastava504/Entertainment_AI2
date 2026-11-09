@@ -56,9 +56,15 @@ export function indexXml(items: { loc: string; lastmod?: Date }[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
 
+// Movies are held back from the sitemap on purpose while the site is new --
+// fewer indexed URLs while Google is still building trust in the domain.
+// Flip this to true once that trust is established and you want movie pages
+// discovered again; nothing else needs to change.
+const INCLUDE_MOVIES = false;
+
 async function load() {
   const [movies, anime, franchises] = await Promise.all([
-    getPublishedMovieSlugs({ strict: true }),
+    INCLUDE_MOVIES ? getPublishedMovieSlugs({ strict: true }) : Promise.resolve([] as Row[]),
     getPublishedAnimeSlugs({ strict: true }),
     getPublishedFranchiseSlugs({ strict: true }),
   ]);

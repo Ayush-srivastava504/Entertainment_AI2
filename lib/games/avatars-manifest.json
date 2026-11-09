@@ -1,0 +1,602 @@
+[
+  {
+    "id": "avatar-001",
+    "title": "Koko Star #1",
+    "image": "/games/avatars/avatar-001.svg",
+    "thumb": "/games/thumbs/avatar-001.svg"
+  },
+  {
+    "id": "avatar-002",
+    "title": "Yuki Dream #2",
+    "image": "/games/avatars/avatar-002.svg",
+    "thumb": "/games/thumbs/avatar-002.svg"
+  },
+  {
+    "id": "avatar-003",
+    "title": "Hana Pout #3",
+    "image": "/games/avatars/avatar-003.svg",
+    "thumb": "/games/thumbs/avatar-003.svg"
+  },
+  {
+    "id": "avatar-004",
+    "title": "Yuki Giggle #4",
+    "image": "/games/avatars/avatar-004.svg",
+    "thumb": "/games/thumbs/avatar-004.svg"
+  },
+  {
+    "id": "avatar-005",
+    "title": "Koko Glow #5",
+    "image": "/games/avatars/avatar-005.svg",
+    "thumb": "/games/thumbs/avatar-005.svg"
+  },
+  {
+    "id": "avatar-006",
+    "title": "Koko Sweet #6",
+    "image": "/games/avatars/avatar-006.svg",
+    "thumb": "/games/thumbs/avatar-006.svg"
+  },
+  {
+    "id": "avatar-007",
+    "title": "Mochi Glow #7",
+    "image": "/games/avatars/avatar-007.svg",
+    "thumb": "/games/thumbs/avatar-007.svg"
+  },
+  {
+    "id": "avatar-008",
+    "title": "Suzu Giggle #8",
+    "image": "/games/avatars/avatar-008.svg",
+    "thumb": "/games/thumbs/avatar-008.svg"
+  },
+  {
+    "id": "avatar-009",
+    "title": "Mei Sparkle #9",
+    "image": "/games/avatars/avatar-009.svg",
+    "thumb": "/games/thumbs/avatar-009.svg"
+  },
+  {
+    "id": "avatar-010",
+    "title": "Chibi Wave #10",
+    "image": "/games/avatars/avatar-010.svg",
+    "thumb": "/games/thumbs/avatar-010.svg"
+  },
+  {
+    "id": "avatar-011",
+    "title": "Aki Wave #11",
+    "image": "/games/avatars/avatar-011.svg",
+    "thumb": "/games/thumbs/avatar-011.svg"
+  },
+  {
+    "id": "avatar-012",
+    "title": "Hana Sparkle #12",
+    "image": "/games/avatars/avatar-012.svg",
+    "thumb": "/games/thumbs/avatar-012.svg"
+  },
+  {
+    "id": "avatar-013",
+    "title": "Suzu Sweet #13",
+    "image": "/games/avatars/avatar-013.svg",
+    "thumb": "/games/thumbs/avatar-013.svg"
+  },
+  {
+    "id": "avatar-014",
+    "title": "Koko Pout #14",
+    "image": "/games/avatars/avatar-014.svg",
+    "thumb": "/games/thumbs/avatar-014.svg"
+  },
+  {
+    "id": "avatar-015",
+    "title": "Hana Wave #15",
+    "image": "/games/avatars/avatar-015.svg",
+    "thumb": "/games/thumbs/avatar-015.svg"
+  },
+  {
+    "id": "avatar-016",
+    "title": "Nene Sparkle #16",
+    "image": "/games/avatars/avatar-016.svg",
+    "thumb": "/games/thumbs/avatar-016.svg"
+  },
+  {
+    "id": "avatar-017",
+    "title": "Mei Pout #17",
+    "image": "/games/avatars/avatar-017.svg",
+    "thumb": "/games/thumbs/avatar-017.svg"
+  },
+  {
+    "id": "avatar-018",
+    "title": "Rin Sweet #18",
+    "image": "/games/avatars/avatar-018.svg",
+    "thumb": "/games/thumbs/avatar-018.svg"
+  },
+  {
+    "id": "avatar-019",
+    "title": "Suzu Star #19",
+    "image": "/games/avatars/avatar-019.svg",
+    "thumb": "/games/thumbs/avatar-019.svg"
+  },
+  {
+    "id": "avatar-020",
+    "title": "Aki Blush #20",
+    "image": "/games/avatars/avatar-020.svg",
+    "thumb": "/games/thumbs/avatar-020.svg"
+  },
+  {
+    "id": "avatar-021",
+    "title": "Suzu Sparkle #21",
+    "image": "/games/avatars/avatar-021.svg",
+    "thumb": "/games/thumbs/avatar-021.svg"
+  },
+  {
+    "id": "avatar-022",
+    "title": "Koko Sweet #22",
+    "image": "/games/avatars/avatar-022.svg",
+    "thumb": "/games/thumbs/avatar-022.svg"
+  },
+  {
+    "id": "avatar-023",
+    "title": "Mochi Sparkle #23",
+    "image": "/games/avatars/avatar-023.svg",
+    "thumb": "/games/thumbs/avatar-023.svg"
+  },
+  {
+    "id": "avatar-024",
+    "title": "Hana Blush #24",
+    "image": "/games/avatars/avatar-024.svg",
+    "thumb": "/games/thumbs/avatar-024.svg"
+  },
+  {
+    "id": "avatar-025",
+    "title": "Koko Wink #25",
+    "image": "/games/avatars/avatar-025.svg",
+    "thumb": "/games/thumbs/avatar-025.svg"
+  },
+  {
+    "id": "avatar-026",
+    "title": "Yuki Blush #26",
+    "image": "/games/avatars/avatar-026.svg",
+    "thumb": "/games/thumbs/avatar-026.svg"
+  },
+  {
+    "id": "avatar-027",
+    "title": "Aki Glow #27",
+    "image": "/games/avatars/avatar-027.svg",
+    "thumb": "/games/thumbs/avatar-027.svg"
+  },
+  {
+    "id": "avatar-028",
+    "title": "Hana Wink #28",
+    "image": "/games/avatars/avatar-028.svg",
+    "thumb": "/games/thumbs/avatar-028.svg"
+  },
+  {
+    "id": "avatar-029",
+    "title": "Koko Sparkle #29",
+    "image": "/games/avatars/avatar-029.svg",
+    "thumb": "/games/thumbs/avatar-029.svg"
+  },
+  {
+    "id": "avatar-030",
+    "title": "Mei Sweet #30",
+    "image": "/games/avatars/avatar-030.svg",
+    "thumb": "/games/thumbs/avatar-030.svg"
+  },
+  {
+    "id": "avatar-031",
+    "title": "Rin Dream #31",
+    "image": "/games/avatars/avatar-031.svg",
+    "thumb": "/games/thumbs/avatar-031.svg"
+  },
+  {
+    "id": "avatar-032",
+    "title": "Koko Giggle #32",
+    "image": "/games/avatars/avatar-032.svg",
+    "thumb": "/games/thumbs/avatar-032.svg"
+  },
+  {
+    "id": "avatar-033",
+    "title": "Suzu Wave #33",
+    "image": "/games/avatars/avatar-033.svg",
+    "thumb": "/games/thumbs/avatar-033.svg"
+  },
+  {
+    "id": "avatar-034",
+    "title": "Aki Wink #34",
+    "image": "/games/avatars/avatar-034.svg",
+    "thumb": "/games/thumbs/avatar-034.svg"
+  },
+  {
+    "id": "avatar-035",
+    "title": "Mei Wave #35",
+    "image": "/games/avatars/avatar-035.svg",
+    "thumb": "/games/thumbs/avatar-035.svg"
+  },
+  {
+    "id": "avatar-036",
+    "title": "Suzu Pout #36",
+    "image": "/games/avatars/avatar-036.svg",
+    "thumb": "/games/thumbs/avatar-036.svg"
+  },
+  {
+    "id": "avatar-037",
+    "title": "Nene Sparkle #37",
+    "image": "/games/avatars/avatar-037.svg",
+    "thumb": "/games/thumbs/avatar-037.svg"
+  },
+  {
+    "id": "avatar-038",
+    "title": "Hana Giggle #38",
+    "image": "/games/avatars/avatar-038.svg",
+    "thumb": "/games/thumbs/avatar-038.svg"
+  },
+  {
+    "id": "avatar-039",
+    "title": "Yuki Sweet #39",
+    "image": "/games/avatars/avatar-039.svg",
+    "thumb": "/games/thumbs/avatar-039.svg"
+  },
+  {
+    "id": "avatar-040",
+    "title": "Koko Giggle #40",
+    "image": "/games/avatars/avatar-040.svg",
+    "thumb": "/games/thumbs/avatar-040.svg"
+  },
+  {
+    "id": "avatar-041",
+    "title": "Mei Sparkle #41",
+    "image": "/games/avatars/avatar-041.svg",
+    "thumb": "/games/thumbs/avatar-041.svg"
+  },
+  {
+    "id": "avatar-042",
+    "title": "Mochi Sweet #42",
+    "image": "/games/avatars/avatar-042.svg",
+    "thumb": "/games/thumbs/avatar-042.svg"
+  },
+  {
+    "id": "avatar-043",
+    "title": "Aki Blush #43",
+    "image": "/games/avatars/avatar-043.svg",
+    "thumb": "/games/thumbs/avatar-043.svg"
+  },
+  {
+    "id": "avatar-044",
+    "title": "Yuki Wink #44",
+    "image": "/games/avatars/avatar-044.svg",
+    "thumb": "/games/thumbs/avatar-044.svg"
+  },
+  {
+    "id": "avatar-045",
+    "title": "Chibi Wave #45",
+    "image": "/games/avatars/avatar-045.svg",
+    "thumb": "/games/thumbs/avatar-045.svg"
+  },
+  {
+    "id": "avatar-046",
+    "title": "Yuki Star #46",
+    "image": "/games/avatars/avatar-046.svg",
+    "thumb": "/games/thumbs/avatar-046.svg"
+  },
+  {
+    "id": "avatar-047",
+    "title": "Suzu Sweet #47",
+    "image": "/games/avatars/avatar-047.svg",
+    "thumb": "/games/thumbs/avatar-047.svg"
+  },
+  {
+    "id": "avatar-048",
+    "title": "Nene Pout #48",
+    "image": "/games/avatars/avatar-048.svg",
+    "thumb": "/games/thumbs/avatar-048.svg"
+  },
+  {
+    "id": "avatar-049",
+    "title": "Mei Sweet #49",
+    "image": "/games/avatars/avatar-049.svg",
+    "thumb": "/games/thumbs/avatar-049.svg"
+  },
+  {
+    "id": "avatar-050",
+    "title": "Mochi Wink #50",
+    "image": "/games/avatars/avatar-050.svg",
+    "thumb": "/games/thumbs/avatar-050.svg"
+  },
+  {
+    "id": "avatar-051",
+    "title": "Mei Sparkle #51",
+    "image": "/games/avatars/avatar-051.svg",
+    "thumb": "/games/thumbs/avatar-051.svg"
+  },
+  {
+    "id": "avatar-052",
+    "title": "Hana Sweet #52",
+    "image": "/games/avatars/avatar-052.svg",
+    "thumb": "/games/thumbs/avatar-052.svg"
+  },
+  {
+    "id": "avatar-053",
+    "title": "Mochi Wave #53",
+    "image": "/games/avatars/avatar-053.svg",
+    "thumb": "/games/thumbs/avatar-053.svg"
+  },
+  {
+    "id": "avatar-054",
+    "title": "Koko Star #54",
+    "image": "/games/avatars/avatar-054.svg",
+    "thumb": "/games/thumbs/avatar-054.svg"
+  },
+  {
+    "id": "avatar-055",
+    "title": "Mochi Blush #55",
+    "image": "/games/avatars/avatar-055.svg",
+    "thumb": "/games/thumbs/avatar-055.svg"
+  },
+  {
+    "id": "avatar-056",
+    "title": "Koko Wave #56",
+    "image": "/games/avatars/avatar-056.svg",
+    "thumb": "/games/thumbs/avatar-056.svg"
+  },
+  {
+    "id": "avatar-057",
+    "title": "Mochi Blush #57",
+    "image": "/games/avatars/avatar-057.svg",
+    "thumb": "/games/thumbs/avatar-057.svg"
+  },
+  {
+    "id": "avatar-058",
+    "title": "Mochi Giggle #58",
+    "image": "/games/avatars/avatar-058.svg",
+    "thumb": "/games/thumbs/avatar-058.svg"
+  },
+  {
+    "id": "avatar-059",
+    "title": "Koko Giggle #59",
+    "image": "/games/avatars/avatar-059.svg",
+    "thumb": "/games/thumbs/avatar-059.svg"
+  },
+  {
+    "id": "avatar-060",
+    "title": "Suzu Sweet #60",
+    "image": "/games/avatars/avatar-060.svg",
+    "thumb": "/games/thumbs/avatar-060.svg"
+  },
+  {
+    "id": "avatar-061",
+    "title": "Hana Glow #61",
+    "image": "/games/avatars/avatar-061.svg",
+    "thumb": "/games/thumbs/avatar-061.svg"
+  },
+  {
+    "id": "avatar-062",
+    "title": "Nene Wave #62",
+    "image": "/games/avatars/avatar-062.svg",
+    "thumb": "/games/thumbs/avatar-062.svg"
+  },
+  {
+    "id": "avatar-063",
+    "title": "Nene Star #63",
+    "image": "/games/avatars/avatar-063.svg",
+    "thumb": "/games/thumbs/avatar-063.svg"
+  },
+  {
+    "id": "avatar-064",
+    "title": "Hana Wink #64",
+    "image": "/games/avatars/avatar-064.svg",
+    "thumb": "/games/thumbs/avatar-064.svg"
+  },
+  {
+    "id": "avatar-065",
+    "title": "Rin Sweet #65",
+    "image": "/games/avatars/avatar-065.svg",
+    "thumb": "/games/thumbs/avatar-065.svg"
+  },
+  {
+    "id": "avatar-066",
+    "title": "Rin Sweet #66",
+    "image": "/games/avatars/avatar-066.svg",
+    "thumb": "/games/thumbs/avatar-066.svg"
+  },
+  {
+    "id": "avatar-067",
+    "title": "Rin Giggle #67",
+    "image": "/games/avatars/avatar-067.svg",
+    "thumb": "/games/thumbs/avatar-067.svg"
+  },
+  {
+    "id": "avatar-068",
+    "title": "Mei Giggle #68",
+    "image": "/games/avatars/avatar-068.svg",
+    "thumb": "/games/thumbs/avatar-068.svg"
+  },
+  {
+    "id": "avatar-069",
+    "title": "Rin Sparkle #69",
+    "image": "/games/avatars/avatar-069.svg",
+    "thumb": "/games/thumbs/avatar-069.svg"
+  },
+  {
+    "id": "avatar-070",
+    "title": "Koko Sparkle #70",
+    "image": "/games/avatars/avatar-070.svg",
+    "thumb": "/games/thumbs/avatar-070.svg"
+  },
+  {
+    "id": "avatar-071",
+    "title": "Mochi Sweet #71",
+    "image": "/games/avatars/avatar-071.svg",
+    "thumb": "/games/thumbs/avatar-071.svg"
+  },
+  {
+    "id": "avatar-072",
+    "title": "Chibi Pout #72",
+    "image": "/games/avatars/avatar-072.svg",
+    "thumb": "/games/thumbs/avatar-072.svg"
+  },
+  {
+    "id": "avatar-073",
+    "title": "Koko Sparkle #73",
+    "image": "/games/avatars/avatar-073.svg",
+    "thumb": "/games/thumbs/avatar-073.svg"
+  },
+  {
+    "id": "avatar-074",
+    "title": "Hana Wave #74",
+    "image": "/games/avatars/avatar-074.svg",
+    "thumb": "/games/thumbs/avatar-074.svg"
+  },
+  {
+    "id": "avatar-075",
+    "title": "Rin Wave #75",
+    "image": "/games/avatars/avatar-075.svg",
+    "thumb": "/games/thumbs/avatar-075.svg"
+  },
+  {
+    "id": "avatar-076",
+    "title": "Hana Wave #76",
+    "image": "/games/avatars/avatar-076.svg",
+    "thumb": "/games/thumbs/avatar-076.svg"
+  },
+  {
+    "id": "avatar-077",
+    "title": "Yuki Giggle #77",
+    "image": "/games/avatars/avatar-077.svg",
+    "thumb": "/games/thumbs/avatar-077.svg"
+  },
+  {
+    "id": "avatar-078",
+    "title": "Nene Star #78",
+    "image": "/games/avatars/avatar-078.svg",
+    "thumb": "/games/thumbs/avatar-078.svg"
+  },
+  {
+    "id": "avatar-079",
+    "title": "Rin Glow #79",
+    "image": "/games/avatars/avatar-079.svg",
+    "thumb": "/games/thumbs/avatar-079.svg"
+  },
+  {
+    "id": "avatar-080",
+    "title": "Suzu Glow #80",
+    "image": "/games/avatars/avatar-080.svg",
+    "thumb": "/games/thumbs/avatar-080.svg"
+  },
+  {
+    "id": "avatar-081",
+    "title": "Hana Pout #81",
+    "image": "/games/avatars/avatar-081.svg",
+    "thumb": "/games/thumbs/avatar-081.svg"
+  },
+  {
+    "id": "avatar-082",
+    "title": "Suzu Blush #82",
+    "image": "/games/avatars/avatar-082.svg",
+    "thumb": "/games/thumbs/avatar-082.svg"
+  },
+  {
+    "id": "avatar-083",
+    "title": "Chibi Pout #83",
+    "image": "/games/avatars/avatar-083.svg",
+    "thumb": "/games/thumbs/avatar-083.svg"
+  },
+  {
+    "id": "avatar-084",
+    "title": "Chibi Wink #84",
+    "image": "/games/avatars/avatar-084.svg",
+    "thumb": "/games/thumbs/avatar-084.svg"
+  },
+  {
+    "id": "avatar-085",
+    "title": "Rin Wave #85",
+    "image": "/games/avatars/avatar-085.svg",
+    "thumb": "/games/thumbs/avatar-085.svg"
+  },
+  {
+    "id": "avatar-086",
+    "title": "Mei Star #86",
+    "image": "/games/avatars/avatar-086.svg",
+    "thumb": "/games/thumbs/avatar-086.svg"
+  },
+  {
+    "id": "avatar-087",
+    "title": "Suzu Wave #87",
+    "image": "/games/avatars/avatar-087.svg",
+    "thumb": "/games/thumbs/avatar-087.svg"
+  },
+  {
+    "id": "avatar-088",
+    "title": "Nene Star #88",
+    "image": "/games/avatars/avatar-088.svg",
+    "thumb": "/games/thumbs/avatar-088.svg"
+  },
+  {
+    "id": "avatar-089",
+    "title": "Aki Sweet #89",
+    "image": "/games/avatars/avatar-089.svg",
+    "thumb": "/games/thumbs/avatar-089.svg"
+  },
+  {
+    "id": "avatar-090",
+    "title": "Aki Sweet #90",
+    "image": "/games/avatars/avatar-090.svg",
+    "thumb": "/games/thumbs/avatar-090.svg"
+  },
+  {
+    "id": "avatar-091",
+    "title": "Chibi Pout #91",
+    "image": "/games/avatars/avatar-091.svg",
+    "thumb": "/games/thumbs/avatar-091.svg"
+  },
+  {
+    "id": "avatar-092",
+    "title": "Suzu Sweet #92",
+    "image": "/games/avatars/avatar-092.svg",
+    "thumb": "/games/thumbs/avatar-092.svg"
+  },
+  {
+    "id": "avatar-093",
+    "title": "Mei Wink #93",
+    "image": "/games/avatars/avatar-093.svg",
+    "thumb": "/games/thumbs/avatar-093.svg"
+  },
+  {
+    "id": "avatar-094",
+    "title": "Mochi Star #94",
+    "image": "/games/avatars/avatar-094.svg",
+    "thumb": "/games/thumbs/avatar-094.svg"
+  },
+  {
+    "id": "avatar-095",
+    "title": "Chibi Sparkle #95",
+    "image": "/games/avatars/avatar-095.svg",
+    "thumb": "/games/thumbs/avatar-095.svg"
+  },
+  {
+    "id": "avatar-096",
+    "title": "Hana Sparkle #96",
+    "image": "/games/avatars/avatar-096.svg",
+    "thumb": "/games/thumbs/avatar-096.svg"
+  },
+  {
+    "id": "avatar-097",
+    "title": "Mochi Sparkle #97",
+    "image": "/games/avatars/avatar-097.svg",
+    "thumb": "/games/thumbs/avatar-097.svg"
+  },
+  {
+    "id": "avatar-098",
+    "title": "Suzu Blush #98",
+    "image": "/games/avatars/avatar-098.svg",
+    "thumb": "/games/thumbs/avatar-098.svg"
+  },
+  {
+    "id": "avatar-099",
+    "title": "Hana Sparkle #99",
+    "image": "/games/avatars/avatar-099.svg",
+    "thumb": "/games/thumbs/avatar-099.svg"
+  },
+  {
+    "id": "avatar-100",
+    "title": "Suzu Wink #100",
+    "image": "/games/avatars/avatar-100.svg",
+    "thumb": "/games/thumbs/avatar-100.svg"
+  }
+]

@@ -1,64 +1,67 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  // Streaming metadata puts <title>/<meta> in <body> for normal browsers.
-  // For these crawlers (and link-preview bots) Next waits for metadata and
-  // writes it into <head>, which is the safest form for indexing. Googlebot
-  // and Bingbot are listed explicitly so they always get a real <head>.
-  htmlLimitedBots:
-    /Googlebot|Google-InspectionTool|Storebot-Google|GoogleOther|Bingbot|BingPreview|msnbot|AdIdxBot|DuckDuckBot|Slurp|YandexBot|Baiduspider|Applebot|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|redditbot|Mediapartners-Google/i,
-  experimental: {
-    // Inlines the CSS actually needed for above-the-fold content directly
-    // into the HTML and loads the rest of the stylesheet asynchronously,
-    // so the <link rel="stylesheet"> is no longer a render-blocking
-    // request (this is what Lighthouse's "Render-blocking requests"
-    // diagnostic was flagging). Requires the `critters` package below.
-    optimizeCss: true,
-  },
-  // Set to 'export' only if you deploy the static build to Cloudflare Pages / Netlify
-  // WITHOUT using Next's Node/Edge runtime for /app/api routes (see README:
-  // "Deploying without a Node server").
-  // output: 'export',
+# Database connection string for Postgres, used by both the Next.js app and crawler scripts.
+# The app reads from Postgres at request time; crawlers populate the data on a schedule.
+# Keep this secret and never expose it to the client.
 
-  // One host only. GSC crawl stats show ~1,600 requests going to
-  // www.animegirl4u.com vs ~120 to animegirl4u.com: every www hit is a wasted
-  // redirect. Also set animegirl4u.com as the primary domain in Vercel
-  // (Settings -> Domains) so the redirect happens at the edge.
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.animegirl4u.com" }],
-        destination: "https://animegirl4u.com/:path*",
-        permanent: true,
-      },
-    ];
-  },
+DATABASE_URL=postgres://user:password@host/dbname
 
-  async headers() {
-    return [
-      {
-        // Applies to every route, including /api/*.
-        source: "/:path*",
-        headers: [
-          // Prevents this site from being embedded in an iframe elsewhere
-          // (clickjacking protection).
-          { key: "X-Frame-Options", value: "DENY" },
-          // Stops browsers from MIME-sniffing a response away from its
-          // declared Content-Type.
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          // Don't leak the full referring URL (which may contain a
-          // search query or other detail) to third-party origins.
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          // Disable browser features this site never uses.
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-          // Force HTTPS on repeat visits once you're confident TLS is
-          // always available (Vercel terminates TLS by default).
-          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-        ],
-      },
-    ];
-  },
-};
+# Google Analytics 4 measurement ID for tracking site usage.
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-ZEZ5BF0QF4
 
-module.exports = nextConfig;
+# Production domain for building absolute URLs in sitemaps, canonical links, and Open Graph tags.
+NEXT_PUBLIC_SITE_URL=https://animegirl4u.com
+
+# Secret key for authorizing revalidation requests. Generate a long random value.
+REVALIDATION_SECRET=
+
+# TMDB API read access token for movie data. Required for crawling movies.
+TMDB_API_READ_ACCESS_TOKEN=
+
+# Optional AI text-generation endpoint for on-demand tools (recommender, tag generator, etc.).
+HF_SPACE_URL=
+
+# Optional auth token for the AI text-generation endpoint.
+HF_TOKEN=
+
+# DeepSeek is preferred by the ending-explained generator; Groq is the fallback.
+
+
+# Groq API key for crawler/ending-explained-generator.mjs and
+# crawler/franchise-watch-order-builder.mjs. Free tier, no credit card.
+# Gemini is used by the offline generators.
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash-lite
+# Delay between generations in ms.
+AI_DELAY_MS=15000
+
+# IndexNow: any random 8-128 char alphanumeric string. Served at
+# https://<domain>/<key>.txt and pinged from /api/revalidate.
+INDEXNOW_KEY=
+
+# Admin panel login (/admin). ADMIN_SESSION_SECRET: `openssl rand -hex 32`.
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+
+# Optional: shared cache across serverless instances (recommended on Vercel).
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Optional: region for crawler/watch-providers-crawler.mjs (default IN).
+WATCH_PROVIDERS_REGION=
+
+# Supabase project URL + anon key, used ONLY to read your original GIFs/
+# stickers from Supabase Storage (lib/api/original-gifs.ts) — NOT the
+# database connection (that's DATABASE_URL above, a separate thing even if
+# it points at the same Supabase project). Get both from your Supabase
+# project's Settings -> API. The anon key is safe to expose to the client
+# (hence NEXT_PUBLIC_) as long as the "original-gifs" bucket is public.
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# Tenor + Giphy free API keys, for the live GIF/sticker search.
+TENOR_API_KEY=
+GIPHY_API_KEY=
+
+# Android App Links: comma-separated SHA-256 certificate fingerprints for the Animegirl4u app
+# (Play Console > Release > Setup > App signing > "App signing key certificate").
+# Served at /.well-known/assetlinks.json so https://animegirl4u.com links open in the app.
+ANDROID_SHA256_CERT_FINGERPRINTS=
