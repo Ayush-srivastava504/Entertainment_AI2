@@ -182,14 +182,14 @@ export default async function HomePage() {
       />
 
       <section className="overflow-hidden border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white" aria-labelledby="home-heading">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
-          <div>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-12">
+          <div className="min-w-0">
             <p className="inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">
               Free anime girl GIFs & stickers
             </p>
             <h1
               id="home-heading"
-              className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
+              className="mt-4 break-words font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight min-[400px]:text-4xl sm:text-6xl lg:text-7xl"
             >
               Anime girl GIFs & stickers, ready to send
             </h1>
@@ -273,7 +273,7 @@ export default async function HomePage() {
         <h2 id="browse-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
           Browse Animegirl4u by what you need
         </h2>
-        <ul className="mt-8 grid gap-5 md:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
           {browseCards.map((c) => (
             <li key={c.href}>
               <Link
@@ -297,10 +297,10 @@ export default async function HomePage() {
         <h2 id="topics-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
           Find a guide by topic
         </h2>
-        <div className="mt-8 grid gap-10 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2">
           <div>
             <h3 className="font-display text-xl font-bold">Ending explained collections</h3>
-            <ul className="mt-4 grid gap-3">
+            <ul className="mt-4 grid grid-cols-1 gap-3">
               {ENDING_TOPICS.map((t) => (
                 <li key={t.slug}>
                   <Link
@@ -316,7 +316,7 @@ export default async function HomePage() {
           </div>
           <div>
             <h3 className="font-display text-xl font-bold">Watch order collections</h3>
-            <ul className="mt-4 grid gap-3">
+            <ul className="mt-4 grid grid-cols-1 gap-3">
               {WATCH_ORDER_TOPICS.map((t) => (
                 <li key={t.slug}>
                   <Link
@@ -338,7 +338,7 @@ export default async function HomePage() {
           <h2 id="top-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
             Top-rated endings explained
           </h2>
-          <div className="mt-8 grid gap-10 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-10 md:grid-cols-2">
             {([
               ["Movies", topMovies],
               ["Anime", topAnime],
@@ -375,7 +375,7 @@ export default async function HomePage() {
         <h2 id="promise-heading" className="mt-2 max-w-3xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
           Clear answers, without ruining the surprise
         </h2>
-        <ul className="mt-8 grid gap-5 md:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
           {promises.map((p) => (
             <li key={p.title} className="rounded-2xl border-2 border-ink bg-surface p-6">
               <h3 className="font-display text-xl font-bold">{p.title}</h3>
@@ -401,7 +401,7 @@ export default async function HomePage() {
               See all watch orders
             </Link>
           </div>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {franchises.map((f) => (
               <Link
                 key={f.id}
@@ -462,7 +462,7 @@ export default async function HomePage() {
           <h2 id="how-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
             How Animegirl4u works
           </h2>
-          <ol className="mt-10 grid gap-6 md:grid-cols-3">
+          <ol className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
             {steps.map((s, i) => (
               <li key={s.title} className="rounded-2xl border-2 border-ink bg-paper p-6">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-tape font-display text-lg font-extrabold">
@@ -477,7 +477,7 @@ export default async function HomePage() {
       </section>
 
       <section className="bg-surface text-white" aria-label="Story quotes">
-        <ul className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-6 md:grid-cols-3">
+        <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-10 sm:px-6 md:grid-cols-3">
           {quotes.map((q) => (
             <li key={q}>
               <blockquote className="border-l-4 border-tape pl-4 font-body text-lg italic leading-relaxed text-white/90">
@@ -489,7 +489,7 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20" aria-labelledby="questions-heading">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
           <div>
             <h2 id="questions-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
               Questions, answered

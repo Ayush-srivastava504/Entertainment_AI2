@@ -29,7 +29,7 @@ export function SearchBar({
         trackEvent("search", { search_term: query.trim() });
         router.push(`${path}?${params.toString()}`);
       }}
-      className={`flex items-center gap-2 rounded-full border-2 border-ink bg-surface p-1.5 shadow-block ${big ? "sm:p-2" : ""}`}
+      className={`flex w-full min-w-0 items-center gap-2 rounded-full border-2 border-ink bg-surface p-1.5 shadow-block ${big ? "sm:p-2" : ""}`}
     >
       <label htmlFor={`search-${path}`} className="sr-only">
         Search by title

@@ -17,7 +17,7 @@ export default function HeroGifRotator() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-sm rounded-2xl border-2 border-beam bg-surface p-2 shadow-block sm:rotate-2 sm:hover:rotate-0">
+    <div className="mx-auto w-full min-w-0 max-w-[min(24rem,100%)] rounded-2xl border-2 border-beam bg-surface p-2 shadow-block lg:rotate-2 lg:hover:rotate-0">
       <div className="aspect-square w-full overflow-hidden rounded-xl bg-paper">
         {src && (
           // eslint-disable-next-line @next/next/no-img-element
