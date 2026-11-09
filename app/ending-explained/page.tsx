@@ -139,7 +139,7 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
               href={f.key === "all" ? "/ending-explained" : `/ending-explained?type=${f.key}`}
               aria-current={active === f.key ? "true" : undefined}
               className={`inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 py-2 font-bold transition ${
-                active === f.key ? "bg-ink text-white" : "bg-surface hover:bg-tape"
+                active === f.key ? "bg-beam text-white" : "bg-surface hover:bg-tape"
               }`}
             >
               {f.label}

@@ -316,7 +316,7 @@ export default async function AboutPage() {
               </ul>
               <Link
                 href={p.href}
-                className="mt-7 inline-flex min-h-[48px] w-fit items-center rounded-full border-2 border-ink bg-ink px-6 py-3 font-bold text-white transition hover:-translate-y-0.5"
+                className="mt-7 inline-flex min-h-[48px] w-fit items-center rounded-full border-2 border-ink bg-surface px-6 py-3 font-bold text-white transition hover:-translate-y-0.5"
               >
                 {p.cta} <span aria-hidden="true" className="ml-2">→</span>
               </Link>
@@ -326,7 +326,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Quote band */}
-      <section className="border-y-2 border-ink bg-ink text-white" aria-label="A thought on stories">
+      <section className="border-y-2 border-ink bg-surface text-white" aria-label="A thought on stories">
         <figure className="mx-auto max-w-4xl px-4 py-12 text-center sm:px-6 sm:py-16">
           <blockquote>
             <p className="font-display text-2xl font-extrabold leading-snug tracking-tight sm:text-4xl">
@@ -401,7 +401,7 @@ export default async function AboutPage() {
               ))}
             </div>
           </div>
-          <div id="next" className="scroll-mt-24 rounded-2xl border-2 border-ink bg-ink p-6 text-white shadow-block sm:p-8">
+          <div id="next" className="scroll-mt-24 rounded-2xl border-2 border-ink bg-surface p-6 text-white shadow-block sm:p-8">
             <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">What {SITE_NAME} is building next</h2>
             <ul className="mt-6 space-y-4">
               {nextUp.map((n) => (

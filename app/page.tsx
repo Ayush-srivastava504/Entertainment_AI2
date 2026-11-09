@@ -476,7 +476,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-ink text-white" aria-label="Story quotes">
+      <section className="bg-surface text-white" aria-label="Story quotes">
         <ul className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-6 md:grid-cols-3">
           {quotes.map((q) => (
             <li key={q}>

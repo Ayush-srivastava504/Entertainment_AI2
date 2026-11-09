@@ -452,7 +452,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
               <p className="mt-1 font-body text-base text-ink/80">Not sure where {item.title} fits?</p>
               <Link
                 href={`/watch-order/${franchise.slug}`}
-                className="mt-3 inline-block rounded-full border-2 border-ink bg-ink px-4 py-2 text-sm font-bold text-white"
+                className="mt-3 inline-block rounded-full border-2 border-ink bg-surface px-4 py-2 text-sm font-bold text-white"
               >
                 {franchise.title} watch order
               </Link>
