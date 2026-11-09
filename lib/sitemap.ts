@@ -14,6 +14,7 @@ import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
 import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { getBaseUrl } from "@/lib/site";
+import { WALLPAPERS } from "@/lib/wallpapers";
 
 const BASE_URL = getBaseUrl();
 export const SITEMAP_CHUNK = 1000;
@@ -99,6 +100,8 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/ending-explained`, lastmod: newest(guides) },
       { loc: `${BASE_URL}/watch-order`, lastmod: newest(franchises) },
       { loc: `${BASE_URL}/about` },
+      { loc: `${BASE_URL}/wallpapers` },
+      ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];
     // Topic hubs only once they have real content behind them.
     if (guides.length >= 10) {
