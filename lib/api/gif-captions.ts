@@ -47,23 +47,33 @@ async function generateCaption(title: string): Promise<string | null> {
 }
 
 export async function getOrCreateCaption(item: GifItem): Promise<string | null> {
-  const pool = getPool();
+  // The whole caption feature is optional: if DATABASE_URL isn't set, the DB
+  // is unreachable, or the gif_captions table/migration isn't applied yet,
+  // getPool()/pool.query() throw. An uncaught throw here would crash the
+  // whole /gif/[id] server component (Next.js's generic error page), so we
+  // catch everything and just skip the caption instead.
+  try {
+    const pool = getPool();
 
-  const existing = await pool.query<{ caption: string }>(
-    "select caption from gif_captions where media_id = $1",
-    [item.id]
-  );
-  if (existing.rows[0]?.caption) return existing.rows[0].caption;
+    const existing = await pool.query<{ caption: string }>(
+      "select caption from gif_captions where media_id = $1",
+      [item.id]
+    );
+    if (existing.rows[0]?.caption) return existing.rows[0].caption;
 
-  const caption = await generateCaption(item.title);
-  if (!caption) return null;
+    const caption = await generateCaption(item.title);
+    if (!caption) return null;
 
-  await pool.query(
-    `insert into gif_captions (media_id, source, title, caption)
-     values ($1, $2, $3, $4)
-     on conflict (media_id) do update set caption = excluded.caption`,
-    [item.id, item.source, item.title, caption]
-  );
+    await pool.query(
+      `insert into gif_captions (media_id, source, title, caption)
+       values ($1, $2, $3, $4)
+       on conflict (media_id) do update set caption = excluded.caption`,
+      [item.id, item.source, item.title, caption]
+    );
 
-  return caption;
+    return caption;
+  } catch (err) {
+    console.error("[gif-captions] DB unavailable, skipping caption:", err);
+    return null;
+  }
 }
