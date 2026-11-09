@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { addCoins } from "@/lib/games/wallet";
-import { getGeneratedAvatars, pickRandom, type Avatar } from "@/lib/games/avatars";
 import CoinBadge from "@/components/games/CoinBadge";
 
 const COLS = 10;
@@ -12,8 +11,8 @@ const COLORS = ["#4C61C9", "#5EC8FF", "#FF5C5C", "#FFD36E", "#6EE7B7", "#C98BFF"
 const TYPES = ["I", "O", "T", "S", "Z", "J", "L"] as const;
 type PieceType = (typeof TYPES)[number];
 
-// Twist: every 4 lines cleared pops one of the site's avatars onto the
-// board for a coin bonus -- the one deliberate departure from plain Tetris.
+// Twist: every 4 lines cleared pays a coin bonus, shown as a small note
+// above the board (nothing covers the playfield mid-game).
 const LINES_PER_GACHA = 4;
 const GACHA_BONUS = 50;
 const LINE_COINS = [0, 10, 25, 40, 60]; // indexed by lines cleared in one drop
@@ -118,7 +117,7 @@ export default function TetrisPage() {
   const [, setRenderTick] = useState(0);
   const gameRef = useRef<GameState>(freshGame());
   const runningRef = useRef(true);
-  const [gacha, setGacha] = useState<Avatar | null>(null);
+  const [bonus, setBonus] = useState(false);
   const bump = useCallback(() => setRenderTick((t) => t + 1), []);
 
   const lockPiece = useCallback(() => {
@@ -145,9 +144,8 @@ export default function TetrisPage() {
       if (after > before) {
         g.score += GACHA_BONUS;
         addCoins(GACHA_BONUS);
-        const [a] = pickRandom(getGeneratedAvatars(), 1);
-        setGacha(a);
-        setTimeout(() => setGacha(null), 1800);
+        setBonus(true);
+        setTimeout(() => setBonus(false), 1800);
       }
     }
 
@@ -215,7 +213,7 @@ export default function TetrisPage() {
   function restart() {
     gameRef.current = freshGame();
     runningRef.current = true;
-    setGacha(null);
+    setBonus(false);
     bump();
   }
 
@@ -234,7 +232,7 @@ export default function TetrisPage() {
           </Link>
           <h1 className="mt-1 font-display text-3xl font-extrabold">Chibi Blocks</h1>
           <p className="mt-1 text-sm text-muted">
-            Arrow keys to move/rotate, Space to drop. Clear {LINES_PER_GACHA} lines total for a gacha coin bonus.
+            Arrow keys to move/rotate, Space to drop. Every {LINES_PER_GACHA} lines cleared earns a coin bonus.
           </p>
         </div>
         <CoinBadge />
@@ -243,6 +241,9 @@ export default function TetrisPage() {
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted">
         <span>Lines: {g.lines}</span>
         <span>Coins this game: {g.score}</span>
+        <span aria-live="polite" className={`rounded-full bg-tape px-3 py-0.5 font-bold text-ink transition-opacity ${bonus ? "opacity-100" : "opacity-0"}`}>
+          +{GACHA_BONUS} bonus coins!
+        </span>
       </div>
 
       <div className="relative mt-5 inline-block">
@@ -260,14 +261,6 @@ export default function TetrisPage() {
             ))
           )}
         </div>
-
-        {gacha && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-paper/80 backdrop-blur-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={gacha.thumb} alt={gacha.title} className="h-20 w-20 rounded-xl border-2 border-tape" />
-            <p className="font-display font-bold text-tape">+{GACHA_BONUS} bonus coins!</p>
-          </div>
-        )}
 
         {g.over && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-2xl bg-paper/90">

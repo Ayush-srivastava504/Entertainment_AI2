@@ -6,13 +6,17 @@
 # You can also run any job manually from the Actions tab ("Run workflow").
 name: Crawl and generate
 
+# Runs every 9 days, not daily. New pages need time to be crawled and earn
+# trust; publishing a big batch of URLs every day looks like spam to search
+# engines. GitHub cron can't say "every 9 days", so these fire daily and the
+# `gate` job below lets them through only when (days since 1970-01-01) % 9 == 0.
+# Manual runs from the Actions tab always go through.
 on:
   schedule:
-    - cron: "0 3 * * *"   # daily at 03:00 UTC: refresh catalog data
-    - cron: "0 5 * * *"   # daily at 05:00 UTC: write new guides
-    - cron: "0 13 * * *"  # second pass: retries titles the model was too busy for
-    - cron: "0 21 * * *"  # third pass
-    - cron: "30 22 * * *" # push everything new/changed today to Bing (IndexNow)
+    - cron: "0 3 * * *"   # run day 03:00 UTC: refresh catalog data
+    - cron: "0 5 * * *"   # run day 05:00 UTC: write new guides
+    - cron: "0 13 * * *"  # run day second pass: retries titles the model was too busy for
+    - cron: "30 22 * * *" # run day: push everything new/changed today to Bing (IndexNow)
   workflow_dispatch:
     inputs:
       job:
@@ -22,17 +26,34 @@ on:
         options: [both, crawl, generate, indexnow]
       limit:
         description: "Max guides to generate per table"
-        default: "20"
+        default: "15"
 
 concurrency:
   group: crawl
   cancel-in-progress: false
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        run: |
+          day=$(( $(date -u +%s) / 86400 ))
+          if [ "${{ github.event_name }}" != "schedule" ] || [ $(( day % 9 )) -eq 0 ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Not a run day ($(( 9 - day % 9 )) day(s) until the next one). Skipping."
+          fi
+
   crawl:
+    needs: gate
     if: >
+      needs.gate.outputs.run == 'true' && (
       github.event_name == 'workflow_dispatch' && (inputs.job == 'both' || inputs.job == 'crawl') ||
-      github.event_name == 'schedule' && github.event.schedule == '0 3 * * *'
+      github.event_name == 'schedule' && github.event.schedule == '0 3 * * *' )
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -51,9 +72,11 @@ jobs:
       - run: npm run crawl:all
 
   generate:
+    needs: gate
     if: >
+      needs.gate.outputs.run == 'true' && (
       github.event_name == 'workflow_dispatch' && (inputs.job == 'both' || inputs.job == 'generate') ||
-      github.event_name == 'schedule' && github.event.schedule != '0 3 * * *' && github.event.schedule != '30 22 * * *'
+      github.event_name == 'schedule' && github.event.schedule != '0 3 * * *' && github.event.schedule != '30 22 * * *' )
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -73,7 +96,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Generate ending-explained guides
-        run: node crawler/ending-explained-generator.mjs --limit=${{ inputs.limit || 20 }}
+        run: node crawler/ending-explained-generator.mjs --limit=${{ inputs.limit || 15 }}
       - name: Discover franchises and write Watch Order guides
         if: always()
         run: node crawler/watch-order-auto.mjs --limit=10
@@ -82,9 +105,11 @@ jobs:
   # last 36h to IndexNow (Bing, Yandex, Seznam, Naver). Safety net on top of the
   # per-run pings above; needs INDEXNOW_KEY set on Vercel too (the key file).
   indexnow:
+    needs: gate
     if: >
+      needs.gate.outputs.run == 'true' && (
       github.event_name == 'workflow_dispatch' && inputs.job == 'indexnow' ||
-      github.event_name == 'schedule' && github.event.schedule == '30 22 * * *'
+      github.event_name == 'schedule' && github.event.schedule == '30 22 * * *' )
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:

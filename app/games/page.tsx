@@ -33,7 +33,7 @@ const GAMES = [
   {
     href: "/games/tetris",
     title: "Chibi Blocks",
-    blurb: "A Tetris twist -- clear 4 lines in a row and a surprise avatar pops in for a coin bonus.",
+    blurb: "Falling-block puzzle: clear lines for coins, with a bonus every 4 lines.",
     emoji: "🧱",
   },
   {
@@ -77,6 +77,18 @@ const GAMES = [
     title: "Reaction Rush",
     blurb: "Tap the instant the box turns green. Five rounds, faster = more coins.",
     emoji: "⚡",
+  },
+  {
+    href: "/games/four",
+    title: "Four in a Row",
+    blurb: "Drop discs and connect four before the computer does. Win 30 coins, a draw pays 10.",
+    emoji: "🔴",
+  },
+  {
+    href: "/games/slide",
+    title: "Slide 15",
+    blurb: "Slide the numbered tiles back into order. Fewer moves = more coins.",
+    emoji: "🧩",
   },
 ];
 
