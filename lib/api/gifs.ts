@@ -26,16 +26,28 @@ export type GifItem = {
 const TENOR_BASE = "https://tenor.googleapis.com/v2";
 const GIPHY_BASE = "https://api.giphy.com/v1/gifs";
 
+/** Network errors, timeouts and non-2xx all resolve to null so a flaky
+ * third-party API can never crash a page. */
+async function safeJson(url: string): Promise<any | null> {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error("[gifs] upstream fetch failed:", err);
+    return null;
+  }
+}
+
 async function searchTenor(query: string, limit: number): Promise<GifItem[]> {
   const key = process.env.TENOR_API_KEY;
   if (!key) return [];
 
   const url = `${TENOR_BASE}/search?q=${encodeURIComponent(query)}&key=${key}&client_key=animegirl4u&limit=${limit}&media_filter=gif`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  const data = await res.json();
+  const data = await safeJson(url);
+  if (!data) return [];
 
-  return (data.results || []).map((r: any): GifItem => ({
+  return (data.results || []).filter((r: any) => r.media_formats?.gif?.url).map((r: any): GifItem => ({
     id: `tenor-${r.id}`,
     source: "tenor",
     title: r.content_description || query,
@@ -51,11 +63,10 @@ async function searchGiphy(query: string, limit: number): Promise<GifItem[]> {
   if (!key) return [];
 
   const url = `${GIPHY_BASE}/search?api_key=${key}&q=${encodeURIComponent(query)}&limit=${limit}&rating=g`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  const data = await res.json();
+  const data = await safeJson(url);
+  if (!data) return [];
 
-  return (data.data || []).map((r: any): GifItem => ({
+  return (data.data || []).filter((r: any) => r.images?.original?.url).map((r: any): GifItem => ({
     id: `giphy-${r.id}`,
     source: "giphy",
     title: r.title || query,
@@ -99,9 +110,8 @@ export async function getGifById(id: string): Promise<GifItem | null> {
       const key = process.env.TENOR_API_KEY;
       if (!key) return null;
       const rawId = id.replace("tenor-", "");
-      const res = await fetch(`${TENOR_BASE}/posts?ids=${rawId}&key=${key}&client_key=animegirl4u&media_filter=gif`);
-      if (!res.ok) return null;
-      const data = await res.json();
+      const data = await safeJson(`${TENOR_BASE}/posts?ids=${rawId}&key=${key}&client_key=animegirl4u&media_filter=gif`);
+      if (!data) return null;
       const r = data.results?.[0];
       if (!r) return null;
       return {
@@ -118,9 +128,8 @@ export async function getGifById(id: string): Promise<GifItem | null> {
       const key = process.env.GIPHY_API_KEY;
       if (!key) return null;
       const rawId = id.replace("giphy-", "");
-      const res = await fetch(`${GIPHY_BASE}/${rawId}?api_key=${key}`);
-      if (!res.ok) return null;
-      const data = await res.json();
+      const data = await safeJson(`${GIPHY_BASE}/${encodeURIComponent(rawId)}?api_key=${key}`);
+      if (!data) return null;
       const r = data.data;
       if (!r) return null;
       return {

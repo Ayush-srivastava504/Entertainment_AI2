@@ -80,13 +80,13 @@ export default function WallpapersPage() {
 
           <div className="mt-6 flex flex-wrap gap-2">
             {WALLPAPER_CATEGORIES.map((c) => (
-              <a
+              <Link
                 key={c.slug}
-                href={`#${c.slug}`}
+                href={`/wallpapers/category/${c.slug}`}
                 className="rounded-full border-2 border-white/30 px-4 py-1.5 text-sm font-semibold text-white hover:border-tape hover:text-tape"
               >
                 {c.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -105,9 +105,12 @@ export default function WallpapersPage() {
                   </h2>
                   <p className="mt-1 max-w-2xl text-muted">{category.description}</p>
                 </div>
-                <span className="rounded-full border border-ink/20 bg-surface px-3 py-1 text-sm font-semibold text-muted">
-                  {items.length} wallpapers
-                </span>
+                <Link
+                  href={`/wallpapers/category/${category.slug}`}
+                  className="rounded-full bg-beam px-4 py-1.5 text-sm font-bold text-white hover:bg-beamDeep"
+                >
+                  View all {items.length} &amp; download →
+                </Link>
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">

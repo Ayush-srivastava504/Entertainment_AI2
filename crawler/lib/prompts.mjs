@@ -1,6 +1,6 @@
 /*
-Plain-Node mirror of the two prompts in lib/prompts.ts used by the offline
-generators. Keep prompt text in sync with the TypeScript version.
+Prompt templates used by the offline generators (ending-explained and
+watch-order).
 */
 
 export function buildPrompt(task, input) {

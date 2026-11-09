@@ -14,8 +14,9 @@ export function generateStaticParams() {
   return WALLPAPERS.map((w) => ({ slug: w.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const wallpaper = getWallpaper(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const wallpaper = getWallpaper(slug);
   if (!wallpaper) return {};
 
   const path = `/wallpapers/${wallpaper.slug}`;
@@ -38,8 +39,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function WallpaperDetailPage({ params }: { params: { slug: string } }) {
-  const wallpaper = getWallpaper(params.slug);
+export default async function WallpaperDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const wallpaper = getWallpaper(slug);
   if (!wallpaper) notFound();
 
   const related = getRelatedWallpapers(wallpaper, 6);
@@ -64,7 +66,7 @@ export default function WallpaperDetailPage({ params }: { params: { slug: string
       ...breadcrumbNode([
         { name: "Home", path: "/" },
         { name: "Wallpapers", path: "/wallpapers" },
-        { name: wallpaper.categoryLabel, path: `/wallpapers#${wallpaper.category}` },
+        { name: wallpaper.categoryLabel, path: `/wallpapers/category/${wallpaper.category}` },
         { name: wallpaper.title, path },
       ]),
     }
@@ -78,7 +80,7 @@ export default function WallpaperDetailPage({ params }: { params: { slug: string
         items={[
           { name: "Home", href: "/" },
           { name: "Wallpapers", href: "/wallpapers" },
-          { name: wallpaper.categoryLabel, href: `/wallpapers#${wallpaper.category}` },
+          { name: wallpaper.categoryLabel, href: `/wallpapers/category/${wallpaper.category}` },
           { name: wallpaper.title },
         ]}
       />

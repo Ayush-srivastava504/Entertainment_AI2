@@ -1,0 +1,105 @@
+/*
+Anime character data, fetched live from Jikan (MyAnimeList) and cached with
+Next's ISR. No DB table needed: character pages are discovery/SEO content and
+Jikan already has the canonical data. Failures resolve to null/empty so a
+Jikan hiccup renders an empty state instead of a 500.
+*/
+
+const JIKAN = "https://api.jikan.moe/v4";
+const REVALIDATE = 60 * 60 * 24; // 1 day
+
+export interface CharacterSummary {
+  id: number;
+  name: string;
+  nameKanji: string | null;
+  image: string | null;
+  favorites: number;
+}
+
+export interface CharacterDetail extends CharacterSummary {
+  nicknames: string[];
+  about: string | null;
+  anime: { malId: number; title: string; image: string | null; role: string }[];
+  voices: { name: string; language: string; image: string | null }[];
+}
+
+export interface CharacterPage {
+  items: CharacterSummary[];
+  page: number;
+  hasNext: boolean;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function jikan(path: string): Promise<any | null> {
+  try {
+    const res = await fetch(`${JIKAN}${path}`, { next: { revalidate: REVALIDATE } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+function toSummary(c: any): CharacterSummary {
+  return {
+    id: c.mal_id,
+    name: c.name,
+    nameKanji: c.name_kanji ?? null,
+    image: c.images?.webp?.image_url ?? c.images?.jpg?.image_url ?? null,
+    favorites: c.favorites ?? 0,
+  };
+}
+
+function toPage(json: any | null, page: number): CharacterPage {
+  const rows: any[] = Array.isArray(json?.data) ? json.data : [];
+  return {
+    items: rows.map(toSummary),
+    page,
+    hasNext: Boolean(json?.pagination?.has_next_page),
+  };
+}
+
+export async function getTopCharacters(page = 1): Promise<CharacterPage> {
+  return toPage(await jikan(`/top/characters?page=${page}&limit=24`), page);
+}
+
+export async function searchCharacters(q: string, page = 1): Promise<CharacterPage> {
+  const qs = new URLSearchParams({ q, page: String(page), limit: "24", order_by: "favorites", sort: "desc" });
+  return toPage(await jikan(`/characters?${qs}`), page);
+}
+
+export async function getCharacter(id: number): Promise<CharacterDetail | null> {
+  const json = await jikan(`/characters/${id}/full`);
+  const c = json?.data;
+  if (!c) return null;
+  return {
+    ...toSummary(c),
+    nicknames: c.nicknames ?? [],
+    about: typeof c.about === "string" ? c.about.trim() || null : null,
+    anime: (c.anime ?? []).slice(0, 12).map((a: any) => ({
+      malId: a.anime?.mal_id,
+      title: a.anime?.title,
+      image: a.anime?.images?.webp?.image_url ?? a.anime?.images?.jpg?.image_url ?? null,
+      role: a.role,
+    })),
+    voices: (c.voices ?? []).slice(0, 8).map((v: any) => ({
+      name: v.person?.name,
+      language: v.language,
+      image: v.person?.images?.jpg?.image_url ?? null,
+    })),
+  };
+}
+
+export function characterSlug(c: Pick<CharacterSummary, "id" | "name">): string {
+  const s = c.name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return s ? `${c.id}-${s}` : String(c.id);
+}
+
+export function parseCharacterId(slug: string): number | null {
+  const m = /^(\d+)(?:-|$)/.exec(slug);
+  return m ? Number(m[1]) : null;
+}
