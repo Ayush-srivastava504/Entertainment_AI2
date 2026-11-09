@@ -95,8 +95,9 @@ query ($id: Int) {
       edges {
         characterRole
         node { id title { romaji english } coverImage { large } seasonYear format averageScore }
-        jp: voiceActors(language: JAPANESE, sort: RELEVANCE) { name { full } image { medium } }
-        en: voiceActors(language: ENGLISH, sort: RELEVANCE) { name { full } image { medium } }
+        # One field, all languages, each tagged with languageV2. (Two aliases of voiceActors with
+        # different language args do NOT work: AniList applies the last argument set to both.)
+        voiceActors(sort: RELEVANCE) { name { full } image { medium } languageV2 }
       }
     }
   }
@@ -169,11 +170,11 @@ function toRow(c, { popularRank, trendingRank, collections }) {
   // Voice actors: Japanese and English, de-duplicated by name.
   const va = new Map();
   for (const e of c.media?.edges ?? []) {
-    for (const [lang, list] of [["Japanese", e.jp], ["English", e.en]]) {
-      for (const v of list ?? []) {
-        const k = `${lang}:${v.name.full}`;
-        if (!va.has(k)) va.set(k, { name: v.name.full, image: v.image?.medium ?? null, language: lang });
-      }
+    for (const v of e.voiceActors ?? []) {
+      const lang = v.languageV2;
+      if (lang !== "Japanese" && lang !== "English") continue;
+      const k = `${lang}:${v.name.full}`;
+      if (!va.has(k)) va.set(k, { name: v.name.full, image: v.image?.medium ?? null, language: lang });
     }
   }
   return {
@@ -190,7 +191,8 @@ function toRow(c, { popularRank, trendingRank, collections }) {
     favourites: c.favourites ?? 0,
     about: clean(c.description, 3000),
     anime,
-    voice_actors: [...va.values()].slice(0, 8),
+    // Japanese first, then English; a couple of each is plenty for a profile.
+    voice_actors: [...va.values()].sort((a, b) => (a.language === b.language ? 0 : a.language === "Japanese" ? -1 : 1)).slice(0, 6),
     collections,
     popular_rank: popularRank,
     trending_rank: trendingRank,
@@ -245,22 +247,29 @@ async function writeOverviews() {
   console.log(`Writing overviews for ${rows.length} characters…`);
   let done = 0;
   for (const r of rows) {
+    const va = r.voice_actors ?? [];
     const facts = {
       name: r.name,
       nativeName: r.name_native,
       gender: r.gender,
       age: r.age,
-      birthday: r.birthday,
+      birthday: r.birthday ? `month/day ${r.birthday}` : null,
       bloodType: r.blood_type,
       fanFavourites: r.favourites,
-      appearsIn: (r.anime ?? []).slice(0, 6).map((a) => `${a.title}${a.year ? ` (${a.year})` : ""} as ${String(a.role || "").toLowerCase()} character`),
-      voicedBy: (r.voice_actors ?? []).map((v) => `${v.name} (${v.language})`),
+      // Distinct titles only: the same series often has many season/movie entries.
+      mainSeries: (r.anime ?? [])[0]?.title ?? null,
+      otherTitles: [...new Set((r.anime ?? []).slice(1).map((a) => a.title))].slice(0, 3),
+      roleInMainSeries: (r.anime ?? [])[0]?.role ?? null,
+      japaneseVoiceActors: va.filter((v) => v.language === "Japanese").map((v) => v.name),
+      englishVoiceActors: va.filter((v) => v.language === "English").map((v) => v.name),
       officialDescription: r.about,
     };
     const prompt =
       `Write a spoiler-free profile overview of the anime character below, 130-190 words, in 2 short paragraphs of plain English.\n` +
       `Rules: use ONLY the facts given; never invent plot events, relationships, abilities or quotes; do not reveal twists or deaths; ` +
-      `mention the anime they appear in and the voice actors when given; skip any fact that is null; no headings, no bullet points, no markdown.\n\n` +
+      `name the main series once (do not list every season or movie); state the Japanese and English voice actors separately and never ` +
+      `attribute a voice actor to the wrong language; skip any fact that is null or empty; do not start with "X is a male/female anime character"; ` +
+      `no headings, no bullet points, no markdown.\n\n` +
       JSON.stringify(facts, null, 2);
     try {
       const text = (await generateWithAI(prompt, { temperature: 0.4, maxTokens: 700 }))?.trim();
