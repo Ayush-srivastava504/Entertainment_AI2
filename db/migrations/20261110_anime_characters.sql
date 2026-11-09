@@ -2,7 +2,7 @@
 -- and read by the /characters pages. AniList id is the primary key.
 create table if not exists anime_characters (
   id               bigint primary key,
-  slug             text not null unique,            -- "<id>-<name>", used in /characters/<slug>
+  slug             text not null unique,            -- name slug ("mikasa-ackerman"), set by reslug() in the crawler
   name             text not null,
   name_native      text,
   aliases          text[] not null default '{}',

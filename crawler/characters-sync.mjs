@@ -6,6 +6,8 @@ in Supabase, for the /characters pages.
   npm run crawl:characters -- --ai         # also write a spoiler-free overview per character (needs GEMINI_API_KEY)
   npm run crawl:characters -- --ai-only    # only (re)write missing overviews for rows already saved
   npm run crawl:characters -- --dry-run    # fetch and print, save nothing
+  npm run crawl:characters -- --reslug-only  # only recompute URL slugs for rows already saved
+  npm run crawl:characters -- --reslug-only --dry-run  # print the slug changes, write nothing
   npm run crawl:characters -- --popular=100 --trending-anime=30 --trending=60
 
 Sets collected (a character can be in several):
@@ -32,6 +34,7 @@ const TRENDING_MAX = Number(args.trending || 60);
 const DRY = !!args["dry-run"];
 const AI = !!args.ai || !!args["ai-only"];
 const AI_ONLY = !!args["ai-only"];
+const RESLUG_ONLY = !!args["reslug-only"];
 
 const API = "https://graphql.anilist.co";
 const GAP_MS = 900;
@@ -118,9 +121,123 @@ function clean(text, max) {
   return s.length > max ? `${s.slice(0, max).replace(/\s+\S*$/, "")}…` : s;
 }
 
-function slugify(id, name) {
-  const s = name.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return s ? `${id}-${s}` : String(id);
+/* ---------------- URL slugs ----------------
+Profiles live at /characters/<slug>. The slug is the character's name, the
+way people search for it ("mikasa-ackerman"), with no id in it. When two
+characters share a name, the more-favourited one keeps the plain name and the
+other gets its main anime appended ("rin-tohsaka-fate-stay-night"); the id is
+only a last resort. Old "<id>-<name>" URLs 301 to the new slug (see
+app/characters/[slug]/page.tsx).
+
+Slugs are stable: a row keeps its current slug as long as it is still one of
+its own valid candidates, so a re-sync never shuffles live URLs around. */
+function slugPart(s, maxWords = 0) {
+  let out = String(s ?? "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "") // strip accents: "Émilia" -> "emilia"
+    .replace(/['’]/g, "") // "journey's" -> "journeys"
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  if (maxWords) out = out.split("-").filter(Boolean).slice(0, maxWords).join("-");
+  return out;
+}
+
+/** The character's home series: a MAIN role first, then the earliest entry (season 1, not season 3). */
+function mainAnime(anime) {
+  const list = Array.isArray(anime) ? anime : [];
+  const year = (a) => a.year ?? 9999;
+  const pool = list.filter((a) => a.role === "MAIN");
+  return [...(pool.length ? pool : list)].sort((a, b) => year(a) - year(b))[0] ?? null;
+}
+
+/** "Attack on Titan Season 3" -> "Attack on Titan", "Re:ZERO -Starting Life…-" -> "Re:ZERO", "HUNTER×HUNTER (2011)" -> "HUNTER×HUNTER". */
+function shortTitle(title) {
+  return String(title ?? "")
+    .replace(/\(.*?\)/g, " ")
+    .split(/\s+[-–—]\s*|:\s+/)[0]
+    .replace(/\b(season|part|cour)\s*\d+\b/gi, " ")
+    .replace(/\b\d+(st|nd|rd|th)\s+season\b/gi, " ")
+    .replace(/\b(19|20)\d{2}\b/g, " ")
+    .replace(/\s+(ii|iii|iv|\d)\s*$/i, " ")
+    .trim();
+}
+
+/** Show part of the slug, without repeating the character's own name ("frieren" + "Frieren: Beyond Journey's End"). */
+function showSlug(name, anime) {
+  const a = mainAnime(anime);
+  if (!a) return "";
+  const nameWords = new Set(slugPart(name).split("-"));
+  const strip = (s) => s.split("-").filter((w) => w && !nameWords.has(w)).join("-");
+  let show = strip(slugPart(shortTitle(a.title), 5));
+  if (!show) show = strip(slugPart(a.title.replace(/\(.*?\)/g, " "), 6)).split("-").slice(0, 5).join("-");
+  return show;
+}
+
+/*
+AniList romanises Japanese long vowels ("Tanjirou", "Gojou", "Shouyou",
+"Senkuu"), but people search the short form ("tanjiro", "gojo", "shoyo",
+"senku"). Shorten them, but only for names written with kanji/hiragana: an
+all-katakana native name is a foreign name ("Louise"), left as is.
+*/
+function searchName(name, native) {
+  const s = slugPart(name);
+  const japanese = /[\p{Script=Hiragana}\p{Script=Han}]/u.test(native ?? "");
+  if (!japanese) return s;
+  return s
+    .split("-")
+    .map((w) => w.replace(/ou/g, "o").replace(/uu/g, "u"))
+    .join("-");
+}
+
+function slugCandidates({ id, name, name_native, anime }) {
+  const base = searchName(name, name_native);
+  const show = showSlug(name, anime);
+  if (!base) return show ? [`${show}-character-${id}`] : [`character-${id}`];
+  // A purely numeric name ("02") would look like a legacy "<id>" URL.
+  const safeBase = /^\d+$/.test(base) ? `${base}-character` : base;
+  const withShow = show ? `${safeBase}-${show}` : null;
+  // One-word names ("power", "levi", "karen") are ambiguous on their own and
+  // people search them with the show ("power chainsaw man"), so lead with that.
+  const out = !safeBase.includes("-") && withShow ? [withShow, safeBase] : [safeBase, ...(withShow ? [withShow] : [])];
+  out.push(`${safeBase}-${id}`);
+  return out;
+}
+
+/** rows: [{id, name, anime, favourites, slug}] -> Map(id -> slug), most-favourited first wins a clash. */
+function assignSlugs(rows) {
+  const sorted = [...rows].sort((a, b) => (b.favourites ?? 0) - (a.favourites ?? 0) || a.id - b.id);
+  const taken = new Map();
+  const result = new Map();
+  // Pass 1: keep every current slug that is still valid for its row.
+  for (const r of sorted) {
+    if (r.slug && slugCandidates(r).includes(r.slug) && !taken.has(r.slug)) {
+      taken.set(r.slug, r.id);
+      result.set(r.id, r.slug);
+    }
+  }
+  // Pass 2: everyone else takes their first free candidate.
+  for (const r of sorted) {
+    if (result.has(r.id)) continue;
+    const slug = slugCandidates(r).find((s) => !taken.has(s)) ?? `character-${r.id}`;
+    taken.set(slug, r.id);
+    result.set(r.id, slug);
+  }
+  return result;
+}
+
+/** Recompute slugs for the whole table. Two-step update so the unique index never trips mid-swap. */
+async function reslug(client, { dryRun = false } = {}) {
+  const { rows } = await client.query(`select id, name, name_native, anime, favourites, slug from anime_characters`);
+  const next = assignSlugs(rows.map((r) => ({ ...r, id: Number(r.id) })));
+  const changes = rows.filter((r) => next.get(Number(r.id)) !== r.slug).map((r) => ({ id: Number(r.id), from: r.slug, to: next.get(Number(r.id)) }));
+  if (dryRun) {
+    for (const c of changes) console.log(`  ${c.from}  ->  ${c.to}`);
+    return changes.length;
+  }
+  for (const c of changes) await client.query(`update anime_characters set slug = $2 where id = $1`, [c.id, `__tmp-${c.id}`]);
+  for (const c of changes) await client.query(`update anime_characters set slug = $2 where id = $1`, [c.id, c.to]);
+  return changes.length;
 }
 
 /* ---------------- 1. collect ids ---------------- */
@@ -179,7 +296,7 @@ function toRow(c, { popularRank, trendingRank, collections }) {
   }
   return {
     id: c.id,
-    slug: slugify(c.id, c.name.full),
+    slug: `__new-${c.id}`, // placeholder; real slug is assigned by reslug() after the save
     name: c.name.full,
     name_native: c.name.native ?? null,
     aliases: (c.name.alternative ?? []).filter(Boolean).slice(0, 8),
@@ -213,13 +330,14 @@ async function save(rows) {
                                        source_url, updated_at)
          values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,now())
          on conflict (id) do update set
-           slug = excluded.slug, name = excluded.name, name_native = excluded.name_native, aliases = excluded.aliases,
+           name = excluded.name, name_native = excluded.name_native, aliases = excluded.aliases,
            image_url = excluded.image_url, gender = excluded.gender, age = excluded.age, birthday = excluded.birthday,
            blood_type = excluded.blood_type, favourites = excluded.favourites, about = excluded.about,
            anime = excluded.anime, voice_actors = excluded.voice_actors, collections = excluded.collections,
            popular_rank = excluded.popular_rank, trending_rank = excluded.trending_rank,
            source_url = excluded.source_url, updated_at = now()`,
-        // overview and noindex are editor/AI-owned and deliberately not touched by a re-sync.
+        // overview and noindex are editor/AI-owned and deliberately not touched by a re-sync;
+        // slug is owned by reslug() below so live URLs stay stable.
         [
           r.id, r.slug, r.name, r.name_native, r.aliases, r.image_url, r.gender, r.age, r.birthday, r.blood_type,
           r.favourites, r.about, JSON.stringify(r.anime), JSON.stringify(r.voice_actors), r.collections,
@@ -227,6 +345,8 @@ async function save(rows) {
         ],
       );
     }
+    const changed = await reslug(client);
+    console.log(`  ${changed} slug(s) assigned or updated.`);
     await client.query("commit");
   } catch (err) {
     await client.query("rollback");
@@ -289,6 +409,23 @@ async function writeOverviews() {
 }
 
 /* ---------------- main ---------------- */
+if (RESLUG_ONLY) {
+  const client = await getPool().connect();
+  try {
+    await client.query("begin");
+    const n = await reslug(client, { dryRun: DRY });
+    await client.query(DRY ? "rollback" : "commit");
+    console.log(DRY ? `Dry run: ${n} slug change(s) listed above, nothing written.` : `Updated ${n} slug(s).`);
+  } catch (err) {
+    await client.query("rollback");
+    throw err;
+  } finally {
+    client.release();
+    await getPool().end();
+  }
+  process.exit(0);
+}
+
 if (!AI_ONLY) {
   console.log(`Collecting ids (popular ${POPULAR}, trending ${TRENDING_MAX} from ${TRENDING_ANIME} anime, leads)…`);
   const { popular, trending, leads } = await collectIds();

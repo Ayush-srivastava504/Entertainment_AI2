@@ -80,6 +80,51 @@ export async function getDbCharacterBySlug(slug: string): Promise<DbCharacter | 
   });
 }
 
+/**
+Old profile URLs were "/characters/<anilistId>-<name>". Profiles now live at a
+name-only slug ("/characters/mikasa-ackerman"). Given an old-style slug, return
+the new one so the page can 301 to it, or null if it isn't a legacy URL of a
+saved profile. The name part must match exactly, so a Jikan/MAL id that happens
+to equal an AniList id is never hijacked.
+*/
+export async function getLegacyCharacterRedirect(slug: string): Promise<string | null> {
+  const m = /^(\d+)(?:-(.+))?$/.exec(slug);
+  if (!m) return null;
+  const id = Number(m[1]);
+  try {
+    const row = await cached(`characters:id:${id}`, 3600, async () => {
+      const { rows } = await getPool().query(`select slug, name from anime_characters where id = $1`, [id]);
+      return (rows[0] as { slug: string; name: string } | undefined) ?? null;
+    });
+    if (!row || row.slug === slug) return null;
+    const legacyName = row.name
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const legacy = legacyName ? `${id}-${legacyName}` : String(id);
+    return slug === legacy || slug === String(id) ? row.slug : null;
+  } catch (err) {
+    console.error("legacy character lookup failed:", err);
+    return null;
+  }
+}
+
+/** id -> current profile slug, for linking from the static leads list. Fails soft to an empty map. */
+export async function getDbSlugsByIds(ids: number[]): Promise<Map<number, string>> {
+  if (!ids.length) return new Map();
+  try {
+    const rows = await cached(`characters:slugs:${ids.join(",")}`, 3600, async () => {
+      const { rows } = await getPool().query(`select id, slug from anime_characters where id = any($1::bigint[])`, [ids]);
+      return rows as { id: string | number; slug: string }[];
+    });
+    return new Map(rows.map((r) => [Number(r.id), r.slug]));
+  } catch (err) {
+    console.error("character slugs query failed:", err);
+    return new Map();
+  }
+}
+
 async function list(key: string, sql: string, params: unknown[] = []): Promise<DbCharacter[]> {
   try {
     return await cached(key, 3600, async () => {

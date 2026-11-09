@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getDbCharacterBySlug } from "@/lib/characters-db";
+import { getDbSlugsByIds } from "@/lib/characters-db";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -50,7 +50,8 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
   // Every lead now has a full profile at /characters/<slug> (Supabase-backed).
   // One URL per character avoids duplicate content; fall back to this simple
   // page only while the profile row is missing.
-  if (await getDbCharacterBySlug(slug).catch(() => null)) permanentRedirect(`/characters/${slug}`);
+  const profileSlug = (await getDbSlugsByIds([lead.character.id])).get(lead.character.id);
+  if (profileSlug) permanentRedirect(`/characters/${profileSlug}`);
 
   const { character: c, anime: a } = lead;
   const leads = getTrendingLeads().items;

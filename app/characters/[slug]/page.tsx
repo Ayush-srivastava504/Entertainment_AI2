@@ -5,7 +5,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getCharacter, parseCharacterId } from "@/lib/characters";
-import { getDbCharacterBySlug, getRelatedCharacters, type DbCharacter } from "@/lib/characters-db";
+import { getDbCharacterBySlug, getLegacyCharacterRedirect, getRelatedCharacters, type DbCharacter } from "@/lib/characters-db";
 
 const BASE_URL = getBaseUrl();
 
@@ -79,6 +79,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     };
   }
 
+  // Old "<id>-<name>" URL of a saved profile: the page itself 301s to the name slug.
+  const moved = await getLegacyCharacterRedirect(slug);
+  if (moved) permanentRedirect(`/characters/${moved}`);
+
   const id = parseCharacterId(slug);
   const c = id ? await getCharacter(id) : null;
   if (!c) return { title: { absolute: `Character not found | ${SITE_NAME}` }, robots: { index: false } };
@@ -107,6 +111,10 @@ export default async function CharacterPage({ params }: { params: Promise<Params
 
   const db = await getDbCharacterBySlug(slug);
   if (db) return <DbProfile c={db} />;
+
+  // Profiles moved from "/characters/<id>-<name>" to "/characters/<name>": 301 so rankings carry over.
+  const moved = await getLegacyCharacterRedirect(slug);
+  if (moved) permanentRedirect(`/characters/${moved}`);
 
   const id = parseCharacterId(slug);
   if (!id) notFound();

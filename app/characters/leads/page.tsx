@@ -4,8 +4,11 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getTrendingLeads } from "@/lib/characters";
+import { getDbSlugsByIds } from "@/lib/characters-db";
 
 const BASE_URL = getBaseUrl();
+
+export const revalidate = 3600;
 const TITLE = `Main Female Leads of 50 Trending Anime | ${SITE_NAME}`;
 const DESCRIPTION =
   "Meet the main female lead of each of the 50 trending anime right now: character profiles, voice actors and the series they star in.";
@@ -16,8 +19,12 @@ export const metadata: Metadata = {
   alternates: { canonical: `${BASE_URL}/characters/leads` },
 };
 
-export default function TrendingLeadsPage() {
+export default async function TrendingLeadsPage() {
   const { items } = getTrendingLeads();
+  // Link straight to each profile's name slug ("/characters/mikasa-ackerman"),
+  // not the old id URL, so no internal link goes through a redirect.
+  const slugs = await getDbSlugsByIds(items.map((l) => l.character.id));
+  const profileHref = (l: (typeof items)[number]) => `/characters/${slugs.get(l.character.id) ?? l.character.slug}`;
 
   const jsonLd = graph(
     {
@@ -26,7 +33,7 @@ export default function TrendingLeadsPage() {
       itemListElement: items.map((l) => ({
         "@type": "ListItem",
         position: l.rank,
-        url: `${BASE_URL}/characters/${l.character.slug}`,
+        url: `${BASE_URL}${profileHref(l)}`,
         name: `${l.character.name} (${l.anime.title})`,
       })),
     },
@@ -59,7 +66,7 @@ export default function TrendingLeadsPage() {
             {items.map((l) => (
               <li key={l.character.id}>
                 <Link
-                  href={`/characters/${l.character.slug}`}
+                  href={profileHref(l)}
                   className="relative block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
                 >
                   <span className="absolute left-2 top-2 z-10 rounded-full border-2 border-ink bg-beam px-2 text-sm font-bold text-white">
