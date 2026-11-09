@@ -59,3 +59,15 @@ IndexNow after changes, and `npm run indexnow:all` submits everything.
 `/admin` is a single-password panel (`ADMIN_PASSWORD`) protected by a signed
 session cookie and `middleware.ts`. It manages titles, comments and title
 requests, and is blocked inside the Android app.
+
+### Stickers not showing from Supabase Storage
+
+A public bucket only makes direct file URLs public; *listing* files still needs
+access. Either set `SUPABASE_SERVICE_ROLE_KEY` in Vercel (server-only, used
+first), or run this once in the Supabase SQL editor to let the anon key list:
+
+```sql
+create policy "Public list original-gifs"
+on storage.objects for select to anon
+using (bucket_id = 'original-gifs');
+```

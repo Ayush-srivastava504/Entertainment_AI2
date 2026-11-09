@@ -22,7 +22,11 @@ import type { GifItem } from "./gifs";
 
 const BUCKET = "original-gifs";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Listing a bucket needs a SELECT policy on storage.objects even when the
+// bucket is public (public only opens the direct file URLs). The server-only
+// service role key bypasses that; the anon key needs the policy in
+// docs/DEPLOYMENT.md. The key is never sent to the browser.
+const SUPABASE_ANON_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const IMAGE_EXT = new Set([".gif", ".png", ".webp", ".jpg", ".jpeg"]);
 
@@ -76,7 +80,7 @@ async function fetchBucketList(): Promise<StorageObject[]> {
  * transient error can't hide your stickers for 5 minutes. */
 async function listBucket(): Promise<StorageObject[]> {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error("[original-gifs] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY not set");
+    console.error("[original-gifs] NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) not set");
     return [];
   }
   try {
