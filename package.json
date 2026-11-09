@@ -18,6 +18,7 @@
     "crawl:anime": "node crawler/anime-sync.mjs",
     "crawl:anime:full": "node crawler/anime-sync.mjs --full",
     "crawl:anime:jikan-only": "node crawler/jikan-crawler.mjs",
+    "generate:leads": "node crawler/trending-leads.mjs",
     "crawl:anime-cast": "node crawler/anime-cast-crawler.mjs",
     "crawl:movies": "node crawler/tmdb-crawler.mjs",
     "crawl:movies:full": "node crawler/tmdb-crawler.mjs --full",

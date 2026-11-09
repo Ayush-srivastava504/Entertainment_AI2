@@ -15,6 +15,7 @@ import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
 import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { getBaseUrl } from "@/lib/site";
+import { characterSlug, getTrendingLeads } from "@/lib/characters";
 import { WALLPAPERS, WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 
 const BASE_URL = getBaseUrl();
@@ -103,6 +104,8 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/about` },
       { loc: `${BASE_URL}/stickers` },
       { loc: `${BASE_URL}/wallpapers` },
+      { loc: `${BASE_URL}/characters/leads` },
+      ...getTrendingLeads().items.map((l) => ({ loc: `${BASE_URL}/characters/${characterSlug(l.character)}` })),
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),
       ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];

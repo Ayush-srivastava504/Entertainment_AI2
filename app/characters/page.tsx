@@ -44,6 +44,9 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               Search
             </button>
           </form>
+          <Link href="/characters/leads" className="mt-4 inline-block font-semibold text-white underline">
+            Female leads of 50 trending anime →
+          </Link>
         </div>
       </div>
 
