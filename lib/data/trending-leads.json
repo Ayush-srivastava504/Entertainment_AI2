@@ -1,4 +1,1966 @@
 {
-  "generatedAt": null,
-  "items": []
+  "generatedAt": "2026-11-09T17:30:42.691Z",
+  "items": [
+    {
+      "rank": 1,
+      "anime": {
+        "id": 207191,
+        "title": "Hello, I am a Witch and my Crush Wants me to Make a Love Potion!",
+        "titleOriginal": "Doumo, Suki na Hito ni Horegusuri wo Irai Sareta Majo desu.",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx207191-VgkIzfH92WoZ.jpg",
+        "score": 7.3,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Fantasy",
+          "Romance"
+        ],
+        "synopsis": "“Make me a love potion.”\n\nAnd with that single sentence, the Good Witch of the Lake’s secret crush on the dashing Sir Harij ends in heartbreak. Still, when he promises to help her gather the ingredients, Rose is thrilled at the chance to gaze upon a man she’d normally never get to interact with. She learns to brace her pounding heart for their usual stilted conversations…but what is she to do when he inexplicably shows up at her doorstep with bread and a jar of apple butter?\n\n(Source: Yen Press)",
+        "url": "https://anilist.co/anime/207191"
+      },
+      "character": {
+        "id": 333958,
+        "slug": "333958-rose",
+        "name": "Rose",
+        "nameNative": "ロゼ",
+        "aliases": [
+          "Witch of the Lake",
+          "Good Witch of the Lake"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b333958-UBRMP6RcZNBH.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 81,
+        "about": "A witch skilled in crafting enchanted elixirs, she comes from a long lineage of magic, both her mother and grandmother were witches before her.",
+        "voiceActors": [
+          {
+            "name": "Mikako Komatsu",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105071-Hcj0X2gcliPq.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 2,
+      "anime": {
+        "id": 21,
+        "title": "ONE PIECE",
+        "titleOriginal": "ONE PIECE",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-ELSYx3yMPcKM.jpg",
+        "score": 8.7,
+        "year": 1999,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy",
+          "Drama",
+          "Fantasy"
+        ],
+        "synopsis": "Gold Roger was known as the Pirate King, the strongest and most infamous being to have sailed the Grand Line. The capture and death of Roger by the World Government brought a change throughout the world. His last words before his death revealed the location of the greatest treasure in the world, One Piece. It was this revelation that brought about the Grand Age of Pirates, men who dreamed of finding One Piece (which promises an unlimited amount of riches and fame), and quite possibly the most coveted of titles for the person who found it, the title of the Pirate King.\n\nEnter Monkey D. Luffy,…",
+        "url": "https://anilist.co/anime/21"
+      },
+      "character": {
+        "id": 61,
+        "slug": "61-robin-nico",
+        "name": "Robin Nico",
+        "nameNative": "ニコロビン",
+        "aliases": [
+          "Akuma no Ko (悪魔の子)",
+          "Demon Child",
+          "Devil Child",
+          "Miss All Sunday",
+          "Light of the Revolution",
+          "O-Robi"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b61-ywXUyyocEEqt.png",
+        "age": "28-",
+        "birthday": "2/6",
+        "favourites": 14861,
+        "about": "Height: 188 cm (6'2\")\nPosition: Archaeologist\nDevil Fruit:  \nDevil Fruit Type: \nBounty: \n\nRobin is the seventh member of Straw Hat's Crew. She had a bounty of 79 million beri since she was eight years old, during an incident in which she supposedly destroyed six Buster Call ships through the use of the powers she gained by eating the Hana Hana no Mi (Flower Flower or Blooming Blooming Fruit). The fruit's power enables her to conjure up multiple replicas of her body parts (most often her arms) upon any surface she is able to see making her very powerful and dexterous as a result. Robin joined the Straw Hat Pirates after Luffy saved her life, or (how she states it) Luffy forced her to live when she wanted to die. To atone for his crime, Robin demands that Luffy allow her to join his crew, to which he complies leaving every other crew member except Sanji in shock. Although feared at first, she is quickly accepted and viewed as a comrade by the crew.\n\nRobin is actually an archaeologist of talent and despises anyone who thoughtlessly damages any piece of history. The World Government fears her because she can decipher Poneglyphs (stones marked with glyphs from an ancient language), which contain details capable of reviving ancient weapons that have the power to destroy the world. In reality, Robin has stated that she does not care about ancient weapons and that her dream is to find the True History written on the Rio Poneglyph.\n\nRobin is a mysterious and serious person who…",
+        "voiceActors": [
+          {
+            "name": "Yuriko Yamaguchi",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95130-GoO41ve3YWQw.png"
+          },
+          {
+            "name": "Yuuko Kobayashi",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95983-lqRFYTojbkRi.png"
+          },
+          {
+            "name": "Anzu Nagai",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/16463.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 3,
+      "anime": {
+        "id": 195604,
+        "title": "Black Clover Season 2",
+        "titleOriginal": "Black Clover 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195604-tSZcfKbVqSEG.jpg",
+        "score": 8.7,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy",
+          "Fantasy"
+        ],
+        "synopsis": "As tyranny engulfs the Clover Kingdom, Asta and the Magic Knights launch a desperate raid on the Spade Kingdom to rescue their squad captains from the Dark Triad. But their mission leads them into a brutal battle against forces beyond anything they’ve ever faced. Now, Asta must rise above impossible odds to protect his friends and honor the promise he made to Yuno.\n\n(Source: Crunchyroll)",
+        "url": "https://anilist.co/anime/195604"
+      },
+      "character": {
+        "id": 123283,
+        "slug": "123283-noelle-silva",
+        "name": "Noelle Silva",
+        "nameNative": "ノエル・シルヴァ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b123283-7nJHtKha0LSm.png",
+        "age": "15-",
+        "birthday": "11/15",
+        "favourites": 4947,
+        "about": "Height: 161 cm (5'3\")\n\nNoelle Silva is a member of the Black Bulls and was inducted into the squad around the same time as Asta. She is the second daughter of one of the Clover Kingdom's royal families, House Silva, and the younger sister of the captain of the Silver Eagles, Nozel Silva. She likes sweets.",
+        "voiceActors": [
+          {
+            "name": "Kana Yuuki",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118739-hIVuGI5fgL5e.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 4,
+      "anime": {
+        "id": 204011,
+        "title": "PSYREN",
+        "titleOriginal": "PSYЯEN",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx204011-j45RZoqYbdZK.jpg",
+        "score": 7,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Sci-Fi"
+        ],
+        "synopsis": "One day, high schooler Ageha Yoshina picks up a mysterious “red phone card” left behind in a public telephone booth.\nA few days later, his childhood friend and classmate, Sakurako Amamiya—who possessed the same card—suddenly vanishes without a trace. In search of her, Ageha finds himself drawn into the rumors surrounding a nationwide string of mysterious disappearances, said to be the work of a secret organization known only as “Psyren.”\n\nWhen he accesses the group, a deadly game begins—one that will change his fate forever.\n\n(Source: PSYЯEN Official Site)",
+        "url": "https://anilist.co/anime/204011"
+      },
+      "character": {
+        "id": 10479,
+        "slug": "10479-sakurako-amamiya",
+        "name": "Sakurako Amamiya",
+        "nameNative": "雨宮桜子",
+        "aliases": [
+          "Kouri no Joou (氷の女王)",
+          "Ice Queen"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b10479-OOUSZF0NI5IT.png",
+        "age": null,
+        "birthday": "6/7",
+        "favourites": 61,
+        "about": "She is a childhood friend of Ageha Yoshina. Although she used to have a kind and cheerful personality, she is now known in class as the \"Ice Queen\"—super cool and anarchic. While Ageha’s internal monologue refers to her as an \"untouchable girl,\" she is actually being bullied by the other girls in the class.\n\nShe primarily fights using weapons like swords and *kusarigama* (sickle-and-chain), enhancing her physical abilities with \"Rise\" in combat. When facing ordinary humans, she may use blunt weapons (such as tonfas) to avoid killing them.\n\nWhile skilled in the use of \"Trance,\" its effectiveness is limited against opponents versed in PSI—who can easily block it—so the combination of weapons and \"Rise\" sees more frequent use.",
+        "voiceActors": [
+          {
+            "name": "Mayuko Kazama",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n175810-qkPp3PAW4kYY.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 5,
+      "anime": {
+        "id": 186541,
+        "title": "Reborn as a Space Mercenary: I Woke Up Piloting the Strongest Starship!",
+        "titleOriginal": "Mezametara Saikyou Soubi to Uchuusen-mochi datta node, Ikkodate Mezashite Youhei to shite Jiyuu ni Ikitai",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx186541-caYpLsLmbCh7.jpg",
+        "score": 6.9,
+        "year": 2026,
+        "episodes": 13,
+        "genres": [
+          "Action",
+          "Comedy",
+          "Drama",
+          "Mecha",
+          "Romance",
+          "Sci-Fi"
+        ],
+        "synopsis": "Sato Takahiro was an ordinary office worker and hobbyist gamer until the day he woke up on a spaceship–one that strangely resembled a craft from a favorite space-shooter game. With a decked-out ship, a crew full of babes, and a fantastic universe to explore, he's going to make the most of his good luck and create the life he's always dreamed of!\n\n(Source: Seven Seas Entertainment)",
+        "url": "https://anilist.co/anime/186541"
+      },
+      "character": {
+        "id": 394572,
+        "slug": "394572-elma",
+        "name": "Elma",
+        "nameNative": "エルマ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b394572-D2I4Lz304IL7.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 36,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Anna Nagase",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n182100-drkeWjMKToYg.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 6,
+      "anime": {
+        "id": 195516,
+        "title": "The Apothecary Diaries Season 3",
+        "titleOriginal": "Kusuriya no Hitorigoto 3rd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195516-MJpUZlOberqH.jpg",
+        "score": 8.5,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Drama",
+          "Mystery"
+        ],
+        "synopsis": "In the aftermath of the Shi Clan’s rebellion, things have finally settled down, and Maomao has returned to her old life as a pharmacist in the pleasure district.\n\nOne day, triggered by a breakfast served at the Verdigris House, Maomao senses an anomaly and begins investigating its true nature.\n\nMeanwhile, Jinshi, who has revealed his true identity as the Imperial brother and begun to face his heavy responsibilities, is deeply troubled by the final message left by Loulan: a warning of an impending \"disaster that will strike the nation.\"\n\nTo make matters worse, rumors of a mysterious shrine…",
+        "url": "https://anilist.co/anime/195516"
+      },
+      "character": {
+        "id": 126824,
+        "slug": "126824-maomao",
+        "name": "Maomao",
+        "nameNative": "猫猫",
+        "aliases": [
+          "Shaomao",
+          "Xiaomao",
+          "小猫",
+          "Miêu Miêu"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b126824-MqsCncTO1qpv.png",
+        "age": "17-",
+        "birthday": "12/31",
+        "favourites": 23022,
+        "about": "Maomao works as an apothecary in the red light district, helping her mentor and father Luomen in caring for its residents, with special attention given to the Verdigris Hall brothel, where she was born and was initially raised.\n\nOne day, while gathering herbs, she gets kidnapped and sold to be a common servant in the inner court of the imperial palace, where only the Emperor's consorts and their servants reside. Not allowed to leave, her curious personality and skills begin to rope her into mysterious problems that can affect the whole country.",
+        "voiceActors": [
+          {
+            "name": "Aoi Yuuki",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n101686-PTd0lQZMsmcv.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 7,
+      "anime": {
+        "id": 189123,
+        "title": "Blue Box Season 2",
+        "titleOriginal": "Ao no Hako Season 2",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx189123-0secXELIhkIW.jpg",
+        "score": 8.1,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Romance",
+          "Slice of Life",
+          "Sports"
+        ],
+        "synopsis": "The second season of Ao no Hako.\n\nAs Taiki and Chinatsu navigate their evolving feelings, a fractured friendship from the past and fierce competition cloud the road to nationals.\n\n(Source: Netflix, edited)",
+        "url": "https://anilist.co/anime/189123"
+      },
+      "character": {
+        "id": 191241,
+        "slug": "191241-chinatsu-kano",
+        "name": "Chinatsu Kano",
+        "nameNative": "鹿野千夏",
+        "aliases": [
+          "Chii",
+          "Natsu"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b191241-FaDEXRL1CgJr.png",
+        "age": "16-",
+        "birthday": "8/26",
+        "favourites": 2377,
+        "about": "Sports Team: Basketball\nSchool: Eimei Junior and Senior High\nYear: High School Second-Year / Third-Year\n\nA first-year high school student and the rising star of Elmei Junior and Senior High's girls' basketball team. Her personality and skills have made her incredibly popular both inside and outside of her school, to the point where she's been featured in various magazines. Chinatsu can be quite competitive, as she always arrives to Elmei's gymnasium in the morning for open practice even earlier than Taiki Inomata, whom she frequently shares the floor and sometimes plays one-on-one games with. \n\nThe day after she completed her years as a junior high school student, Chinatsu tearfully practiced playing basketball, having barely failed to qualify for nationals. When Taiki reminds her both of said event and how hard she works, Chinatsu makes it her goal to go to nationals despite her family moving overseas. To get around this, she stays at Taiki's house due to their mothers being friends and former teammates. She gives Taiki a matching foot bracelet when she learns that he also plans to go to nationals.\n\nIn the _Ao no Hako_ one-shot, Chinatsu is the captain of her school's girls' basketball team.",
+        "voiceActors": [
+          {
+            "name": "Reina Ueda",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118602-C4bNcnyEhDTu.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 8,
+      "anime": {
+        "id": 269,
+        "title": "Bleach",
+        "titleOriginal": "BLEACH",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx269-d2GmRkJbMopq.png",
+        "score": 7.9,
+        "year": 2004,
+        "episodes": 366,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Supernatural"
+        ],
+        "synopsis": "Ichigo Kurosaki is a rather normal high school student apart from the fact he has the ability to see ghosts. This ability never impacted his life in a major way until the day he encounters the Shinigami Kuchiki Rukia, who saves him and his family's lives from a Hollow, a corrupt spirit that devours human souls. \n\nWounded during the fight against the Hollow, Rukia chooses the only option available to defeat the monster and passes her Shinigami powers to Ichigo. Now forced to act as a substitute until Rukia recovers, Ichigo hunts down the Hollows that plague his town.",
+        "url": "https://anilist.co/anime/269"
+      },
+      "character": {
+        "id": 6,
+        "slug": "6-rukia-kuchiki",
+        "name": "Rukia Kuchiki",
+        "nameNative": "朽木ルキア",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b6-25WoBeWMZXBc.png",
+        "age": null,
+        "birthday": "1/14",
+        "favourites": 7499,
+        "about": "Race: Shinigami\nHeight: 144 cm (4'8\")  \nRank: Lieutenant of the 13th Division\nRelatives: Byakuya Kuchiki (Adoptive Brother/Brother-in-law)\nZanpakutou: Sode no Shirayuki\n\nRukia is a Soul Reaper from the Soul Society who met and saved Ichigo Kurosaki's life by lending him her spiritual power. After saving him, she is forced to temporarily remain in the human world, using a gigai given to her by Kisuke Urahara until she can regain her strength and return to the Soul Society. She chooses to live with Ichigo in order to keep an eye on him and have a place to stay. She is also the Lieutenant of the 13th Division of the Gotei 13, serving under Squad Captain Juushirou Ukitake.\n\nInitially born into a lower class, Rukia retains her modesty, despite being an adopted member of a noble bloodline. She is graceful and \"clean\", yet is willing to talk to ordinary people. However, her cool and lone demeanor often forces her to hide her personal troubles, even from those close to her. Because of her never opening up her heart, she has difficulty making friends. She can also act like a bit of a tomboy at times, wanting to show others that she's tough and getting aggressive towards others when they insult her. Rukia is clueless about the ways of the modern Human World, often making misconceptions and struggling with the simplest of things like opening a juice box. She likes to climb up to high places and loves everything rabbit-themed, becoming quite sensitive when someone insults her obsession…",
+        "voiceActors": [
+          {
+            "name": "Fumiko Orikasa",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95152-X9K5ciNGSX35.jpg"
+          },
+          {
+            "name": "Miki Satou",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n218048-x09i76PjLM2A.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 9,
+      "anime": {
+        "id": 205896,
+        "title": "Full Clearing Another World under a Goddess with Zero Believers",
+        "titleOriginal": "Shinja Zero no Megami-sama to Hajimeru Isekai Kouryaku",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx205896-ElrV8oVAsuax.jpg",
+        "score": 6.5,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "RPG player Makoto Takatsuki is hurled into another world with awful skills and stats. But he soon meets a goddess named Noah, who asks him to become her 1st believer in return for blessings.\n\n(Source: J-Novel Club)",
+        "url": "https://anilist.co/anime/205896"
+      },
+      "character": {
+        "id": 403299,
+        "slug": "403299-noah-titan",
+        "name": "Noah Titan",
+        "nameNative": "ノア・ティターン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b403299-7xARgDNsrKL6.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 9,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Ikumi Hasegawa",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n132768-r4FwpBpHnRtZ.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 10,
+      "anime": {
+        "id": 191656,
+        "title": "Even the Student Council Has Its Holes!",
+        "titleOriginal": "Seitokai ni mo Ana wa Aru!",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx191656-xFHtxM8SUTdU.png",
+        "score": 7.3,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Comedy",
+          "Ecchi",
+          "Slice of Life"
+        ],
+        "synopsis": "This is Fujinasu Academy, a private high school with top-achieving students located on the outskirts of town.\n\nHigh School 1st-Year Ume Mizunoe has excellent grades in Japanese language class and has received multiple literary awards.\nHowever, his terrible grades in the sciences are affecting his ability to move up a grade. To avoid repeating a year, he becomes a member of the student council to improve his academic standing.\n\nHowever, in the student council, he meets the charismatic yet sullen student council president Kotobuki Hisako, and the scary yet kind and refined treasurer, Arisu…",
+        "url": "https://anilist.co/anime/191656"
+      },
+      "character": {
+        "id": 341620,
+        "slug": "341620-komaro-michinoku",
+        "name": "Komaro Michinoku",
+        "nameNative": "陸奥こまろ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b341620-TGw3xF74c124.png",
+        "age": null,
+        "birthday": "7/14",
+        "favourites": 362,
+        "about": "Height: 131 cm\n\nShe is a girl packed with distinctive traits: sleepy-looking eyes with dark circles, voluminous long hair, and a rough, raspy natural voice. She serves as the student council's mascot-like figure.\n\nShe gives her all in everything she does, but she is clumsy, prone to frequent mishaps, and cursed with an extraordinary streak of bad luck; consequently, the student council treats her as someone who needs constant looking after. Although she frequently gets into accidents, she boasts such toughness that she might simply slap a bandage on herself after being hit by a car and call it a day. She is like an endangered species—a creature with absolutely no wariness toward others.\n\nShe is a classmate of Ume Mizunoe, though they hadn't met previously because she had been absent due to an accident. She has taken a strong liking to Ume and sticks to him constantly; her small size allows her to sit on Ume's lap without issue. Those around her say she lacks caution, likening her to a kakapo.\n\nShe is a scholarship student for mathematics, so her tuition is waived, and she reportedly earns her own spending money working part-time at a convenience store. She is highly trusted at her workplace, likely because she is a diligent worker. She generally has little desire for money; she once even caught an insect that could have been sold for a profit, but chose to keep it as a pet instead.",
+        "voiceActors": [
+          {
+            "name": "Miyu Tomita",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119518-vZN7TPy12iuu.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 11,
+      "anime": {
+        "id": 185756,
+        "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 3",
+        "titleOriginal": "Tensei Kizoku, Kantei Skill de Nariagaru 3rd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx185756-xPCl0RyQ7fXD.jpg",
+        "score": 6.8,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "The third season of Tensei Kizoku, Kantei Skill de Nariagaru.\n\nNote: On September 4, 2026, it was announced that GeyeG Pictures would take over the production from studio MOTHER while keeping the same staff.",
+        "url": "https://anilist.co/anime/185756"
+      },
+      "character": {
+        "id": 305391,
+        "slug": "305391-charlotte-wraith",
+        "name": "Charlotte Wraith",
+        "nameNative": "シャーロット・レイス",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b305391-vO5F2BqZSbGe.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 207,
+        "about": "An orphan girl who lived without relatives in the castle city of Canare. She was on the run from slave traders when she was rescued by Ars and Rietz.",
+        "voiceActors": [
+          {
+            "name": "Narumi Kaho",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/121486-EZE6cvFWtNQh.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 12,
+      "anime": {
+        "id": 219714,
+        "title": "SPY×FAMILY Season 4",
+        "titleOriginal": "SPY×FAMILY Season 4",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx219714-1qmlRk0eU1tb.jpg",
+        "score": null,
+        "year": null,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Comedy",
+          "Slice of Life",
+          "Supernatural"
+        ],
+        "synopsis": "Fourth season of SPY×FAMILY.",
+        "url": "https://anilist.co/anime/219714"
+      },
+      "character": {
+        "id": 138102,
+        "slug": "138102-yor-forger",
+        "name": "Yor Forger",
+        "nameNative": "ヨル・フォージャー",
+        "aliases": [
+          "Yor Briar (ヨル・ブライア)",
+          "Ibara-hime (いばら姫)",
+          "Thorn Princess",
+          "Yorticia",
+          "Tornprinsessa"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b138102-ZOAu9jI2d5ke.png",
+        "age": "27",
+        "birthday": "4/6",
+        "favourites": 14378,
+        "about": "Height: 170 cm\nOccupation: City Hall Clerk, Assassin (Covertly)\nAffiliation: Berlint City Hall, Garden (Covertly)\nRelatives: Loid Forger (Husband), Anya Forger (Adoptive Daughter), Yuuri Briar (Younger Brother)\n\nYor Forger is the tritagonist of the SPY x FAMILY series. She is a clerical employee at the Berlint City Hall. She is soft-spoken and mild-mannered, but has a strong sense of humor. She has a bad drinking habit and falls into a coma when she drinks. At home, she struggles to be a good wife and a kind mother. Although her cooking skills are not very good, she likes to keep clean and is good at cleaning.\nWhile she works in the capital of Ostania's city hall... or at least that's her civilian cover. In truth, she is an infamous Professional Killer known as \"Thorn Princess\". After becoming overly fixated on the idea her cover might be blown after a coworker ribs her about not being married or even having a boyfriend, Yor suggests to Loid a Marriage of Convenience, which he accepts, as he needs a mother for Anya for his own mission.",
+        "voiceActors": []
+      }
+    },
+    {
+      "rank": 13,
+      "anime": {
+        "id": 195539,
+        "title": "Cyberpunk: Edgerunners 2",
+        "titleOriginal": "Cyberpunk: Edgerunners 2",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195539-4LdfmKIHzuxr.png",
+        "score": 8.3,
+        "year": 2026,
+        "episodes": 10,
+        "genres": [
+          "Action",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "synopsis": "Cyberpunk: Edgerunners 2 pulls you back into Night City, where lives become entangled to the extreme. Weak, a washed-up cyberpunk legend, is now forced to live without chrome as he searches for a sense of purpose in a world that’s passed him by. Meanwhile, the deadly nomad D sets out on a path to revenge that brings him close to corpo secrets never meant to be found. Across this ten-episode standalone series, uncover a story of family, obsession, legacy — and how your lens reflects the stories of the people around you..\n\nWhen the world is blinded by spectacle, what extremes do you have to go…",
+        "url": "https://anilist.co/anime/195539"
+      },
+      "character": {
+        "id": 402683,
+        "slug": "402683-talia-yang",
+        "name": "Talia Yang",
+        "nameNative": "タリア・ヤン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b402683-OE7PEewCJi1v.png",
+        "age": null,
+        "birthday": "4/2",
+        "favourites": 814,
+        "about": "Raised in corpo towers but hardened in Maelstrom’s grip, Talia is fiercely independent and steeped in the gang’s hyper-violent, chrome-obsessed culture.\n\n(Source: Cyberpunk: Edgerunners 2 Official Site)",
+        "voiceActors": [
+          {
+            "name": "Akari Kitou",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119722-Ls7ORfBejJEP.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 14,
+      "anime": {
+        "id": 202250,
+        "title": "Magic Repo Man: Dumped by My Party, I’ll Cash In With a Cute Support Fairy to Become the Strongest!",
+        "titleOriginal": "Kashita Maryoku wa [Revo Barai] de Kyousei Choushuu",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx202250-mpm2cvr92Au2.jpg",
+        "score": 6.1,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "If there's one thing you can never have enough of in a world of RPG-style swords and sorcery, it's magic points! Whether you're fueling spells, techniques, or showing off an incredible ability, you've gotta spend those points to do real damage. But what if you run out?\n\nLent is part of the up-and-coming party known as the “Skypiercers,” and thanks to his unique Gift, he can loan massive amounts of magic to others. No MP? No problem with Lent around! Except, now that his companions have become formidable heroes (thanks to his skill), his usefulness is questioned. Kicked out of the group, Lent…",
+        "url": "https://anilist.co/anime/202250"
+      },
+      "character": {
+        "id": 401367,
+        "slug": "401367-empee",
+        "name": "Empee",
+        "nameNative": "エムピー",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b401367-rtchOFFbjAxM.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 22,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Emiri Katou",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95052-mvDPeBcLCWmX.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 15,
+      "anime": {
+        "id": 1735,
+        "title": "Naruto: Shippuden",
+        "titleOriginal": "NARUTO: Shippuuden",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1735-kGfVm0YqCPcu.png",
+        "score": 8.2,
+        "year": 2007,
+        "episodes": 500,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy",
+          "Drama",
+          "Fantasy",
+          "Supernatural"
+        ],
+        "synopsis": "Naruto: Shippuuden is the continuation of the original animated TV series Naruto. The story revolves around an older and slightly more matured Uzumaki Naruto and his quest to save his friend Uchiha Sasuke from the grips of the snake-like Shinobi, Orochimaru. After 2 and a half years Naruto finally returns to his village of Konoha, and sets about putting his ambitions to work, though it will not be easy, as he has amassed a few (more dangerous) enemies, in the likes of the shinobi organization; Akatsuki. \n\n(Source: Anime News Network)",
+        "url": "https://anilist.co/anime/1735"
+      },
+      "character": {
+        "id": 145,
+        "slug": "145-sakura-haruno",
+        "name": "Sakura Haruno",
+        "nameNative": "春野サクラ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b145-IorfpI8arxeX.png",
+        "age": "12-17",
+        "birthday": "3/28",
+        "favourites": 2903,
+        "about": "Height: 149cm-161cm\n\nSakura is the only female ninja of Team 7. When she first meets Naruto she is physically weak and has an immense crush on Sasuke. She dislikes Naruto as well. The only thing she's good at is her brain as the smartest girl in ninja academy her excellent chakra control, out of that she could be categorized as a kunoichi with no exceptional talent. In the first part of the Chuunin exam, she is easily able to answer the questions, but in the second part, she is unable to defeat the Sound ninja attacking Sasuke and Naruto. She makes a pledge to become a better ninja and a better person. To prove her commitment she cuts her long hair with a kunai.  In the third part of the Chuunin Exam, she goes up against Ino Yamanaka, her former friend but a current rival for Sasuke's affections. The two defeat each other simultaneously. This turns their relationship into a rivalry between friends.  After the time skip, she is now a chuunin having been trained by Tsunade for the past two years.\n\n She is now a medic Ninja of considerable skill, enough skill to possibly defeat Tsunade one day. It is shown when she is able to do a complicated surgery to extract poisons out of Kankuro body and make an antidote of the new type of poison that Sasori used, which the Suna gakure medical-nin unable to do.  During the time skip she's also matured in personality, she becomes calmer compare to when she was Genin, but she still has her temper.  Sakura has grown not only as a medical-nin,…",
+        "voiceActors": [
+          {
+            "name": "Chie Nakamura",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95300-84lMPsAHkPP3.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 16,
+      "anime": {
+        "id": 208025,
+        "title": "I'm Dating a Dark Summoner",
+        "titleOriginal": "Dark Summoner to Dekiteiru",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx208025-JKvqWNr8rz8l.jpg",
+        "score": 6.7,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Comedy",
+          "Ecchi",
+          "Fantasy",
+          "Romance"
+        ],
+        "synopsis": "Amona’s a dark summoner with demonic powers. Roni’s a devout priest who’s way too uptight. By all rights, they should hate each other. Instead, they end up fast-tracking their enemies-to-lovers arc with a one-night stand that somehow insists on becoming a recurring event. Now they must hide their situationship from the rest of the party while denying their growing attraction to one another, all while dealing with an imp who’s far too invested in their love life.\n\n(Source: HIDIVE)",
+        "url": "https://anilist.co/anime/208025"
+      },
+      "character": {
+        "id": 300887,
+        "slug": "300887-amona-jeane",
+        "name": "Amona Jeane",
+        "nameNative": "アモナ・ジーン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b300887-dBdi2Ea3g3ys.png",
+        "age": "16",
+        "birthday": null,
+        "favourites": 78,
+        "about": "Race: Shin (Human-born)\nJob: Dark Summoner, Treasure Hunter\nErogenous zone: Neck\n\nShe was born in a village outside the barrier. She became an adventurer to save up money and be independent. Her personality leans towards a realist, but her interests are edgy.",
+        "voiceActors": [
+          {
+            "name": "Chiyuki  Miura",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n140853-vukwnaiv2b8g.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 17,
+      "anime": {
+        "id": 205909,
+        "title": "Firefly Wedding",
+        "titleOriginal": "Hotaru no Yomeiri",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx205909-DM0fAzNQulod.jpg",
+        "score": 7.5,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Drama",
+          "Romance"
+        ],
+        "synopsis": "On the surface, Satoko has it all—she’s beautiful, the daughter of a nobleman, and at a prime age for marriage. Unfortunately, she is also quite ill and only has a short time left to live. Before she can secure a marriage that will redeem her worth in her family’s eyes, she finds herself the target of the mysterious assassin Shinpei, and her plans are put in jeopardy. In order to save herself, she makes a desperate proposal—of marriage! When it comes to love, however, Shinpei takes “until death do we part” seriously.\n\n(Source: VIZ Media)",
+        "url": "https://anilist.co/anime/205909"
+      },
+      "character": {
+        "id": 298761,
+        "slug": "298761-satoko-kirigaya",
+        "name": "Satoko Kirigaya",
+        "nameNative": "桐ケ谷紗都子",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b298761-EU6Qgcu9AMQc.png",
+        "age": "16",
+        "birthday": null,
+        "favourites": 257,
+        "about": "Satoko is a noblewoman from a wealthy family. As she comes of age, she is expected to find a husband. However, she has a serious heart condition that makes it difficult to find a suitable match. Because of this, she tells every potential suitor about her illness so she does not deceive them, but many proposals are rejected because of it. \n\nOne day, while out in town, she is kidnapped by men who intend to kill her. Then Shinpei Gotou appears. In order to save her life, she proposes marriage to him.",
+        "voiceActors": [
+          {
+            "name": "Lynn",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118806-2aFjOHv08Iwm.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 18,
+      "anime": {
+        "id": 169581,
+        "title": "Magical Explorer",
+        "titleOriginal": "Magical★Explorer: Eroge no Yuujin Chara ni Tensei Shitakedo, Game Chishiki Tsukatte Jiyuu ni Ikiru",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx169581-UlAviVH36Hxi.png",
+        "score": 6.9,
+        "year": 2026,
+        "episodes": 13,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Ecchi",
+          "Fantasy",
+          "Romance"
+        ],
+        "synopsis": "Few titles are more revered among horndogs-(ahem) connoisseurs of Japanese erotic video games-than Magical Explorer. One day, our smut-loving hero wakes up to find he has been reincarnated into the body of the game’s dreamboat protagonist! Or rather, his hapless comic-relief best friend, Kousuke Takioto. But with his unparalleled knowledge of Magical Explorer and Kousuke’s unorthodox abilities (a scarf that doubles as a fist?), our hero vows to turn the game’s unluckiest loser into its mightiest heartthrob. In this world, nothing is out of reach when you’ve got the know-how!\n\n(Source: Yen…",
+        "url": "https://anilist.co/anime/169581"
+      },
+      "character": {
+        "id": 394700,
+        "slug": "394700-nanami",
+        "name": "Nanami",
+        "nameNative": "ななみ",
+        "aliases": [
+          "Nanamin (ななみん)"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b394700-Yz1hcGgPln5E.jpg",
+        "age": null,
+        "birthday": "4/10",
+        "favourites": 39,
+        "about": "Height: 168 cm (5'6\")\n\nA maid created to assist Dungeon Masters. Belongs to the angel race, who are few in number.",
+        "voiceActors": [
+          {
+            "name": "Mao Ichimichi",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118510-iMUv5D7W99C1.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 19,
+      "anime": {
+        "id": 180136,
+        "title": "The Exiled Heavy Knight Knows How to Game the System",
+        "titleOriginal": "Tsuihou Sareta Tensei Juukishi wa Game Chishiki de Musou Suru",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx180136-gtMTCRlOD4OE.jpg",
+        "score": 6.7,
+        "year": 2026,
+        "episodes": 26,
+        "genres": [
+          "Action",
+          "Fantasy"
+        ],
+        "synopsis": "Born into a prestigious family of master swordsmen, Elymas Edvaughn’s future shatters when he awakens the so-called “defective” Heavy Knight class. Disowned and cast out, he regains memories of another life—and realizes this world mirrors a VR game he once mastered. Armed with knowledge no one else possesses, he sets out to rewrite his fate and prove the strength of the “weakest” class.\n\n(Source: Crunchyroll)",
+        "url": "https://anilist.co/anime/180136"
+      },
+      "character": {
+        "id": 344248,
+        "slug": "344248-luce-rubis",
+        "name": "Luce Rubis",
+        "nameNative": "ルーチェ・ルービス",
+        "aliases": [
+          "Ruche Rubis"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b344248-yIAlePtvhgoo.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 198,
+        "about": "A Pierrot class who is in a party with Elymas.",
+        "voiceActors": [
+          {
+            "name": "Shion Wakayama",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n148220-Tj3U7jdXZehG.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 20,
+      "anime": {
+        "id": 204389,
+        "title": "A Wild Last Boss Appeared! Season 2",
+        "titleOriginal": "Yasei no Last Boss ga Arawareta! 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx204389-jCoFCeTthDMy.jpg",
+        "score": 7.4,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "The second season of Yasei no Last Boss ga Arawareta!",
+        "url": "https://anilist.co/anime/204389"
+      },
+      "character": {
+        "id": 161623,
+        "slug": "161623-lufas-maphaahl",
+        "name": "Lufas Maphaahl",
+        "nameNative": "ルファス・マファール",
+        "aliases": [
+          "Lufasu Mafaalu",
+          "Ruphas Mafahl"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b161623-TzQnL3HussOW.jpg",
+        "age": null,
+        "birthday": null,
+        "favourites": 299,
+        "about": "Level:  1000\nSpecies:  Heaven-Winged\n\nThe strongest being who once unified Mizgarz and was feared as \"The Black-Winged Overlord\". Was sealed after a battle with The Seven Heroes, but was summoned back into the world 200 years later.",
+        "voiceActors": [
+          {
+            "name": "Ami Koshimizu",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95070-klkIfKz1VItS.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 21,
+      "anime": {
+        "id": 213805,
+        "title": "The Ramparts of Ice Season 2",
+        "titleOriginal": "Koori no Jouheki 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx213805-Nokui3uWlIlw.png",
+        "score": 8.1,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Comedy",
+          "Drama",
+          "Romance",
+          "Slice of Life"
+        ],
+        "synopsis": "Koyuki, the isolated girl; Miki, the former school idol; Minato, the guy with no concept of personal space; and Youta, the gentle basketball player. Clumsy, frustrating, yet deeply endearing — this coming-of-age ensemble drama of crisscrossing hearts marches on.\n\nAs they grow closer, Koyuki and Minato begin to develop feelings for each other that go beyond mere friendship. Meanwhile, Youta finally confesses to Miki the feelings he's harbored for years. Some speak their hearts while others keep their emotions hidden, causing their paths — and their feelings for one another — to continuously…",
+        "url": "https://anilist.co/anime/213805"
+      },
+      "character": {
+        "id": 354440,
+        "slug": "354440-koyuki-hikawa",
+        "name": "Koyuki Hikawa",
+        "nameNative": "氷川小雪",
+        "aliases": [
+          "Koyun"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b354440-baufwO1gkKDE.jpg",
+        "age": null,
+        "birthday": "2/2",
+        "favourites": 1490,
+        "about": "Height: 152cm (4’11)\n\nHaunted by past relationships, bullying, hostility, family issues, and the weight of her own expectations, she often erects emotional walls—rejecting others before giving them a chance to truly understand her",
+        "voiceActors": [
+          {
+            "name": "Anna Nagase",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n182100-drkeWjMKToYg.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 22,
+      "anime": {
+        "id": 200455,
+        "title": "Even Though I'm a Super Timid Noble Girl, I Accepted the Bet From My Cunning Fiancé",
+        "titleOriginal": "Yowaki MAX Reijou Nano ni, Ratsuwan Konyakusha-sama no Kake ni Notte Shimatta",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx200455-P3XStRQMJ7Di.png",
+        "score": 6.7,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Comedy",
+          "Fantasy",
+          "Romance"
+        ],
+        "synopsis": "I was reborn as a villainous daughter in a reverse harem otome game. \n\nAfter being sick with a high fever at the age of 10, Pia Rockwell suddenly remembered her past life as a university student in Japan. But far from going down the villainess route, all this super timid girl wants is to finally use her knowledge from when she was a grad student studying to get her doctorate in paleontology. Her ultimate goal is to become a commoner, excavate fossils, build a museum and then become a curator.\n\nSo in order to escape the villainess route and avoid being deported by her fiancé during the…",
+        "url": "https://anilist.co/anime/200455"
+      },
+      "character": {
+        "id": 377367,
+        "slug": "377367-pia-rockwell",
+        "name": "Pia Rockwell",
+        "nameNative": "ピア・ロックウェル",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b377367-K3VKiYG5Cjyu.jpg",
+        "age": null,
+        "birthday": null,
+        "favourites": 23,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Miku Itou",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118581-8tQ3U5oTXTTQ.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 23,
+      "anime": {
+        "id": 211877,
+        "title": "My Girlfriend's Friend",
+        "titleOriginal": "Kanojo no Tomodachi",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx211877-yWQ2r7XmWvG6.jpg",
+        "score": 4.9,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Drama",
+          "Ecchi",
+          "Romance"
+        ],
+        "synopsis": "For the first time in my life, I have a girlfriend. But her friend tempts me with a body that's so seductive... What would you do if your girlfriend's friend came on to you like this? \n\n(Source: Yanmaga, translated)",
+        "url": "https://anilist.co/anime/211877"
+      },
+      "character": {
+        "id": 397963,
+        "slug": "397963-tomoko-yoshioka",
+        "name": "Tomoko Yoshioka",
+        "nameNative": "吉岡トモコ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b397963-6jhuX13Uygjj.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 21,
+        "about": "Takeru and Kaori's classmate, and Kaori's best friend. Takeru often glanced at her in school but had been unable to make a move on her at first. After the karaoke date, he starts a secret relationship with her.",
+        "voiceActors": [
+          {
+            "name": "Miki Hase",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n105637-PZFXj5YUnMLE.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 24,
+      "anime": {
+        "id": 16498,
+        "title": "Attack on Titan",
+        "titleOriginal": "Shingeki no Kyojin",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-buvcRTBx4NSm.jpg",
+        "score": 8.5,
+        "year": 2013,
+        "episodes": 25,
+        "genres": [
+          "Action",
+          "Drama",
+          "Fantasy",
+          "Mystery"
+        ],
+        "synopsis": "Several hundred years ago, humans were nearly exterminated by titans. Titans are typically several stories tall, seem to have no intelligence, devour human beings and, worst of all, seem to do it for the pleasure rather than as a food source. A small percentage of humanity survived by walling themselves in a city protected by extremely high walls, even taller than the biggest of titans.\n\n\r\nFlash forward to the present and the city has not seen a titan in over 100 years. Teenage boy Eren and his foster sister Mikasa witness something horrific as the city walls are destroyed by a colossal titan…",
+        "url": "https://anilist.co/anime/16498"
+      },
+      "character": {
+        "id": 40881,
+        "slug": "40881-mikasa-ackerman",
+        "name": "Mikasa Ackerman",
+        "nameNative": "ミカサ・アッカーマン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b40881-F3gr1PkreDvj.png",
+        "age": "15-",
+        "birthday": "2/10",
+        "favourites": 25816,
+        "about": "Height: 170 cm (5'7\") - 176 cm (5'9½\")\nPosition: 104th Training Corps, Survey Corps\nRelatives: Birth Mother (Deceased), Birth Father (Deceased), Grisha Yaeger (Foster Father), Carla Yaeger (Foster Mother, Deceased), Eren Yeager (Foster Brother)\n\nMikasa is Eren Yaeger's foster sister and mutual childhood friend of Armin Arlert, living with the two of them in Shiganshina District within the southern region of Wall Maria. \n\nWhen she was young, her parents were killed by human traffickers, and she was kidnapped. Eren discovered this and helped her escape her captors. Later, Eren gave her his scarf, which she constantly wears and shares an emotional attachment to. She was adopted by the Yaeger family soon after. Because of these past events, Mikasa shares an unbreakable bond with Eren and lives to protect him, constantly worrying for Eren's well-being. After the Titans broke through Wall Maria and killed her and Eren's mother, she chose to follow Eren into the military to try and keep him safe from danger. \n\nEven as a child, Mikasa possessed impressive fighting skill and strength, and that skill was only honed further during her training.  Mikasa is considered a genius among all the army trainees and is incredibly skilled at combat and agility, to the point that she was known as the greatest soldier among the 104th Training Corps and graduated in first place. Though being among the best of the best, she remains humble and refrains from displaying arrogance. Ultimately, Mikasa's…",
+        "voiceActors": [
+          {
+            "name": "Yui Ishikawa",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n100142-k6RP0HzXffUG.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 25,
+      "anime": {
+        "id": 189046,
+        "title": "Re:ZERO -Starting Life in Another World- Season 4",
+        "titleOriginal": "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx189046-yaHWtS5FII46.jpg",
+        "score": 9,
+        "year": 2026,
+        "episodes": 19,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Drama",
+          "Fantasy",
+          "Psychological",
+          "Romance",
+          "Thriller"
+        ],
+        "synopsis": "In the deadly battle at Priestella, Subaru and his allies emerged victorious, but at great cost. As Subaru searches for a way to save Rem, Crusch, and Julius, he learns of a \"wise woman,\" Shaula, an all-seeing being said to possess every form of knowledge, who resides at the Pleiades Watchtower. Subaru and his crew must brave the uncharted Auguria Dunes to reclaim what was lost.\n\n(Source: Crunchyroll)\n\nNote: Lucca Comics & Games pre-screened episode 1 early on November 1, 2025, prior to the Japanese television broadcast on July 8th, 2026.",
+        "url": "https://anilist.co/anime/189046"
+      },
+      "character": {
+        "id": 88572,
+        "slug": "88572-emilia",
+        "name": "Emilia",
+        "nameNative": "エミリア",
+        "aliases": [
+          "Satella",
+          "Lia",
+          "Emilia-tan",
+          "Witch of Glaciation",
+          "Hyouketsu no Majo (氷結の魔女)",
+          "Witch of Frost"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b88572-IzTwXEHSobRs.jpg",
+        "age": "14-19",
+        "birthday": "9/23",
+        "favourites": 27656,
+        "about": "Height: 164 cm (5'5\")\n\nEmilia is a half-elf girl who is one of the candidates to become the next ruler in the royal election. Subaru first meets her when her insignia is stolen by Felt as she needs to possess it to be eligible to participate in the election. She introduces herself as Satella when she and Subaru met during the first timeline before introducing herself by her real name when she got her insignia back.\n\nEmilia is good natured and likes to take care of others, though she herself refuses to admit it, instead thinking of it as her own selfishness. She is indifferent to her own appearance, leaving Puck to take care of her clothes and hair. Because her appearance is similar to the Witch of Envy, she has received unfair discrimination from others. She sometimes acts like a child and is unacquainted with the world as she used to live in the woods with other Elves, though despite this she still works hard to become a ruler.",
+        "voiceActors": [
+          {
+            "name": "Rie Takahashi",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119331-5dPuMCxu4RWf.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 26,
+      "anime": {
+        "id": 19,
+        "title": "Monster",
+        "titleOriginal": "MONSTER",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx19-gtMC64182sm4.jpg",
+        "score": 8.8,
+        "year": 2004,
+        "episodes": 74,
+        "genres": [
+          "Drama",
+          "Horror",
+          "Mystery",
+          "Psychological",
+          "Thriller"
+        ],
+        "synopsis": "Dr. Kenzo Tenma is a renowned Japanese brain surgeon working at a leading hospital in Germany. One night, Dr. Tenma risks his reputation and career to save the life of a critically wounded young boy over that of the town mayor who had been planning to support the hospital financially. A string of mysterious murders begin to occur soon after the operation, and Dr. Tenma emerges as the primary suspect despite no incriminating evidence. \n\nA doctor is taught to believe that all life is equal; however, when another series of murders occur in the surgeon's vicinity, Dr. Tenma's beliefs are shaken…",
+        "url": "https://anilist.co/anime/19"
+      },
+      "character": {
+        "id": 720,
+        "slug": "720-anna-liebert",
+        "name": "Anna Liebert",
+        "nameNative": "アンナ・リーベルト",
+        "aliases": [
+          "Nina Fortner (ニナ・フォルトナー)"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b720-VFo5SzZsVfzl.png",
+        "age": "19-23, (30's in Another Monster)",
+        "birthday": "4/7",
+        "favourites": 2096,
+        "about": "Johan's twin sister and the only unharmed survivor of the night when both her parents and her brother were shot in what appeared to be a botched burglary. At first she showed signs of amnesia due to the psychological trauma of the incident. After she and her brother disappeared, she was adopted by the Fortner family from Heidelberg, who were unaware of her previous identity as Anna Liebert. \n\nAs Nina Fortner, she was a hardworking law student at an unnamed university (likely the University of Heidelberg), as well as an adept practitioner of Aikido. She lived her life in peace until Johan made contact with her on her twentieth birthday. She comes to pursue Johan, albeit by different methods and for a different reason than Tenma.",
+        "voiceActors": [
+          {
+            "name": "Mamiko Noto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95040-hSONMMOAmiJ6.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 27,
+      "anime": {
+        "id": 209872,
+        "title": "Ranma1/2 (2024) Season 3",
+        "titleOriginal": "Ranma 1/2 (2024) 3rd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx209872-RBeVPqwejHFp.jpg",
+        "score": 7.9,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Comedy",
+          "Romance"
+        ],
+        "synopsis": "The third season of Ranma 1/2 (2024).\n\nMore rivals and misadventures follow Ranma and Akane as Cologne trains Ryouga, a cookie war crumbles out of control, and Shampoo brews new schemes.\n\n(Source: Netflix, edited)",
+        "url": "https://anilist.co/anime/209872"
+      },
+      "character": {
+        "id": 669,
+        "slug": "669-akane-tendou",
+        "name": "Akane Tendou",
+        "nameNative": "天道あかね",
+        "aliases": [
+          "Adeline",
+          "Macho Chick"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b669-eMyVdO4BDPiP.jpg",
+        "age": "16",
+        "birthday": null,
+        "favourites": 907,
+        "about": "Occupation: Material arts student, sports\nWeapon: Large, wooden mallet.\n\nAkane Tendo is the youngest of Soun Tendo's three daughters and one of the heirs to the Anything Goes School of Martial Arts.\n\nWhile Akane is generally shown as compassionate and helpful towards anyone in trouble, she's also a vulnerable, stubborn, relentless, and very short-tempered girl. She frequently becomes angry and jealous, and is apt to hit Ranma, often a reaction to Ranma's own bad traits like his smart mouth and insensitivity, but also due to rampant paranoia and willingness to generally believe the worst of the situations she finds him in. Despite her temper, Akane has a more prominent gentle side. She has come to the aid of her rivals, even consistently feeling compassion towards or helping people who try to make her life miserable. Most of her flaws can be attributed to insecurities about her own attractiveness, skill, or lack of traditionally feminine talents.",
+        "voiceActors": [
+          {
+            "name": "Noriko Hidaka",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95181-VZKOK4WN0UuO.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 28,
+      "anime": {
+        "id": 207329,
+        "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+        "titleOriginal": "Tsuihou Sareta Cheat Fuyo Majutsushi wa Kimama na Second Life wo Ouka Suru.: Ore wa Buki dake ja Naku, Arayuru Mono ni \"Kyouka Point\" wo Fuyo Dekiru shi, Ore no Ishi de Itsudemo Kouka wo Kaijo Dekiru kedo, Nokotta Hitotachi Daijoubu?",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b207329-6VPeZIDfF4Sr.png",
+        "score": 7.3,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Adventure",
+          "Comedy",
+          "Fantasy",
+          "Slice of Life"
+        ],
+        "synopsis": "Rein, an enchanter, is suddenly expelled from his guild one day. But instead of despairing, he declares, “Now I can do anything!” and begins reclaiming the massive number of enhancement points he once poured into his guildmates’ gear, setting off on a brand-new path as an adventurer.\n\nGathering around him are people carrying wounds that don’t fade easily: a genius adventurer who shut her heart after her party was slaughtered, a warrior who lost her family, and an assassin raised from childhood to kill. Yet Rein never rejects their pasts or their scars—he accepts them all with bright,…",
+        "url": "https://anilist.co/anime/207329"
+      },
+      "character": {
+        "id": 389807,
+        "slug": "389807-lily-flambert",
+        "name": "Lily Flambert",
+        "nameNative": "リリィ・フラムベル",
+        "aliases": [
+          "Lily Flamebell"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b389807-RJdvQk9u7Y2K.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 39,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Lynn",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n118806-2aFjOHv08Iwm.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 29,
+      "anime": {
+        "id": 209219,
+        "title": "So What's Wrong with Getting Reborn as a Goblin?",
+        "titleOriginal": "Tensei Goblin Dakedo Shitsumon Aru?",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx209219-3yhKlRx0LX3p.jpg",
+        "score": 6.5,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy",
+          "Drama",
+          "Fantasy",
+          "Romance"
+        ],
+        "synopsis": "Office worker Akira Yagami’s altruistic nature usually gets him the short end of the stick. When he dies after saving a kid from oncoming traffic...he reincarnates in another world as a goblin?! Normally, goblins only live for seven days, but Akira’s newfound powers let him defy the species’ normal life span...and are the key to his path to becoming the strongest goblin ever!\n\n(Source: Yen Press)\n\nNote: Tensei Goblin Dakedo Shitsumon Aru? is streaming 1 week in advance of the TV broadcast on ABEMA and Prime Video beginning with episode 2 on October 5th, 2026",
+        "url": "https://anilist.co/anime/209219"
+      },
+      "character": {
+        "id": 393613,
+        "slug": "393613-karen",
+        "name": "Karen",
+        "nameNative": "カレン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b393613-x1DO68FHkI8Z.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 10,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Youko Hikasa",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n102263-aaPZtNXVUljW.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 30,
+      "anime": {
+        "id": 918,
+        "title": "Gintama",
+        "titleOriginal": "Gintama",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx918-iOaeBVUn4uK7.jpg",
+        "score": 8.5,
+        "year": 2006,
+        "episodes": 201,
+        "genres": [
+          "Action",
+          "Comedy",
+          "Drama",
+          "Sci-Fi"
+        ],
+        "synopsis": "Life isn't easy in feudal Japan... especially since the aliens landed and conquered everything! Oh sure, the new health care is great, but the public ban on the use of swords has left a lot of defeated samurai with a difficult decision to make concerning their future career paths! This is especially true if, as in the case of Gintoki Sakata, they're not particularly inclined towards holding a day job, which is why Gintoki's opted for the freelance route, taking any job that's offered to him as long as the financial remuneration sounds right. Unfortunately, in a brave new world filled with…",
+        "url": "https://anilist.co/anime/918"
+      },
+      "character": {
+        "id": 674,
+        "slug": "674-kagura",
+        "name": "Kagura",
+        "nameNative": "神楽",
+        "aliases": [
+          "Gura",
+          "China Girl",
+          "Leader",
+          "Gurako"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b674-w8wCh0A5Qa8R.png",
+        "age": "14-",
+        "birthday": "11/3",
+        "favourites": 6150,
+        "about": "Height: 155 cm\n\nAlthough she appears to be a normal, cute, human girl in Chinese-style clothing, she actually belongs to the Yato Clan, one of the strongest and most bloodthirsty of the Amanto races. The Yato is said to have \"transparent\" skin that is highly sensitive to sunlight, so Kagura carries a purple parasol at all times. The parasol is also the Yato clan's weapon of choice; Kagura's is bulletproof and fires bullets from its tip. Because of her Yato blood, she is super-strong and can stop a speeding motor-scooter with one hand. Although stronger than most humans, she cannot control her strength perfectly. Her super-human strength makes her extremely bad with pets. Most of her pets, with the exception of Sadaharu, have met with an untimely demise at her hands.\n\nShe is also extremely flexible and fast; capable of catching multiple speeding bullets between her teeth and fingers. During a battle, she's often seen flipping through the air and performing various acrobatic feats. Due to her Yato blood, she is capable of rapid regeneration. During the Benizakura arc, she is seen healing from a gunshot wound almost overnight.\n\nKagura also has an unusually strong appetite. She is able to consume large quantities of food within a matter of seconds. Nevertheless, her tastes are endearingly plain. Sukonbu, rice, and eggs are among her favorite foods.\n\nHer immediate family consists of her father, Umibouzu, a widely recognized alien hunter, her mother, who is deceased, and her older…",
+        "voiceActors": [
+          {
+            "name": "Rie Kugimiya",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95008-2y0EeuSTHIri.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 31,
+      "anime": {
+        "id": 180894,
+        "title": "Romelia War Chronicle",
+        "titleOriginal": "Romelia Senki: Maou wo Taoshita nochi mo Jinrui Yabasou dakara Guntai Soshiki Shita",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx180894-o3pz4DWFm3je.png",
+        "score": 7.2,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Adventure",
+          "Drama",
+          "Fantasy"
+        ],
+        "synopsis": "Romelia and her party succeed in defeating the Demon King Zelgis, though Prince Henri’s reckless charge forces them into a grueling battle. In the aftermath, Romelia is branded \"dead weight\" for not fighting directly, and the Prince unilaterally breaks off their engagement. Denied a place in the victory celebrations, Romelia returns home, only to be met with cold indifference from her family and society. Yet, she refuses to break. She has already set her sights on the path that lies ahead.\n\n(Source: Crunchyroll)\n\nNote: Romelia War Chronicle streamed 2 days in advance of the TV broadcast on…",
+        "url": "https://anilist.co/anime/180894"
+      },
+      "character": {
+        "id": 344617,
+        "slug": "344617-rome-lia-von-graham",
+        "name": "Romélia von Graham",
+        "nameNative": "ロメリア・フォン・グラハム",
+        "aliases": [
+          "Rome"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b344617-U8k4usaDs8rR.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 32,
+        "about": "She set out on a journey with her fiancé, Prince Henri, to slay Zelgis—the Demon King who had threatened their homeland—only to find herself with a broken engagement once the battle was won. Yet, it seems she still has a mission to fulfill.",
+        "voiceActors": [
+          {
+            "name": "Yuna Nemoto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n243272-OXpyRIi3kjBk.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 32,
+      "anime": {
+        "id": 187402,
+        "title": "A Tale of the Secret Saint",
+        "titleOriginal": "Tensei shita Dai Seijo wa, Seijo de Aru Koto wo Hita Kakusu",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx187402-ReKkLwFmMV3q.jpg",
+        "score": 7,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "Fia always dreamed of becoming a knight. Born into a family of knights, she’s the least talented among them, but she still clutches to her hope and trains with everything she has. When the day comes for her to slay a small demon and prove her worth, she ends up face to face with a dragon instead! A deadly injury makes her life flash before her eyes…and she suddenly remembers her former life, when she was a powerful Saint in a bygone era who defeated the Demon King. That life ended in pain because of who she was, making her fear ever becoming a Saint again. Now that the magic from her previous…",
+        "url": "https://anilist.co/anime/187402"
+      },
+      "character": {
+        "id": 301758,
+        "slug": "301758-fia-ruud",
+        "name": "Fia Ruud",
+        "nameNative": "フィーア・ルード",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b301758-DbpPBn5O933J.jpg",
+        "age": "15-",
+        "birthday": "2/25",
+        "favourites": 41,
+        "about": "Height: 150 cm\n\nYoungest daughter of the Ruud knight family. After a near-death experience she recalls her past life. She was a princess and the Great Saint in her past life. Currently hiding her status as a saint and living as a knight.",
+        "voiceActors": [
+          {
+            "name": "Shion Wakayama",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n148220-Tj3U7jdXZehG.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 33,
+      "anime": {
+        "id": 203275,
+        "title": "Devils' Crest",
+        "titleOriginal": "Demons' Crest",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b203275-YyNHygkzIjMC.jpg",
+        "score": 5.2,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "Sixth-grader Yuuma Ashihara and his twin sister, Sawa, are playing Actual Magic, a brand-new virtual reality MMORPG, when it suddenly begins fusing with the real world. Amid all the chaos and confusion, it becomes clear that death is lurking around every corner, including when Yuuma runs into his classmate Sumika. Before, she was one of the cutest girls in his class, but she’s since undergone a terrible metamorphosis—into one of the game’s horrifying monsters! From the author of Sword Art Online and Accel World comes a story beyond VR and AR, where gaming and reality are one and the same…and…",
+        "url": "https://anilist.co/anime/203275"
+      },
+      "character": {
+        "id": 287000,
+        "slug": "287000-sawa-ashihara",
+        "name": "Sawa Ashihara",
+        "nameNative": "芦原佐羽",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b287000-pKORNlrs8OiH.png",
+        "age": "11",
+        "birthday": null,
+        "favourites": 10,
+        "about": "The female protagonist of the story. Sawa is Yuuma's younger twin sister, and a 6th grader at Shiritsu Yukibana Elementary School. She is a hardcore MMO player, having experienced them regularly with her brother, and is generally the braver of the twins.",
+        "voiceActors": [
+          {
+            "name": "Konomi Inagaki",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n271036-0ek5c2MkANNg.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 34,
+      "anime": {
+        "id": 210031,
+        "title": "You and I Are Polar Opposites Season 2",
+        "titleOriginal": "Seihantai na Kimi to Boku 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx210031-TppgcHZh46LY.jpg",
+        "score": 8.4,
+        "year": 2026,
+        "episodes": 13,
+        "genres": [
+          "Comedy",
+          "Drama",
+          "Romance",
+          "Slice of Life"
+        ],
+        "synopsis": "Six months have passed since the polar opposite classmates Miyu Suzuki and Yuusuke Tani started dating. Through spending time together along with their friends from school, the two have been happier than ever. As the year nears its end, the new couple plans to celebrate Christmas and the New Year together, making memories for years to come.\n\nMeanwhile, Miyu and Yuusuke's friends Shuuji Taira and Kentarou Yamada are puzzled by their own situations. Due to his bad experiences in middle school, Taira still overthinks everything around him, especially after his classmate Shino Azuma began giving…",
+        "url": "https://anilist.co/anime/210031"
+      },
+      "character": {
+        "id": 281250,
+        "slug": "281250-miyu-suzuki",
+        "name": "Miyu Suzuki",
+        "nameNative": "鈴木みゆ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b281250-3Ce6zhYCFWtN.png",
+        "age": "16-17",
+        "birthday": "3/30",
+        "favourites": 1367,
+        "about": "Height: 158 cm (5'2\")\n\nAn energetic but self-conscious girl. She admires Tani for being the complete opposite of herself, but she can't interact with him normally and always ends up bothering him with pointless conversation.",
+        "voiceActors": [
+          {
+            "name": "Sayumi Suzushiro",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n126963-GnhNcLWFeKmy.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 35,
+      "anime": {
+        "id": 195600,
+        "title": "Daemons of the Shadow Realm",
+        "titleOriginal": "Yomi no Tsugai",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195600-moI0UFArtOme.jpg",
+        "score": 7.8,
+        "year": 2026,
+        "episodes": 24,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Comedy",
+          "Fantasy",
+          "Supernatural"
+        ],
+        "synopsis": "In a remote mountain village under the watchful eyes of two stone guardians, the young Yuru contentedly lives off the land while staying close to the only family he has left—Asa, his precious twin sister. Asa, meanwhile, carries out a mysterious “duty” on behalf of the village while locked in a cage. Why is Asa a prisoner? And what other secrets does Yuru’s otherwise idyllic home hide?\n\n(Source: Square Enix)",
+        "url": "https://anilist.co/anime/195600"
+      },
+      "character": {
+        "id": 270810,
+        "slug": "270810-asa",
+        "name": "Asa",
+        "nameNative": "アサ",
+        "aliases": [
+          "阿薩"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b270810-RDnZzM4DtLyn.png",
+        "age": "16",
+        "birthday": null,
+        "favourites": 268,
+        "about": "Daemons: Kai, Inyou (Ohagi and Daifuku)\nAffiliation: Kagemori Family\n\nThe younger of the twins. A tall, masculine girl who embodies the Day. Although she displays a very tough character and a readiness for violence in critical situations, she is also a reliable friend to Jin and Gabby, and has a pronounced brother complex towards Yuru due to their long separation. She actually left the village at a young age with her parents, and a \"False Asa\" with a more idealized personality and the ability to regenerate lived in the settlement in her place.",
+        "voiceActors": [
+          {
+            "name": "Yume Miyamoto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n104510-hB8YLsPRLNKq.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 36,
+      "anime": {
+        "id": 206774,
+        "title": "Now That I Can Control Reality With A Mouse Cursor, I'm Gonna Click Away On The Girls!",
+        "titleOriginal": "Mouse Cursor de Genjitsu wo Sousa Dekiru You ni Natta node, Onnanoko wo Ippai Click Shimasu",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx206774-gXVdrySlLY6y.jpg",
+        "score": 5.2,
+        "year": 2026,
+        "episodes": 8,
+        "genres": [
+          "Ecchi",
+          "Romance",
+          "Supernatural"
+        ],
+        "synopsis": "What if you could control reality with a mouse cursor?\n\nOne day during class, Takumi— an otaku — notices his mouse cursor has sprung out of the screen.\n\nPanicked, he asks his childhood friend Mone, sitting next to him, to take a look, only to be brushed off...\n\nOnce Takumi realizes he could actually control it himself, he uses the mouse cursor— visible only to him— to slip it in between Mone's clothes and starts clicking away...\n\nHere's Japan’s (probably) first new genre of romcom, \"Clicking Away at a Gyaru Who's Mean to Otakus with a Mouse Cursor\"!\n\n(Source: Official Site)\n\nNote: Episode 1…",
+        "url": "https://anilist.co/anime/206774"
+      },
+      "character": {
+        "id": 407559,
+        "slug": "407559-mone-himeno",
+        "name": "Mone Himeno",
+        "nameNative": "姫野萌音",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b407559-NqTMjE5NRa26.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 5,
+        "about": "Takumi's childhood friend. As a child, she was a crybaby and acted spoiled, but she grew up to become a pretty gyaru. She's mean to otakus and makes fun of the socially awkward Takumi.",
+        "voiceActors": [
+          {
+            "name": "Ruka Fujihira",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/default.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 37,
+      "anime": {
+        "id": 159042,
+        "title": "Reincarnated as a Sword Season 2",
+        "titleOriginal": "Tensei Shitara Ken Deshita 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx159042-GGFwlDskc5vR.png",
+        "score": 7.5,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Action",
+          "Adventure",
+          "Fantasy"
+        ],
+        "synopsis": "The second season of Tensei Shitara Ken Deshita.\n\nNote: Each episode was streamed one week in advance of the TV broadcast starting on October 1, 2026 on Abema. Regular broadcasting began on October 8, 2026.",
+        "url": "https://anilist.co/anime/159042"
+      },
+      "character": {
+        "id": 127603,
+        "slug": "127603-fran",
+        "name": "Fran",
+        "nameNative": "フラン",
+        "aliases": [
+          "Mofumimi",
+          "Nameless",
+          "Magical Sword Girl",
+          "Black Lightning Princess",
+          "Saint"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b127603-CixEdBk9ItUU.png",
+        "age": "12-13",
+        "birthday": null,
+        "favourites": 1473,
+        "about": "Race: Beastman\nSpecies: Black Cat\nClass: Swordlord\n\nFran is normally stoic and expressionless, Fran can be quick to anger when her race is insulted and is almost completely unafraid of the idea of displaying violence and mercilessness for the sake of achieving her goals. She views most Blue Catkin with hostility due to their betrayal and selling of her people into slavery. Fran will express happiness or excitement at the prospects of fighting a strong opponent or eating curry. Anyone, that insults that which she takes pride in, will face her wrath. Fran does not completely understand metaphors and will take things literally.",
+        "voiceActors": [
+          {
+            "name": "Ai Kakuma",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n113511-F58Tk4OFKs1w.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 38,
+      "anime": {
+        "id": 178789,
+        "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+        "titleOriginal": "Mushoku Tensei III: Isekai Ittara Honki Dasu",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx178789-hNXjKFzUq7mk.jpg",
+        "score": 8.6,
+        "year": 2026,
+        "episodes": 14,
+        "genres": [
+          "Adventure",
+          "Drama",
+          "Ecchi",
+          "Fantasy"
+        ],
+        "synopsis": "The third season of Mushoku Tensei: Isekai Ittara Honki Dasu.",
+        "url": "https://anilist.co/anime/178789"
+      },
+      "character": {
+        "id": 88350,
+        "slug": "88350-roxy-migurdia",
+        "name": "Roxy Migurdia",
+        "nameNative": "ロキシー・ミグルディア",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b88350-QU1iwgZ887U8.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 11572,
+        "about": "Roxy Migurdia is a talented mage from the Migurd race, and a former magic tutor. Because she can't use telepathy, she left her village due to feeling isolated from her peers. Unable to make a stable living as an adventurer, she became a travelling tutor and eventually becomes Rudeus' teacher.",
+        "voiceActors": [
+          {
+            "name": "Konomi Kohara",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n121961-TaMewK1taQm6.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 39,
+      "anime": {
+        "id": 1575,
+        "title": "Code Geass: Lelouch of the Rebellion",
+        "titleOriginal": "Code Geass: Hangyaku no Lelouch",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1575-hsmWM2ydNm1m.jpg",
+        "score": 8.5,
+        "year": 2006,
+        "episodes": 25,
+        "genres": [
+          "Action",
+          "Drama",
+          "Mecha",
+          "Sci-Fi",
+          "Thriller"
+        ],
+        "synopsis": "On August 10th of the year 2010 the Holy Empire of Britannia began a campaign of conquest, its sights set on Japan. Operations were completed in one month thanks to Britannia's deployment of new mobile humanoid armor vehicles dubbed Knightmare Frames. Japan's rights and identity were stripped away, the once proud nation now referred to as Area 11. Its citizens, Elevens, are forced to scratch out a living while the Britannian aristocracy lives comfortably within their settlements. Pockets of resistance appear throughout Area 11, working towards independence for Japan.\n\n Lelouch, an exiled…",
+        "url": "https://anilist.co/anime/1575"
+      },
+      "character": {
+        "id": 1111,
+        "slug": "1111-c-c",
+        "name": "C.C.",
+        "nameNative": "シー･ツー",
+        "aliases": [
+          "Witch of Britannia",
+          "Gray Witch",
+          "Pizza Girl",
+          "C2"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b1111-UhmlFtRFrnWa.png",
+        "age": null,
+        "birthday": "3/21",
+        "favourites": 10956,
+        "about": "Height: 167 cm\nAllegiance: The Black Knights\n\nC.C. is apparently immortal, healing from any wound (implied to include beheading) with enough time. She also doesn't age. Apart from her immortality, C.C. can bestow people with the power of Geass, which manifests differently in each person but generally carries the ability to affect the minds of those it is used on in some way. The Geass sigil glows on her forehead whenever she manifests this power, and she has a similar scar on her left breast. It is hinted that many more like her exist, as shown in her memories of many children with similar sigils, and she suggests that the power has precipitated bloody conflicts in the past. Her powers caught the interest of Britannia, who imprisoned her for experimentation purposes.",
+        "voiceActors": [
+          {
+            "name": "Yukana",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95140-sFp0uedEmZ9f.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 40,
+      "anime": {
+        "id": 195571,
+        "title": "The Vermilion Mask",
+        "titleOriginal": "Shuiro no Kamen",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195571-fvj7u5GI7BRT.jpg",
+        "score": 6.7,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Drama",
+          "Supernatural"
+        ],
+        "synopsis": "\"The Mask” gives power to anyone who wears it.\n\nAt times, that means endless possibility, or unimaginable tragedy…\n\nPeru, pupil of the legendary mask maker Gaston Roux, becomes controlled by the “Mask of the Warrior God,” and unintentionally kills his friends, and even his own master.\n\nIn order to prevent this type of tragedy from reoccurring, Peru swears to destroy all of Gaston’s masks that are spread around the world. Confronting the sins that he has committed, he embarks on his voyage. Meeting new friends, then confronting powerful foes. The boy continues on. Until the day he can atone…",
+        "url": "https://anilist.co/anime/195571"
+      },
+      "character": {
+        "id": 403307,
+        "slug": "403307-sonarue-maywood",
+        "name": "Sonarue Maywood",
+        "nameNative": "ソナルエ・メイウッド",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b403307-im5lTuP73HQk.png",
+        "age": null,
+        "birthday": null,
+        "favourites": 4,
+        "about": null,
+        "voiceActors": [
+          {
+            "name": "Yuuki Yamamoto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n298382-uVSZFizlMIbl.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 41,
+      "anime": {
+        "id": 1535,
+        "title": "Death Note",
+        "titleOriginal": "DEATH NOTE",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1535-kUgkcrfOrkUM.jpg",
+        "score": 8.4,
+        "year": 2006,
+        "episodes": 37,
+        "genres": [
+          "Mystery",
+          "Psychological",
+          "Supernatural",
+          "Thriller"
+        ],
+        "synopsis": "Light Yagami is a genius high school student who is about to learn about life through a book of death. When a bored shinigami, a God of Death, named Ryuk drops a black notepad called a Death Note, Light receives power over life and death with the stroke of a pen. Determined to use this dark gift for the best, Light sets out to rid the world of evil… namely, the people he believes to be evil. Should anyone hold such power?\n\nThe consequences of Light’s actions will set the world ablaze.\n\n(Source: VIZ Media)",
+        "url": "https://anilist.co/anime/1535"
+      },
+      "character": {
+        "id": 835,
+        "slug": "835-misa-amane",
+        "name": "Misa Amane",
+        "nameNative": "弥海砂",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b835-CiZa8y2z2gCz.png",
+        "age": null,
+        "birthday": "12/25",
+        "favourites": 7118,
+        "about": "Height: 152 cm (4'11\")\n\nMisa is a famous model, singer and actress and has an immense crush on Light Yagami. She usually refers to herself in the third person by calling herself \"Misa-Misa\" and tends to be hyperactive. \n\nShe poses as the second Kira to attract the attention of the first Kira. She decides to devote her life to Light because he punished the criminal that killed her parents when she was younger; a burglar killed Misa's parents in front of her eyes. Misa, unable to forgive the killer and wanting to kill the burglar herself, saw multiple delays in the killer's trial before Kira killed him. The Shinigami who follows her is Rem.",
+        "voiceActors": [
+          {
+            "name": "Aya Hirano",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95004-qWQQHGzY3wqr.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 42,
+      "anime": {
+        "id": 113415,
+        "title": "JUJUTSU KAISEN",
+        "titleOriginal": "Jujutsu Kaisen",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113415-LHBAeoZDIsnF.jpg",
+        "score": 8.4,
+        "year": 2020,
+        "episodes": 24,
+        "genres": [
+          "Action",
+          "Drama",
+          "Supernatural"
+        ],
+        "synopsis": "A boy fights... for \"the right death.\"\n\nHardship, regret, shame: the negative feelings that humans feel become Curses that lurk in our everyday lives. The Curses run rampant throughout the world, capable of leading people to terrible misfortune and even death. What's more, the Curses can only be exorcised by another Curse.\n\nItadori Yuji is a boy with tremendous physical strength, though he lives a completely ordinary high school life. One day, to save a friend who has been attacked by Curses, he eats the finger of the Double-Faced Specter, taking the Curse into his own soul. From then on, he…",
+        "url": "https://anilist.co/anime/113415"
+      },
+      "character": {
+        "id": 133700,
+        "slug": "133700-nobara-kugisaki",
+        "name": "Nobara Kugisaki",
+        "nameNative": "釘崎野薔薇",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b133700-f6sOO3TcgLV6.png",
+        "age": "16",
+        "birthday": "8/7",
+        "favourites": 13589,
+        "about": "Height: 160 cm (5'3\")\nOccupation: Jujutsu Sorcerer, Student\nAffiliation: Tokyo Jujutsu High\nGrade: Grade 3 Sorcerer\n\nShe is a first-year student and grade 3 jujutsu sorcerer at Tokyo Jujutsu High studying under Satoru Gojo alongside Yuji and Megumi.\n \nNobara is a confident and brash young woman with an unshakable character. More than anything, Nobara is determined to stay true to herself no matter what. She takes great pride in being both a pretty girl and a strong fighter, refusing to let anyone influence her.\n\nInitially, Nobara can appear to be a very obnoxious and arrogant person. She first introduced herself to Yuji and Megumi by expressing how inferior they were. She also argued with Yuji for the greater part of their first mission together. Despite her abrasive attitude, Nobara is actually an incredibly caring and dutiful person, but would never let most people see that side of her. After fighting alongside each other in several missions, Yuji and Megumi grow to become Nobara's closest allies.",
+        "voiceActors": [
+          {
+            "name": "Asami Seto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106787-ojpoY7XEGYgc.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 43,
+      "anime": {
+        "id": 206949,
+        "title": "Nia Liston: The Merciless Maiden",
+        "titleOriginal": "Kyouran Reijou Nia Liston",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx206949-4HYI3YuP0eLI.png",
+        "score": 7.5,
+        "year": 2026,
+        "episodes": 25,
+        "genres": [
+          "Action",
+          "Fantasy"
+        ],
+        "synopsis": "A great hero lies undefeated on her deathbed, regretting that she never found a foe who could take her down. She never intended to meet her fate anywhere other than on the battlefield, and her peaceful demise has her wishing desperately that things could have been different... But when she suddenly comes to in the body of the young, frail Nia Liston, she’s got an all-new fight ahead of her. Nia is a sickly child, meaning she has a long way to go before she’s in fighting form. Now that she’s been given a second shot at life, however, she’s determined to get what she wants. She’s going to…",
+        "url": "https://anilist.co/anime/206949"
+      },
+      "character": {
+        "id": 325674,
+        "slug": "325674-nia-liston",
+        "name": "Nia Liston",
+        "nameNative": "ニア・リストン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b325674-CUrlRnBxhdWo.png",
+        "age": "4-",
+        "birthday": null,
+        "favourites": 106,
+        "about": "A young lady of the Liston family. Although she died of illness at a tender age, she was resurrected via a forbidden ritual; outwardly, she appears to be a charming young noblewoman. However, the soul inhabiting her body is that of a warrior once hailed as a \"God-Slaying Hero\"—a spirit that still craves life-or-death battles against formidable foes. Aiming to popularize her family's business—\"magic imagery\"—she appears on broadcasts and becomes an idol?",
+        "voiceActors": [
+          {
+            "name": "Honoka Inoue",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n129363-xjhWsP7JCp3F.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 44,
+      "anime": {
+        "id": 213657,
+        "title": "Mission: Yozakura Family Season 2 Part 2",
+        "titleOriginal": "Yozakura-san Chi no Daisakusen 2nd Season Part 2",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx213657-ORNXVEBCjXaz.jpg",
+        "score": 7.3,
+        "year": 2026,
+        "episodes": null,
+        "genres": [
+          "Action",
+          "Comedy",
+          "Romance"
+        ],
+        "synopsis": "The second cour of the second season of Yozakura-san Chi no Daisakusen.",
+        "url": "https://anilist.co/anime/213657"
+      },
+      "character": {
+        "id": 162724,
+        "slug": "162724-mutsumi-yozakura",
+        "name": "Mutsumi Yozakura",
+        "nameNative": "夜桜六美",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b162724-MOaS8OsRvdyW.jpg",
+        "age": "17",
+        "birthday": "6/6",
+        "favourites": 499,
+        "about": "Affiliation: Yozakura Family\nOccupation: Student, Spy, Head of Yozakura Family\n\nMutsumi is one of the main protagonists of the series. She is the wife of Taiyo Asano and the current head of the Yozakura Family.\n\nMutsumi is a kind and caring girl who can be willing to do anything to help her friends and family. Additionally, she is responsible as a sister and as the Head of the Yozakura Family, taking after her late mother, the previous head of the family. Since being married to Taiyo Asano, she's seen assisting in Taiyo's missions, leading him the way, treating his wounds, etc. Mutsumi also does not hesitate when it comes to Taiyo and her family despite always being targeted by other spies and assassins.\n\nSince being born as a normal child of the Yozakura Family, making her the Head of the family, she is not known to have any superhuman abilities or skills. Even so, Mutsumi still, does have the talent and knowledge of a spy apart of the Yozakura Family.",
+        "voiceActors": [
+          {
+            "name": "Kaede Hondo",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n119416-7RC2mPKDKydB.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 45,
+      "anime": {
+        "id": 154587,
+        "title": "Frieren: Beyond Journey’s End",
+        "titleOriginal": "Sousou no Frieren",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-qQTzQnEJJ3oB.jpg",
+        "score": 9.1,
+        "year": 2023,
+        "episodes": 28,
+        "genres": [
+          "Adventure",
+          "Drama",
+          "Fantasy"
+        ],
+        "synopsis": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. But Frieren will long outlive the rest of her former party. How will she come to understand what life means to the people around her? Decades after their victory, the funeral of one her friends confronts Frieren with her own near immortality. Frieren sets out to fulfill the last wishes of her comrades and finds herself beginning a new adventure…\n\n(Source: Crunchyroll)",
+        "url": "https://anilist.co/anime/154587"
+      },
+      "character": {
+        "id": 176754,
+        "slug": "176754-frieren",
+        "name": "Frieren",
+        "nameNative": "フリーレン",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b176754-PCnpqIOkjhFk.png",
+        "age": "1000+",
+        "birthday": null,
+        "favourites": 22681,
+        "about": "Frieren is the protagonist of _Sousou no Frieren_ and Fern's master. She was the Mage of the Hero Party and traveled alongside Hero Himmel, Warrior Eisen, and Priest Heiter in a 10-year journey to defeat the Demon King. \n\nShe was a magic prodigy at a young age, with an impressive quantity of mana, which caught the interest of Flamme, a human wizard who taught her everything there is to know about magic and mana control until she passed away. Frieren persists in collecting magic knowledge no matter how trivial it may be.",
+        "voiceActors": [
+          {
+            "name": "Atsumi Tanezaki",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n112215-kfABGD8W2YSJ.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 46,
+      "anime": {
+        "id": 176301,
+        "title": "The Apothecary Diaries Season 2",
+        "titleOriginal": "Kusuriya no Hitorigoto 2nd Season",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx176301-TIGmldLffQGX.jpg",
+        "score": 8.8,
+        "year": 2025,
+        "episodes": 24,
+        "genres": [
+          "Drama",
+          "Mystery"
+        ],
+        "synopsis": "Using her wit and vast knowledge of medicines and poisons alike, Maomao played a pivotal role in solving a series of mysteries and conspiracies that plagued the imperial court. Having recently come to terms with the secrets of her parents, she returns to fulfill her normal duties on behalf of the emperor's highest-ranking consorts. Maomao also works alongside the eunuch Jinshi to better the consorts' many ladies-in-waiting, including helping them learn to read.\n\nHowever, with the arrival of a merchant caravan comes a new wave of intrigue. A pattern of strange coincidences involving the…",
+        "url": "https://anilist.co/anime/176301"
+      },
+      "character": {
+        "id": 244995,
+        "slug": "244995-rouran",
+        "name": "Rouran",
+        "nameNative": "楼蘭",
+        "aliases": [
+          "Loulan",
+          "Pure Consort"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b244995-dv4lX99O8aCZ.jpg",
+        "age": "18",
+        "birthday": null,
+        "favourites": 1956,
+        "about": "The (new) Pure consort, residing in the Garnet Palace within the inner court. She makes a big show of her exorbitant and ever changing clothing, jewellery and make up. Despite that, she doesn't talk any more than she needs to, keeping her distance.",
+        "voiceActors": [
+          {
+            "name": "Asami Seto",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106787-ojpoY7XEGYgc.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 47,
+      "anime": {
+        "id": 120377,
+        "title": "Cyberpunk: Edgerunners",
+        "titleOriginal": "Cyberpunk: Edgerunners",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx120377-ayZPoxiWt4Li.jpg",
+        "score": 8.5,
+        "year": 2022,
+        "episodes": 10,
+        "genres": [
+          "Action",
+          "Drama",
+          "Psychological",
+          "Sci-Fi"
+        ],
+        "synopsis": "Cyberpunk: Edgerunners tells a standalone, 10-episode story about a street kid trying to survive in a technology and body modification-obsessed city of the future. Having everything to lose, he chooses to stay alive by becoming an edgerunner—a mercenary outlaw also known as a cyberpunk.\n\n(Source: CD PROJEKT RED)\n\nNote: The first episode received a pre-screening at Anime Expo on July 2, 2022. The first 3 dubbed episodes were streamed on Twitch as part of a co-stream promotion on September 12, a day before the show’s premiere.",
+        "url": "https://anilist.co/anime/120377"
+      },
+      "character": {
+        "id": 284157,
+        "slug": "284157-lucy",
+        "name": "Lucy",
+        "nameNative": "ルーシー",
+        "aliases": [
+          "Lucyna Kushinada"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b284157-cqYawN7XCNJx.jpg",
+        "age": "~20",
+        "birthday": null,
+        "favourites": 8996,
+        "about": "Lucy is a mysterious netrunner from Night City. She is quite introverted and doesn't like to talk much about her past. Although she looks innocent, she won't hesitate to kill a person in a heartbeat if they tick her off. Lucy also considers Night City a prison and dreams of one day leaving it for the moon.\n\nLucy is a part of Maine's crew of edgerunners. One of its members, a netrunner named Kiwi, is her mentor. She also becomes acquainted with David and takes him on a tour through Night City's criminal underworld, leading the two of them to become partners in Maine's crew.",
+        "voiceActors": [
+          {
+            "name": "Aoi Yuuki",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n101686-PTd0lQZMsmcv.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 48,
+      "anime": {
+        "id": 99147,
+        "title": "Attack on Titan Season 3",
+        "titleOriginal": "Shingeki no Kyojin Season 3",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx99147-AiPDD8cwlCfi.jpg",
+        "score": 8.6,
+        "year": 2018,
+        "episodes": 12,
+        "genres": [
+          "Action",
+          "Drama",
+          "Fantasy",
+          "Mystery"
+        ],
+        "synopsis": "Eren and his companions in the 104th are assigned to the newly-formed Levi Squad, whose assignment is to keep Eren and Historia safe given Eren's newly-discovered power and Historia's knowledge and pedigree. Levi and Erwin have good reason to be concerned, because the priest of the Church that Hanji had hidden away was found tortured to death, making it clear that the Military Police are involved with the cover-up. Things get more harrowing when the MPs make a move on Erwin and the Levi Squad narrowly avoids capture. Eren is also having problems with his Titan transformation, and a deadly…",
+        "url": "https://anilist.co/anime/99147"
+      },
+      "character": {
+        "id": 62481,
+        "slug": "62481-krista-lenz",
+        "name": "Krista Lenz",
+        "nameNative": "クリスタ・レンズ",
+        "aliases": [
+          "Christa",
+          "Cattle-Taming Goddess"
+        ],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b62481-ZZDa7vn17lMU.png",
+        "age": "15-",
+        "birthday": "1/15",
+        "favourites": 3743,
+        "about": "Height: 145 cm (4'8\")\nAffiliations: 104th Trainees Squad, Survey Corps\n\nRanked tenth in the trainee class, Krista is a very shy and kind, caring person, often being described as a \"goddess\" or \"angel\" by her peers. She is good friends with Ymir.",
+        "voiceActors": [
+          {
+            "name": "Shiori Mikami",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n106236-aGhlIhHPPtjc.png"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 49,
+      "anime": {
+        "id": 147105,
+        "title": "Witch Hat Atelier",
+        "titleOriginal": "Tongari Boushi no Atelier",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx147105-rwOX8qyUy8gV.jpg",
+        "score": 8.5,
+        "year": 2026,
+        "episodes": 13,
+        "genres": [
+          "Adventure",
+          "Drama",
+          "Fantasy"
+        ],
+        "synopsis": "In a world where everyone takes wonders like magic spells and dragons for granted, Coco is a girl with a simple dream: she wants to be a witch. But everybody knows magicians are born, not made, and Coco was not born with a gift for magic. Resigned to her un-magical life, Coco is about to give up on her dream to become a witch … until the day she meets Qifrey, a mysterious, traveling magician. After secretly seeing Qifrey perform magic in a way she’s never seen before, Coco soon learns what everybody “knows” might not be the truth, and discovers that her magical dream may not be as far away as…",
+        "url": "https://anilist.co/anime/147105"
+      },
+      "character": {
+        "id": 129840,
+        "slug": "129840-coco",
+        "name": "Coco",
+        "nameNative": "ココ",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129840-B2CVE0TIcKpT.png",
+        "age": null,
+        "birthday": "5/25",
+        "favourites": 2542,
+        "about": "She is a young girl who becomes an apprentice witch under the witch Qifrey after her initial accidental use of forbidden magic turned her mother to crystal. She hopes to search the Tower of Books for the book containing the magic, in order to reverse its effects on her mother.\n\nShe is quite a dork for magic, with a child-like (even for her age) widen eyed look whenever she sees things that are common for every other witch. The very magic that inspired her was simple magic made by Qifrey's watcher that caused glowstone path to light up.",
+        "voiceActors": [
+          {
+            "name": "Rena Motomura",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n344276-kHHSHFe3msI6.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 50,
+      "anime": {
+        "id": 202269,
+        "title": "Love Unseen Beneath the Clear Night Sky",
+        "titleOriginal": "Toumei na Yoru ni Kakeru Kimi to, Me ni Mienai Koi wo Shita.",
+        "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx202269-7KNj8s2fSsJJ.jpg",
+        "score": 8.4,
+        "year": 2026,
+        "episodes": 12,
+        "genres": [
+          "Drama",
+          "Romance"
+        ],
+        "synopsis": "Kakeru Sorano, a quiet university freshman who avoids others, meets Koharu Fuyutsuki, a blind girl who faces the world with quiet brightness. When she says, “I want to see fireworks someday,” something in Kakeru shifts. As they grow closer through small moments and shared loneliness, he searches for a way to make her wish come true.\n\n(Source: Crunchyroll)",
+        "url": "https://anilist.co/anime/202269"
+      },
+      "character": {
+        "id": 354098,
+        "slug": "354098-koharu-fuyutsuki",
+        "name": "Koharu Fuyutsuki",
+        "nameNative": "冬月小春",
+        "aliases": [],
+        "image": "https://s4.anilist.co/file/anilistcdn/character/large/b354098-OLaNW2wevKQ9.png",
+        "age": "19-",
+        "birthday": "3/28",
+        "favourites": 497,
+        "about": "A freshman at a university in Tokyo, living in Tsukishima. She is always cheerful and positive. Her favorite drink is milk tea with a lot of sugar. She is blind.",
+        "voiceActors": [
+          {
+            "name": "Saori Hayami",
+            "image": "https://s4.anilist.co/file/anilistcdn/staff/medium/n95869-qCQ0EaWpq1QT.png"
+          }
+        ]
+      }
+    }
+  ]
 }

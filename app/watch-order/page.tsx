@@ -14,7 +14,7 @@ export const revalidate = 3600;
 const BASE_URL = getBaseUrl();
 
 export const metadata = {
-  title: "Watch Order Guides | Animegirl4u",
+  title: "Watch Order Guides",
   description:
     "The correct order to watch every franchise: release order, chronological order, or the best-experience recommended order.",
   alternates: { canonical: `${BASE_URL}/watch-order` },

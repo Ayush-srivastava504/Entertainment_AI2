@@ -99,6 +99,18 @@ export default async function Footer() {
         </nav>
       </div>
 
+      <nav aria-label="Explore" className="border-t border-white/15">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 px-4 py-4 sm:px-6">
+          <p className={headingClass}>Explore</p>
+          <Link href="/characters" className={linkClass}>Anime characters</Link>
+          <Link href="/characters/leads" className={linkClass}>Trending anime leads</Link>
+          <Link href="/wallpapers" className={linkClass}>Wallpapers</Link>
+          <Link href="/stickers" className={linkClass}>Stickers &amp; GIFs</Link>
+          <Link href="/games" className={linkClass}>Games</Link>
+          <Link href="/games/spin" className={linkClass}>Spin for avatars</Link>
+        </div>
+      </nav>
+
       <div className="border-t border-white/15">
         <p className="mx-auto max-w-6xl px-4 py-8 font-body text-sm leading-relaxed text-white/70 sm:px-6">
           {SITE_NAME} is an ending explained and watch order guide for movie and anime fans. Read{" "}

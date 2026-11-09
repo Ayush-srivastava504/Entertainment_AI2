@@ -17,7 +17,10 @@ export function getBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL;
   try {
     const url = new URL(raw);
-    url.hostname = url.hostname.replace(/^www\./, "");
+    // Also strip a trailing dot ("animegirl4u.com."): it is a valid FQDN but a
+    // different host string to Google, so canonicals/sitemap URLs built from it
+    // never match the real pages.
+    url.hostname = url.hostname.replace(/^www\./, "").replace(/\.+$/, "");
     return url.origin;
   } catch {
     return raw.replace(/\/$/, "");

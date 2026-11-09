@@ -77,8 +77,9 @@ export async function getPublishedAnimeBySlugOrId(
       const anime = rowToMedia(rows[0]);
       return { anime, isCanonical: anime.slug === param };
     } catch (err) {
+      // Rethrow so a DB blip is neither cached nor rendered as a cached 404.
       console.error("published anime by slug/id query failed:", err);
-      return null;
+      throw err;
     }
   });
 }

@@ -97,7 +97,7 @@ export async function getCharacter(id: number): Promise<CharacterDetail | null> 
 export interface TrendingLead {
   rank: number;
   anime: {
-    malId: number;
+    id: number;
     title: string;
     titleOriginal: string;
     image: string | null;
@@ -106,16 +106,29 @@ export interface TrendingLead {
     episodes: number | null;
     genres: string[];
     synopsis: string | null;
+    url: string;
   };
-  character: CharacterSummary;
+  character: {
+    id: number;
+    slug: string;
+    name: string;
+    nameNative: string | null;
+    aliases: string[];
+    image: string | null;
+    age: string | null;
+    birthday: string | null;
+    favourites: number;
+    about: string | null;
+    voiceActors: { name: string; image: string | null }[];
+  };
 }
 
 export function getTrendingLeads(): { generatedAt: string | null; items: TrendingLead[] } {
-  return leadsData as { generatedAt: string | null; items: TrendingLead[] };
+  return leadsData as unknown as { generatedAt: string | null; items: TrendingLead[] };
 }
 
-export function getLeadByCharacterId(id: number): TrendingLead | null {
-  return getTrendingLeads().items.find((l) => l.character.id === id) ?? null;
+export function getLeadBySlug(slug: string): TrendingLead | null {
+  return getTrendingLeads().items.find((l) => l.character.slug === slug) ?? null;
 }
 
 export function characterSlug(c: Pick<CharacterSummary, "id" | "name">): string {

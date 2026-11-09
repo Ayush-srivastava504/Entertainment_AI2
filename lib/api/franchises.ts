@@ -62,8 +62,10 @@ export async function getPublishedFranchiseBySlug(slug: string): Promise<Franchi
       );
       return rows[0] ? rowToFranchise(rows[0]) : null;
     } catch (err) {
+      // Rethrow: returning null here would be cached for an hour AND turn into
+      // a cached 404 page (soft 404 in Search Console) after a transient DB blip.
       console.error("franchise by slug query failed:", err);
-      return null;
+      throw err;
     }
   });
 }

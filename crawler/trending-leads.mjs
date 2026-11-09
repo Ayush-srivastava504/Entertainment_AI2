@@ -1,37 +1,41 @@
 /*
 Builds lib/data/trending-leads.json: the main FEMALE lead of each of the top 50
-currently-airing ("trending") anime, via Jikan (MyAnimeList).
+trending anime, via the AniList GraphQL API (which exposes character gender).
 
   npm run generate:leads
 
-Per anime: take Main-role characters (most-favorited first), look each up, and
-pick the first one detected as female. Anime with no detectable female lead are
-skipped and the next trending anime fills the slot, until we have 50.
-Jikan allows ~3 req/s and 60/min, so this is throttled and takes a few minutes.
+Per anime: take MAIN-role characters (most-favourited first) and pick the first
+with gender "Female". Anime with no such character are skipped and the next
+trending one fills the slot, until we have 50. AniList allows ~90 req/min.
 */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const JIKAN = "https://api.jikan.moe/v4";
+const API = "https://graphql.anilist.co";
 const TARGET = 50;
-const MAX_TOP_PAGES = 6;
-const MAX_CANDIDATES = 4;
-const GAP_MS = 1100; // ~55 req/min, under Jikan's 60/min cap
+const GAP_MS = 800;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let last = 0;
 
-async function jikan(p, tries = 5) {
+async function gql(query, variables, tries = 5) {
   for (let i = 0; i < tries; i++) {
     const wait = last + GAP_MS - Date.now();
     if (wait > 0) await sleep(wait);
     last = Date.now();
     try {
-      const res = await fetch(`${JIKAN}${p}`);
-      if (res.ok) return await res.json();
-      if (res.status === 404) return null;
-      if (res.status !== 429 && res.status < 500) return null;
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ query, variables }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) return json.data;
+      }
+      if (res.status === 429) await sleep((Number(res.headers.get("retry-after")) || 30) * 1000);
+      else if (res.status < 500 && res.status !== 200) return null;
     } catch {
       /* network blip: retry */
     }
@@ -40,79 +44,124 @@ async function jikan(p, tries = 5) {
   return null;
 }
 
-/** "female" | "male" | null, from the character's MAL profile text. */
-function detectGender(about) {
-  if (!about) return null;
-  const tag = /\b(?:gender|sex)\s*:\s*(female|male)\b/i.exec(about);
-  if (tag) return tag[1].toLowerCase();
-  const she = (about.match(/\b(she|her|hers|herself)\b/gi) ?? []).length;
-  const he = (about.match(/\b(he|him|his|himself)\b/gi) ?? []).length;
-  if (she >= 2 && she > he * 1.5) return "female";
-  if (he >= 2 && he > she * 1.5) return "male";
-  return null;
+const TRENDING = `
+query ($page: Int) {
+  Page(page: $page, perPage: 60) {
+    media(type: ANIME, sort: TRENDING_DESC, isAdult: false, format_in: [TV, TV_SHORT, ONA]) { id }
+  }
+}`;
+
+const DETAIL = `
+query ($id: Int) {
+  Media(id: $id, type: ANIME) {
+    id
+    siteUrl
+    title { romaji english }
+    coverImage { extraLarge large }
+    averageScore
+    seasonYear
+    episodes
+    genres
+    description(asHtml: false)
+    characters(role: MAIN, sort: FAVOURITES_DESC, perPage: 8) {
+      edges {
+        node {
+          id
+          name { full native alternative }
+          image { large }
+          gender
+          age
+          favourites
+          description(asHtml: false)
+          dateOfBirth { month day }
+        }
+        voiceActors(language: JAPANESE, sort: RELEVANCE) {
+          name { full }
+          image { medium }
+        }
+      }
+    }
+  }
+}`;
+
+/** Strip AniList markup and spoiler blocks so it is safe to show as plain text. */
+function clean(text, max) {
+  if (!text) return null;
+  const s = text
+    .replace(/~!([\s\S]*?)!~/g, "") // spoilers
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/(\*\*|__|~~)/g, "")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  if (!s) return null;
+  return s.length > max ? `${s.slice(0, max).replace(/\s+\S*$/, "")}…` : s;
 }
 
-const img = (o) => o?.images?.webp?.large_image_url ?? o?.images?.webp?.image_url ?? o?.images?.jpg?.image_url ?? null;
-
-async function findFemaleLead(animeId) {
-  const json = await jikan(`/anime/${animeId}/characters`);
-  const mains = (json?.data ?? [])
-    .filter((c) => c.role === "Main")
-    .sort((a, b) => (b.favorites ?? 0) - (a.favorites ?? 0))
-    .slice(0, MAX_CANDIDATES);
-  for (const m of mains) {
-    const full = await jikan(`/characters/${m.character.mal_id}`);
-    const c = full?.data;
-    if (!c || detectGender(c.about) !== "female") continue;
-    return {
-      id: c.mal_id,
-      name: c.name,
-      nameKanji: c.name_kanji ?? null,
-      image: img(c),
-      favorites: c.favorites ?? 0,
-    };
-  }
-  return null;
+function slugify(id, name) {
+  const s = name.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return s ? `${id}-${s}` : String(id);
 }
 
 const items = [];
 const seen = new Set();
+const seenChars = new Set();
 
-for (let page = 1; page <= MAX_TOP_PAGES && items.length < TARGET; page++) {
-  const top = await jikan(`/top/anime?filter=airing&sfw=true&limit=25&page=${page}`);
-  const rows = top?.data ?? [];
-  if (!rows.length) break;
-  for (const a of rows) {
+for (let page = 1; page <= 3 && items.length < TARGET; page++) {
+  const list = await gql(TRENDING, { page });
+  const ids = (list?.Page?.media ?? []).map((m) => m.id);
+  if (!ids.length) break;
+  for (const id of ids) {
     if (items.length >= TARGET) break;
-    if (seen.has(a.mal_id)) continue;
-    seen.add(a.mal_id);
-    const character = await findFemaleLead(a.mal_id);
-    const tag = `[${items.length + 1}/${TARGET}]`;
-    if (!character) {
-      console.log(`${tag} skip  ${a.title} (no female lead found)`);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const m = (await gql(DETAIL, { id }))?.Media;
+    if (!m) continue;
+    const title = m.title.english || m.title.romaji;
+    // Several seasons of one franchise are trending at once: show each lead once.
+    const edge = (m.characters?.edges ?? []).find((e) => e.node?.gender === "Female" && !seenChars.has(e.node.id));
+    if (!edge) {
+      console.log(`skip  ${title} (no female main character)`);
       continue;
     }
-    console.log(`${tag} ok    ${a.title} -> ${character.name}`);
+    const c = edge.node;
+    seenChars.add(c.id);
+    const dob = c.dateOfBirth?.month && c.dateOfBirth?.day ? c.dateOfBirth : null;
     items.push({
       rank: items.length + 1,
       anime: {
-        malId: a.mal_id,
-        title: a.title_english || a.title,
-        titleOriginal: a.title,
-        image: img(a),
-        score: a.score ?? null,
-        year: a.year ?? null,
-        episodes: a.episodes ?? null,
-        genres: (a.genres ?? []).map((g) => g.name),
-        synopsis: typeof a.synopsis === "string" ? a.synopsis.replace(/\s*\[Written by MAL Rewrite\]\s*$/, "").trim() : null,
+        id: m.id,
+        title,
+        titleOriginal: m.title.romaji,
+        image: m.coverImage?.extraLarge ?? m.coverImage?.large ?? null,
+        score: m.averageScore ? m.averageScore / 10 : null,
+        year: m.seasonYear ?? null,
+        episodes: m.episodes ?? null,
+        genres: m.genres ?? [],
+        synopsis: clean(m.description, 600),
+        url: m.siteUrl,
       },
-      character,
+      character: {
+        id: c.id,
+        slug: slugify(c.id, c.name.full),
+        name: c.name.full,
+        nameNative: c.name.native ?? null,
+        aliases: (c.name.alternative ?? []).filter(Boolean).slice(0, 6),
+        image: c.image?.large ?? null,
+        age: c.age ?? null,
+        birthday: dob ? `${dob.month}/${dob.day}` : null,
+        favourites: c.favourites ?? 0,
+        about: clean(c.description, 1500),
+        voiceActors: (edge.voiceActors ?? []).slice(0, 3).map((v) => ({ name: v.name.full, image: v.image?.medium ?? null })),
+      },
     });
+    console.log(`[${items.length}/${TARGET}] ${title} -> ${c.name.full}`);
   }
 }
 
 if (items.length === 0) {
-  console.error("No leads fetched (Jikan unreachable?). Leaving existing file untouched.");
+  console.error("No leads fetched (AniList unreachable?). Leaving existing file untouched.");
   process.exit(1);
 }
 

@@ -3,8 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import Link from "next/link";
-import { characterSlug, getCharacter, getLeadByCharacterId, getTrendingLeads, parseCharacterId } from "@/lib/characters";
+import { characterSlug, getCharacter, parseCharacterId } from "@/lib/characters";
 
 const BASE_URL = getBaseUrl();
 
@@ -44,12 +43,6 @@ export default async function CharacterPage({ params }: { params: Promise<Params
 
   const canonical = characterSlug(c);
   if (slug !== canonical) permanentRedirect(`/characters/${canonical}`);
-
-  const lead = getLeadByCharacterId(c.id);
-  const leads = getTrendingLeads().items;
-  const leadIdx = lead ? leads.indexOf(lead) : -1;
-  const prev = leadIdx > 0 ? leads[leadIdx - 1] : null;
-  const next = leadIdx >= 0 && leadIdx < leads.length - 1 ? leads[leadIdx + 1] : null;
 
   const jsonLd = graph(
     {
@@ -93,28 +86,6 @@ export default async function CharacterPage({ params }: { params: Promise<Params
               <p className="mt-2 text-sm text-muted">Also known as: {c.nicknames.join(", ")}</p>
             )}
 
-            {lead && (
-              <section className="mt-6 flex gap-4 rounded-2xl border-2 border-ink bg-surface p-4 shadow-block">
-                {lead.anime.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={lead.anime.image} alt={lead.anime.title} className="h-32 w-24 shrink-0 rounded-lg border-2 border-ink object-cover" />
-                )}
-                <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-wide text-beam">
-                    Main lead · Trending anime #{lead.rank}
-                  </p>
-                  <h2 className="font-display text-xl font-bold">{lead.anime.title}</h2>
-                  <p className="text-sm text-muted">
-                    {[lead.anime.year, lead.anime.episodes ? `${lead.anime.episodes} eps` : null, lead.anime.score ? `★ ${lead.anime.score}` : null]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                  {lead.anime.genres.length > 0 && <p className="mt-1 text-sm">{lead.anime.genres.join(" · ")}</p>}
-                  {lead.anime.synopsis && <p className="mt-2 text-sm leading-relaxed">{lead.anime.synopsis.slice(0, 280)}…</p>}
-                </div>
-              </section>
-            )}
-
             {c.about && (
               <section className="mt-6">
                 <h2 className="font-display text-xl font-bold">About</h2>
@@ -141,28 +112,6 @@ export default async function CharacterPage({ params }: { params: Promise<Params
             )}
           </div>
         </div>
-
-        {(prev || next) && (
-          <nav aria-label="More trending leads" className="mt-10 flex items-center justify-between gap-3">
-            {prev ? (
-              <Link href={`/characters/${characterSlug(prev.character)}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
-                ← {prev.character.name}
-              </Link>
-            ) : (
-              <span />
-            )}
-            <Link href="/characters/leads" className="text-sm font-semibold underline">
-              All 50 leads
-            </Link>
-            {next ? (
-              <Link href={`/characters/${characterSlug(next.character)}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
-                {next.character.name} →
-              </Link>
-            ) : (
-              <span />
-            )}
-          </nav>
-        )}
 
         {c.anime.length > 0 && (
           <section className="mt-10">

@@ -76,8 +76,9 @@ export async function getPublishedMovieBySlugOrId(
       const movie = rowToMedia(rows[0]);
       return { movie, isCanonical: movie.slug === param };
     } catch (err) {
+      // Rethrow so a DB blip is neither cached nor rendered as a cached 404.
       console.error("published movie by slug/id query failed:", err);
-      return null;
+      throw err;
     }
   });
 }

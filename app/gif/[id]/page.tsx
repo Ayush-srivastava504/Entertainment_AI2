@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = `${item.title} | ${SITE_NAME}`;
   const description = `Download the "${item.title}" anime GIF, free, on ${SITE_NAME}.`;
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: `${getBaseUrl()}/gif/${id}` },
     // Only your own originals are unique content; Tenor/Giphy pages are thin.

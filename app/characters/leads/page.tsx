@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { characterSlug, getTrendingLeads } from "@/lib/characters";
+import { getTrendingLeads } from "@/lib/characters";
 
 const BASE_URL = getBaseUrl();
 const TITLE = `Main Female Leads of 50 Trending Anime | ${SITE_NAME}`;
@@ -26,7 +26,7 @@ export default function TrendingLeadsPage() {
       itemListElement: items.map((l) => ({
         "@type": "ListItem",
         position: l.rank,
-        url: `${BASE_URL}/characters/${characterSlug(l.character)}`,
+        url: `${BASE_URL}/characters/leads/${l.character.slug}`,
         name: `${l.character.name} (${l.anime.title})`,
       })),
     },
@@ -59,7 +59,7 @@ export default function TrendingLeadsPage() {
             {items.map((l) => (
               <li key={l.character.id}>
                 <Link
-                  href={`/characters/${characterSlug(l.character)}`}
+                  href={`/characters/leads/${l.character.slug}`}
                   className="relative block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
                 >
                   <span className="absolute left-2 top-2 z-10 rounded-full border-2 border-ink bg-beam px-2 text-sm font-bold text-white">
@@ -72,7 +72,7 @@ export default function TrendingLeadsPage() {
                   <div className="p-3">
                     <p className="font-semibold leading-tight">{l.character.name}</p>
                     <p className="text-sm text-muted">{l.anime.title}</p>
-                    <p className="mt-1 text-sm text-muted">♥ {l.character.favorites.toLocaleString()}</p>
+                    <p className="mt-1 text-sm text-muted">♥ {l.character.favourites.toLocaleString()}</p>
                   </div>
                 </Link>
               </li>

@@ -32,6 +32,7 @@
     "crawl:all": "npm run crawl:anime && npm run crawl:movies && npm run crawl:watch-providers && npm run crawl:anime-cast",
     "crawl:all:full": "npm run crawl:anime:full && npm run crawl:movies:full && npm run crawl:watch-providers && npm run crawl:anime-cast",
     "indexnow:all": "node crawler/indexnow-bulk.mjs",
+    "seo:audit": "node scripts/seo-audit.mjs",
     "test:crawler": "node --test crawler/test/quality.test.mjs"
   },
   "dependencies": {

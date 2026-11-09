@@ -3,9 +3,10 @@ import Link from "next/link";
 import { getAllAvatars } from "@/lib/games/avatars";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import CoinBadge from "@/components/games/CoinBadge";
+import AvatarCollection from "@/components/games/AvatarCollection";
 
 const TITLE = `Games & Collectibles | ${SITE_NAME}`;
-const DESCRIPTION = "Play cute anime girl mini-games, earn coins, and spin the wheel for free GIFs and stickers.";
+const DESCRIPTION = "Play cute anime girl mini-games, earn coins, and spin the wheel to collect avatars you can download.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -59,6 +60,24 @@ const GAMES = [
     blurb: "Classic 9x9 mine clearing. Win for a 50 coin prize.",
     emoji: "🚩",
   },
+  {
+    href: "/games/tictactoe",
+    title: "Tic-Tac-Toe",
+    blurb: "Beat the computer for 25 coins. A draw still pays 8.",
+    emoji: "⭕",
+  },
+  {
+    href: "/games/simon",
+    title: "Pattern Pop",
+    blurb: "Watch the pads light up and repeat the pattern. It grows every round.",
+    emoji: "🎵",
+  },
+  {
+    href: "/games/reaction",
+    title: "Reaction Rush",
+    blurb: "Tap the instant the box turns green. Five rounds, faster = more coins.",
+    emoji: "⚡",
+  },
 ];
 
 export default async function GamesHubPage() {
@@ -91,8 +110,8 @@ export default async function GamesHubPage() {
       <div className="mt-6 rounded-2xl border-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo p-6 shadow-block">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="font-display text-2xl font-bold">Spin for a free GIF or sticker</h2>
-            <p className="mt-1 text-muted">Use the coins you earn from the games above to spin the wheel.</p>
+            <h2 className="font-display text-2xl font-bold">Spin for a collectible avatar</h2>
+            <p className="mt-1 text-muted">Use the coins you earn from the games above to win avatars you can download.</p>
           </div>
           <Link
             href="/games/spin"
@@ -103,21 +122,7 @@ export default async function GamesHubPage() {
         </div>
       </div>
 
-      <h2 className="mt-10 font-display text-2xl font-bold">Collectible avatars ({avatars.length})</h2>
-      <p className="mt-1 text-muted">Original characters made for this site -- not from any show.</p>
-
-      <div className="mt-5 grid grid-cols-4 gap-2.5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
-        {avatars.map((a) => (
-          <div
-            key={a.id}
-            title={a.title}
-            className="overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-blockSm"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={a.thumb} alt={a.title} loading="lazy" className="aspect-square w-full object-cover" />
-          </div>
-        ))}
-      </div>
+      <AvatarCollection avatars={avatars} />
     </div>
   );
 }

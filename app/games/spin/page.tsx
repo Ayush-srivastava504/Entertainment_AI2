@@ -3,14 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { addCoins, getCoins, spendCoins } from "@/lib/games/wallet";
-import { SPIN_COST, WHEEL_SEGMENTS } from "@/lib/games/spin";
+import { addOwnedAvatar, downloadAvatar, getOwnedAvatarIds } from "@/lib/games/collection";
+import { AVATAR_SEGMENTS, DUPLICATE_COINS, SPIN_COST, WHEEL_SEGMENTS } from "@/lib/games/spin";
 import CoinBadge from "@/components/games/CoinBadge";
-import type { GifItem } from "@/lib/api/gifs";
+import type { Avatar } from "@/lib/games/avatars";
 
 const SEGMENT_COLORS = ["#4C61C9", "#FF5C5C", "#5EC8FF", "#FFD36E", "#6EE7B7", "#C98BFF", "#2A3466"];
 const SEGMENT_ANGLE = 360 / WHEEL_SEGMENTS.length;
 
-type SpinResult = { type: "gif"; tag: string; item: GifItem } | { type: "coins"; amount: number };
+type ApiResult =
+  | { type: "avatar"; avatar: Avatar; duplicate: boolean }
+  | { type: "coins"; amount: number };
+type SpinResult = ApiResult & { isNew?: boolean };
 
 function wheelBackground() {
   const stops = WHEEL_SEGMENTS.map((_, i) => {
@@ -38,16 +42,19 @@ export default function SpinPage() {
     }
 
     setSpinning(true);
-    const refunded = spendCoins(SPIN_COST);
-    if (!refunded) {
+    if (!spendCoins(SPIN_COST)) {
       setSpinning(false);
       setError("Something changed your balance -- try again.");
       return;
     }
 
-    let data: SpinResult;
+    let data: ApiResult;
     try {
-      const res = await fetch("/api/games/spin", { method: "POST" });
+      const res = await fetch("/api/games/spin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ owned: getOwnedAvatarIds() }),
+      });
       if (!res.ok) throw new Error("spin request failed");
       data = await res.json();
     } catch {
@@ -57,9 +64,8 @@ export default function SpinPage() {
       return;
     }
 
-    const labelIndex =
-      data.type === "coins" ? WHEEL_SEGMENTS.length - 1 : WHEEL_SEGMENTS.indexOf(data.tag);
-    const segmentIndex = labelIndex === -1 ? 0 : labelIndex;
+    // Avatars land on one of the avatar slices, bonus coins on the last slice.
+    const segmentIndex = data.type === "coins" ? WHEEL_SEGMENTS.length - 1 : Math.floor(Math.random() * AVATAR_SEGMENTS);
     const segmentCenter = segmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
     const jitter = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.5);
     const fullSpins = 5 + Math.floor(Math.random() * 3);
@@ -69,8 +75,14 @@ export default function SpinPage() {
 
     setTimeout(() => {
       setSpinning(false);
-      setResult(data);
-      if (data.type === "coins") addCoins(data.amount);
+      if (data.type === "coins") {
+        addCoins(data.amount);
+        setResult(data);
+      } else {
+        const isNew = addOwnedAvatar(data.avatar.id);
+        if (!isNew) addCoins(DUPLICATE_COINS);
+        setResult({ ...data, isNew });
+      }
     }, 4200);
   }
 
@@ -83,8 +95,11 @@ export default function SpinPage() {
         <CoinBadge />
       </div>
 
-      <h1 className="mt-2 font-display text-3xl font-extrabold">Spin for a GIF or sticker</h1>
-      <p className="mt-2 text-muted">Each spin costs {SPIN_COST} coins. Earn coins by playing the mini-games.</p>
+      <h1 className="mt-2 font-display text-3xl font-extrabold">Spin for a collectible avatar</h1>
+      <p className="mt-2 text-muted">
+        Each spin costs {SPIN_COST} coins and wins an avatar for your collection, which you can download. Earn coins by
+        playing the mini-games.
+      </p>
 
       <div className="relative mx-auto mt-8 h-64 w-64">
         <div
@@ -97,16 +112,18 @@ export default function SpinPage() {
         />
       </div>
 
-      <ul className="mx-auto mt-5 flex max-w-sm flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-muted">
-        {WHEEL_SEGMENTS.map((label, i) => (
-          <li key={label} className="flex items-center gap-1.5">
-            <span
-              className="inline-block h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
-            />
-            {label}
-          </li>
-        ))}
+      <ul className="mx-auto mt-5 flex max-w-sm flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted">
+        <li className="flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-beam" />
+          Collectible avatar
+        </li>
+        <li className="flex items-center gap-1.5">
+          <span
+            className="inline-block h-2.5 w-2.5 rounded-full"
+            style={{ backgroundColor: SEGMENT_COLORS[(WHEEL_SEGMENTS.length - 1) % SEGMENT_COLORS.length] }}
+          />
+          Bonus coins
+        </li>
       </ul>
 
       <button
@@ -121,31 +138,31 @@ export default function SpinPage() {
       {error && <p className="mt-4 text-sm font-semibold text-cue">{error}</p>}
 
       {result && (
-        <div className="mt-6 rounded-2xl border-2 border-ink bg-surface p-5 shadow-block">
+        <div className="mt-6 rounded-2xl border-2 border-ink bg-surface p-5 shadow-block" role="status">
           {result.type === "coins" ? (
-            <p className="font-display text-xl font-bold">Bonus! +{result.amount} coins refunded.</p>
+            <p className="font-display text-xl font-bold">Bonus! +{result.amount} coins.</p>
           ) : (
             <>
-              <p className="font-display text-lg font-bold">You won a {result.tag} GIF!</p>
+              <p className="font-display text-lg font-bold">
+                {result.isNew ? `New avatar: ${result.avatar.title}!` : `${result.avatar.title} (already in your collection)`}
+              </p>
+              {!result.isNew && <p className="mt-1 text-sm text-muted">Duplicate, so +{DUPLICATE_COINS} coins back.</p>}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={result.item.previewUrl}
-                alt={result.item.title}
-                className="mx-auto mt-3 max-h-56 rounded-xl border-2 border-ink"
+                src={result.avatar.image}
+                alt={result.avatar.title}
+                className="mx-auto mt-3 max-h-56 rounded-xl border-2 border-ink bg-white"
               />
-              <div className="mt-4 flex justify-center gap-3">
-                <a
-                  href={result.item.fullUrl}
-                  download
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => downloadAvatar(result.avatar.image, result.avatar.title)}
                   className="rounded-full bg-beam px-5 py-2 text-sm font-bold text-white hover:bg-beamDeep"
                 >
                   Download
-                </a>
-                <Link
-                  href={`/gif/${result.item.id}`}
-                  className="rounded-full border-2 border-ink px-5 py-2 text-sm font-bold hover:bg-tape"
-                >
-                  View page
+                </button>
+                <Link href="/games#collection" className="rounded-full border-2 border-ink px-5 py-2 text-sm font-bold hover:bg-tape">
+                  My collection
                 </Link>
               </div>
             </>

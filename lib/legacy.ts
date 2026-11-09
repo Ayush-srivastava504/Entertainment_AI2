@@ -28,10 +28,16 @@ export function gone() {
 export async function legacyTitle(kind: "movie" | "anime", path?: string[]) {
   const slug = path?.[0];
   if (slug && path!.length === 1) {
-    const hit =
-      kind === "movie"
-        ? (await getPublishedMovieBySlugOrId(slug))?.movie
-        : (await getPublishedAnimeBySlugOrId(slug))?.anime;
+    let hit;
+    try {
+      hit =
+        kind === "movie"
+          ? (await getPublishedMovieBySlugOrId(slug))?.movie
+          : (await getPublishedAnimeBySlugOrId(slug))?.anime;
+    } catch {
+      // DB unavailable: say "try later" rather than a 410 Google would act on.
+      return new Response("Temporarily unavailable", { status: 503, headers: { "Retry-After": "300" } });
+    }
     if (hit) {
       return new Response(null, {
         status: 301,
