@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title,
     description,
     alternates: { canonical: `${getBaseUrl()}/gif/${id}` },
+    // Only your own originals are unique content; Tenor/Giphy pages are thin.
+    robots: item.source === "original" ? undefined : { index: false, follow: true },
     openGraph: { type: "website", title, description, images: [item.previewUrl] },
     twitter: { card: "summary_large_image", title, description, images: [item.previewUrl] },
   };
@@ -48,7 +50,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
       url: `${BASE_URL}${path}`,
       name: item.title,
       description: caption || item.title,
-      encodingFormat: "image/gif",
+      encodingFormat: /\.png$/i.test(item.fullUrl) ? "image/png" : /\.webp$/i.test(item.fullUrl) ? "image/webp" : /\.jpe?g$/i.test(item.fullUrl) ? "image/jpeg" : "image/gif",
       isPartOf: { "@id": WEBSITE_ID },
       breadcrumb: { "@id": `${BASE_URL}${path}#breadcrumb` },
     },

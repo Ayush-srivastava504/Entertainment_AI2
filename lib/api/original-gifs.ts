@@ -47,34 +47,44 @@ type StorageObject = { name: string; metadata?: { size?: number } };
 /** Every file in the Supabase Storage bucket, newest upload first. Cached
  * 5 minutes so new uploads show up quickly without hitting Supabase on
  * every single page view. */
-async function listBucket(): Promise<StorageObject[]> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
-
-  return cached("original-gifs:bucket-list", 300, async () => {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_ANON_KEY as string,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          limit: 1000,
-          sortBy: { column: "created_at", order: "desc" },
-        }),
-      });
-      if (!res.ok) {
-        console.error("[original-gifs] Supabase Storage list failed:", res.status, await res.text().catch(() => ""));
-        return [];
-      }
-      const data: StorageObject[] = await res.json();
-      return data.filter((f) => IMAGE_EXT.has("." + (f.name.split(".").pop() || "").toLowerCase()));
-    } catch (err) {
-      console.error("[original-gifs] Supabase Storage list error:", err);
-      return [];
-    }
+async function fetchBucketList(): Promise<StorageObject[]> {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_ANON_KEY as string,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      "Content-Type": "application/json",
+    },
+    // `prefix` is REQUIRED by the Storage list endpoint; without it Supabase
+    // answers 400 and the bucket looks empty.
+    body: JSON.stringify({
+      prefix: "",
+      limit: 1000,
+      offset: 0,
+      sortBy: { column: "created_at", order: "desc" },
+    }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
   });
+  if (!res.ok) throw new Error(`Supabase Storage list failed: ${res.status} ${await res.text().catch(() => "")}`);
+  const data: StorageObject[] = await res.json();
+  return data.filter((f) => IMAGE_EXT.has("." + (f.name.split(".").pop() || "").toLowerCase()));
+}
+
+/** Every file in the Supabase Storage bucket, newest upload first. Cached
+ * 5 minutes on success only -- a failed/empty lookup is never cached, so a
+ * transient error can't hide your stickers for 5 minutes. */
+async function listBucket(): Promise<StorageObject[]> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error("[original-gifs] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY not set");
+    return [];
+  }
+  try {
+    return await cached("original-gifs:bucket-list", 300, fetchBucketList);
+  } catch (err) {
+    console.error("[original-gifs]", err);
+    return [];
+  }
 }
 
 export async function listOriginalGifs(): Promise<GifItem[]> {

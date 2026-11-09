@@ -9,6 +9,7 @@ and <changefreq>, and trusts <lastmod> only when it is accurate, so it is
 the one field worth getting right: it is the real last content change.
 */
 
+import { listOriginalGifs } from "@/lib/api/original-gifs";
 import { getPublishedMovieSlugs } from "@/lib/api/movies";
 import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
@@ -105,6 +106,9 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),
       ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];
+    try {
+      for (const g of await listOriginalGifs()) entries.push({ loc: `${BASE_URL}/gif/${g.id}` });
+    } catch {}
     // Topic hubs only once they have real content behind them.
     if (guides.length >= 10) {
       for (const t of ENDING_TOPICS) entries.push({ loc: `${BASE_URL}/ending-explained/topic/${t.slug}`, lastmod: newest(guides) });
