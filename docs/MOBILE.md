@@ -49,9 +49,10 @@ put a `link` in the **data** payload.
 ## Status and known gaps
 
 - Never compiled or run on a device from the authoring environment. Build it and run the checklist below before release.
-- No in-app UI to send campaigns, and stale `device_tokens` rows are not pruned.
-- Foreground notification display and silent data-only pushes are not configured.
-- Not yet done: Play-required privacy policy and account-deletion page, in-app review prompt.
+- No in-app UI to send campaigns. Stale `device_tokens` rows (unseen for 90 days) are pruned on each registration.
+- Foreground notifications are shown (`presentationOptions` in `capacitor.config.json`). Silent data-only pushes are not configured.
+- Play-required pages exist: `/privacy` and `/delete-data` (use these URLs in the Play Console). Not yet done: in-app review prompt.
+- `mobile/www/offline.html` is the offline screen. Run `npx cap add android` once on a fresh clone to generate the Gradle project and icons, since only the customised files are tracked.
 - `npm run assets` in `mobile/` points to `scripts/generate_icons.py`, which is not in the repo.
 
 ## Phone test checklist

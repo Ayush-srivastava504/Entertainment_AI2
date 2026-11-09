@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
        on conflict (token) do update set last_seen_at = now(), platform = excluded.platform`,
       [token, safePlatform]
     );
+    // Opportunistic cleanup: tokens unseen for 90 days belong to uninstalled apps.
+    await pool.query("delete from device_tokens where last_seen_at < now() - interval '90 days'");
   } catch (err) {
     console.error("push/register: failed to store token", err);
     return NextResponse.json({ error: "Could not store token" }, { status: 500 });

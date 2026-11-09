@@ -35,6 +35,7 @@ type NativePushNotifications = {
   checkPermissions: () => Promise<PermissionStatus>;
   requestPermissions: () => Promise<PermissionStatus>;
   register: () => Promise<void>;
+  unregister?: () => Promise<void>;
   addListener(eventName: "registration", listener: (token: PushToken) => void): Promise<ListenerHandle>;
   addListener(eventName: "registrationError", listener: (error: { error: string }) => void): Promise<ListenerHandle>;
   addListener(
@@ -89,6 +90,9 @@ async function installPushBridge() {
   if (!push) return;
 
   push.addListener("registration", (token) => {
+    try {
+      window.localStorage.setItem("animegirl4u:pushToken", token.value);
+    } catch {}
     fetch("/api/push/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

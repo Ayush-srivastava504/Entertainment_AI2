@@ -35,6 +35,30 @@ const GAMES = [
     blurb: "A Tetris twist -- clear 4 lines in a row and a surprise avatar pops in for a coin bonus.",
     emoji: "🧱",
   },
+  {
+    href: "/games/g2048",
+    title: "2048",
+    blurb: "Slide and merge tiles to reach 2048. Higher score = more coins.",
+    emoji: "🔢",
+  },
+  {
+    href: "/games/snake",
+    title: "Snake",
+    blurb: "Eat strawberries, grow longer, don't crash. It speeds up as you go.",
+    emoji: "🐍",
+  },
+  {
+    href: "/games/whack",
+    title: "Whack-an-Avatar",
+    blurb: "Tap avatars as they pop up for 30 seconds -- but dodge the bombs!",
+    emoji: "🔨",
+  },
+  {
+    href: "/games/minesweeper",
+    title: "Minesweeper",
+    blurb: "Classic 9x9 mine clearing. Win for a 50 coin prize.",
+    emoji: "🚩",
+  },
 ];
 
 export default async function GamesHubPage() {
@@ -50,7 +74,7 @@ export default async function GamesHubPage() {
         <CoinBadge className="text-base" />
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {GAMES.map((g) => (
           <Link
             key={g.href}

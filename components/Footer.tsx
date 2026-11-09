@@ -91,6 +91,8 @@ export default async function Footer() {
               <li><Link href="/watch-order" className={linkClass}>Browse watch orders</Link></li>
             )}
             <li><Link href="/about" className={linkClass}>About {SITE_NAME}</Link></li>
+            <li><Link href="/privacy" className={linkClass}>Privacy policy</Link></li>
+            <li><Link href="/delete-data" className={linkClass}>Delete my data</Link></li>
             <li><Link href="/search" className={linkClass}>Search titles</Link></li>
             <li><Link href="/favorites" className={linkClass}>Saved titles</Link></li>
           </ul>
