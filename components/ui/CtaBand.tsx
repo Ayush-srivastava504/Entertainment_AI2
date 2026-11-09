@@ -21,7 +21,7 @@ export function CtaBand({
         <div className="flex flex-wrap gap-3">
           <Link
             href={primary.href}
-            className="rounded-full border-2 border-ink bg-ink px-6 py-3 font-bold text-white shadow-blockSm transition hover:-translate-y-0.5"
+            className="rounded-full border-2 border-ink bg-surface px-6 py-3 font-bold text-white shadow-blockSm transition hover:-translate-y-0.5"
           >
             {primary.label}
           </Link>

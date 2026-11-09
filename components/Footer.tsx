@@ -21,7 +21,7 @@ export default async function Footer() {
   const [latest, franchises] = await Promise.all([getLatestGuideLinks(6), getFeaturedFranchises(6)]);
 
   return (
-    <footer className="mt-24 border-t-2 border-ink bg-ink text-white">
+    <footer className="mt-24 border-t-2 border-ink bg-surface text-white">
       <div className="slate-stripes" aria-hidden="true" />
 
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">

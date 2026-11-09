@@ -43,7 +43,7 @@ export function Pagination({
           <Link
             href={href(p)}
             aria-current={p === page ? "page" : undefined}
-            className={`${base} ${p === page ? "bg-ink text-white" : "bg-surface hover:bg-tape"}`}
+            className={`${base} ${p === page ? "bg-beam text-white" : "bg-surface hover:bg-tape"}`}
           >
             {p}
           </Link>

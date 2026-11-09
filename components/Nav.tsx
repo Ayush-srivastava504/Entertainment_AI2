@@ -38,7 +38,7 @@ export default function Nav() {
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
               className={`rounded-full px-4 py-2 text-[15px] font-semibold transition-colors ${
-                isActive(l.href) ? "bg-ink text-white" : "text-ink hover:bg-tape"
+                isActive(l.href) ? "bg-beam text-white" : "text-ink hover:bg-tape"
               }`}
             >
               {l.label}
@@ -88,7 +88,7 @@ export default function Nav() {
               href={l.href}
               onClick={() => setOpen(false)}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={`rounded-lg px-4 py-3.5 text-lg font-semibold ${isActive(l.href) ? "bg-ink text-white" : "text-ink hover:bg-tape"}`}
+              className={`rounded-lg px-4 py-3.5 text-lg font-semibold ${isActive(l.href) ? "bg-beam text-white" : "text-ink hover:bg-tape"}`}
             >
               {l.label}
             </Link>
