@@ -1,41 +1,35 @@
-import type { Config } from "tailwindcss";
+import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_COOKIE_NAME, verifySessionCookieValue } from "@/lib/admin-auth";
 
-// Palette is taken from the projection booth: screen white, leader-tape
-// blue, cue-mark red, gaffer-tape yellow, navy ink.
-const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
-  theme: {
-    extend: {
-      colors: {
-        // Black-and-blue theme. Same token names kept throughout the
-        // codebase (just new values) so every component that already
-        // references bg-paper / text-ink / border-fog / etc. re-themes
-        // automatically with no per-component edits needed.
-        paper: "#05070D",    // page background (near-black)
-        surface: "#0E1220",  // cards, tables, inputs (dark navy)
-        ink: "#EAF0FF",      // text (near-white, cool blue tint)
-        muted: "#8C97C2",    // secondary text (muted blue-gray)
-        fog: "#1E2740",      // rules and borders (dark blue)
-        beam: "#4C61C9",     // primary: links, small buttons, pills (softened blue — less saturated than the old #3B5BFF so it doesn't glare in small doses either)
-        beamDeep: "#38459A", // hover/pressed state of beam
-        cue: "#FF5C5C",      // spoiler + destructive markers (kept red for function, brightened for dark bg)
-        tape: "#5EC8FF",     // highlights, focus ring, stars (icy blue, was yellow)
-        heroFrom: "#141A38", // large hero-panel gradient start (near-navy, replaces flat full-bleed beam)
-        heroTo: "#2A3466",   // large hero-panel gradient end (muted indigo, same hue family as beam but much lower saturation/brightness so big panels don't strain the eyes)
-      },
-      fontFamily: {
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
-        body: ["var(--font-body)", "Georgia", "serif"],
-      },
-      boxShadow: {
-        // Was a dark-navy offset shadow for a light background — invisible
-        // against the new near-black page, so this is now a blue glow
-        // offset instead, which keeps the same "cutout card" look.
-        block: "4px 4px 0 0 #4C61C9",
-        blockSm: "3px 3px 0 0 #4C61C9",
-      },
-    },
-  },
-  plugins: [],
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // The Android app (user agent contains "Animegirl4uApp") has no admin UI. This is a
+  // convenience, not a security control: the admin panel is still password protected.
+  if ((req.headers.get("user-agent") || "").includes("Animegirl4uApp")) {
+    if (pathname.startsWith("/api/admin")) {
+      return NextResponse.json({ error: "Not available in the app." }, { status: 403 });
+    }
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  // Login endpoints must stay reachable while logged out.
+  if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+    return NextResponse.next();
+  }
+
+  const isAuthed = await verifySessionCookieValue(req.cookies.get(ADMIN_COOKIE_NAME)?.value);
+  if (isAuthed) return NextResponse.next();
+
+  if (pathname.startsWith("/api/admin")) {
+    return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
+  }
+
+  const loginUrl = new URL("/admin/login", req.url);
+  loginUrl.searchParams.set("next", pathname);
+  return NextResponse.redirect(loginUrl);
+}
+
+export const config = {
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
-export default config;
