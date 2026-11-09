@@ -47,6 +47,16 @@ entertainment-ai/
 └── db/schema.sql
 ```
 
+## Adding your own 100 original GIFs (ChatGPT-generated)
+
+No code or database work needed — this is purely a file upload:
+
+1. Name each file descriptively with dashes, e.g. `shy-wave-hello.gif`, `blush-smile.gif`. The site turns this into the display title automatically ("Shy Wave Hello").
+2. Upload all the files into the `public/original-gifs/` folder in your GitHub repo (GitHub's web uploader works fine for a batch of files — drag and drop).
+3. Push/merge — Vercel redeploys automatically, and every file in that folder now appears on the homepage, `/stickers`, and gets its own `/gif/original-<filename>` page, automatically, with its own AI caption.
+
+These are prioritized ahead of Tenor/Giphy results in search, since they're your unique content. Re-run `db/schema.sql` once (see below) before uploading — it now also accepts `"original"` as a caption source.
+
 ## New: Anime stickers & GIFs
 
 The homepage, `/stickers`, and `/gif/[id]` now pull anime GIFs/stickers live

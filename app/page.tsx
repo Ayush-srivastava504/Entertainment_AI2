@@ -14,9 +14,8 @@ import { TitleRequestForm } from "@/components/TitleRequestForm";
 import { HOME_FAQ } from "@/lib/faq";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { buildOgImageUrl } from "@/lib/og";
-import { preload } from "react-dom";
-import { posterSrc, posterSrcSet } from "@/lib/image";
 import { graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
+import HeroGifRotator from "@/components/HeroGifRotator";
 
 export const revalidate = 3600;
 
@@ -123,14 +122,6 @@ export default async function HomePage() {
       return bt - at;
     })
     .slice(0, 8);
-
-  const spotlight = latestGuides[0];
-
-  // The spotlight poster is the largest element in the first mobile screen
-  // (the LCP element). Preloading starts its download from the document head
-  // instead of waiting for the parser to reach the card.
-  const spotlightSrc = posterSrc(spotlight?.posterUrl, 185);
-  if (spotlightSrc) preload(spotlightSrc, { as: "image", fetchPriority: "high" });
 
   const pageJsonLd = graph(
     {
@@ -241,40 +232,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {spotlight && (
-            <Link
-              href={`/ending-explained/${spotlight.slug}`}
-              className="group mx-auto block w-full max-w-sm rounded-2xl border-2 border-ink bg-surface text-ink shadow-block transition sm:rotate-2 sm:hover:rotate-0"
-            >
-              <div className="slate-stripes rounded-t-[14px]" aria-hidden="true" />
-              <div className="p-5">
-                <p className="text-sm font-semibold text-muted">Newest guide</p>
-                <div className="mt-3 flex gap-4">
-                  {spotlight.posterUrl && (
-                    <img
-                      src={posterSrc(spotlight.posterUrl, 185)}
-                      srcSet={posterSrcSet(spotlight.posterUrl)}
-                      sizes="96px"
-                      alt={`${spotlight.title} poster`}
-                      width={96}
-                      height={144}
-                      decoding="async"
-                      fetchPriority="high"
-                      className="h-36 w-24 shrink-0 rounded-lg border-2 border-ink object-cover"
-                    />
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-display text-2xl font-extrabold leading-tight group-hover:text-beam">
-                      {spotlight.title} ending explained
-                    </p>
-                    <p className="mt-2 text-sm text-muted">
-                      {[spotlight.kind === "anime" ? "Anime" : "Movie", spotlight.year].filter(Boolean).join(", ")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          )}
+          <HeroGifRotator />
         </div>
       </section>
 

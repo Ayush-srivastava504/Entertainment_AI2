@@ -11,10 +11,11 @@ CDN-hosted files, per both services' API terms.
 */
 
 import { cached } from "@/lib/cache";
+import { searchOriginalGifs, getOriginalGifById } from "./original-gifs";
 
 export type GifItem = {
   id: string;
-  source: "tenor" | "giphy";
+  source: "tenor" | "giphy" | "original";
   title: string;
   previewUrl: string;
   fullUrl: string;
@@ -65,13 +66,18 @@ async function searchGiphy(query: string, limit: number): Promise<GifItem[]> {
   }));
 }
 
-/** Interleaved Tenor + Giphy results, cached 1 hour so repeat homepage
- * loads don't burn API quota. */
+/** Your own original GIFs first (unique content, no API quota cost, reads
+ * from disk so not cached the same way), then Tenor + Giphy interleaved to
+ * fill the rest, cached 1 hour so repeat loads don't burn API quota. */
 export async function searchGifs(query: string, limit = 12): Promise<GifItem[]> {
-  return cached(`gifs:${query}:${limit}`, 3600, async () => {
+  const originals = searchOriginalGifs(query, limit);
+  const remaining = limit - originals.length;
+  if (remaining <= 0) return originals;
+
+  const apiResults = await cached(`gifs:${query}:${remaining}`, 3600, async () => {
     const [tenor, giphy] = await Promise.all([
-      searchTenor(query, limit),
-      searchGiphy(query, limit),
+      searchTenor(query, remaining),
+      searchGiphy(query, remaining),
     ]);
     const out: GifItem[] = [];
     const max = Math.max(tenor.length, giphy.length);
@@ -79,11 +85,15 @@ export async function searchGifs(query: string, limit = 12): Promise<GifItem[]> 
       if (tenor[i]) out.push(tenor[i]);
       if (giphy[i]) out.push(giphy[i]);
     }
-    return out.slice(0, limit);
+    return out.slice(0, remaining);
   });
+
+  return [...originals, ...apiResults];
 }
 
 export async function getGifById(id: string): Promise<GifItem | null> {
+  if (id.startsWith("original-")) return getOriginalGifById(id);
+
   return cached(`gif:${id}`, 86400, async () => {
     if (id.startsWith("tenor-")) {
       const key = process.env.TENOR_API_KEY;

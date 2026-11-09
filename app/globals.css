@@ -12,27 +12,27 @@ html {
 body {
   overflow-x: clip;
   overflow-wrap: anywhere;
-  background-color: #f6f7fb;
-  color: #0d1030;
+  background-color: #05070d;
+  color: #eaf0ff;
   font-size: 17px;
 }
 
 ::selection {
-  background: #ffd23f;
-  color: #0d1030;
+  background: #3b5bff;
+  color: #eaf0ff;
 }
 
-/* Keyboard focus: tape-yellow ring with an ink edge so it reads on both
-   the white page and the blue hero fields. */
+/* Keyboard focus: icy-blue ring with a dark edge so it reads against the
+   near-black page and the blue hero fields alike. */
 .focus-ring:focus-visible,
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #ffd23f;
+  outline: 3px solid #5ec8ff;
   outline-offset: 2px;
-  box-shadow: 0 0 0 5px #0d1030;
+  box-shadow: 0 0 0 5px #05070d;
 }
 
 /* Long-form reading text (recap, ending, themes). Serif, generous
@@ -42,7 +42,7 @@ textarea:focus-visible {
   font-size: 1.1875rem;
   line-height: 1.8;
   max-width: 66ch;
-  color: #1c2048;
+  color: #dce3ff;
 }
 
 /* Clapper-slate header: the one decorative motif, used on fact tables. */
@@ -50,18 +50,18 @@ textarea:focus-visible {
   height: 22px;
   background-image: repeating-linear-gradient(
     -45deg,
-    #0d1030 0,
-    #0d1030 14px,
-    #ffffff 14px,
-    #ffffff 28px
+    #3b5bff 0,
+    #3b5bff 14px,
+    #05070d 14px,
+    #05070d 28px
   );
 }
 
 /* Card used on list pages and legacy call sites (admin, comments). */
 .card,
 .ticket {
-  background: #ffffff;
-  border: 2px solid #0d1030;
+  background: #0e1220;
+  border: 2px solid #3b5bff;
   border-radius: 14px;
 }
 

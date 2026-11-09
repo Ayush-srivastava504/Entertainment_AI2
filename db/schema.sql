@@ -275,8 +275,23 @@ create table if not exists device_tokens (
 
 create table if not exists gif_captions (
   media_id    text primary key,
-  source      text not null check (source in ('tenor', 'giphy')),
+  source      text not null check (source in ('tenor', 'giphy', 'original')),
   title       text,
   caption     text not null,
   created_at  timestamptz not null default now()
 );
+
+-- If gif_captions already existed from an earlier run of this file (before
+-- "original" was a valid source), widen its check constraint rather than
+-- erroring — safe to re-run any number of times.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.table_constraints
+    where table_name = 'gif_captions' and constraint_name = 'gif_captions_source_check'
+  ) then
+    alter table gif_captions drop constraint gif_captions_source_check;
+  end if;
+  alter table gif_captions add constraint gif_captions_source_check
+    check (source in ('tenor', 'giphy', 'original'));
+end $$;
