@@ -18,7 +18,7 @@ body {
 }
 
 ::selection {
-  background: #3b5bff;
+  background: #4c61c9;
   color: #eaf0ff;
 }
 
@@ -50,8 +50,8 @@ textarea:focus-visible {
   height: 22px;
   background-image: repeating-linear-gradient(
     -45deg,
-    #3b5bff 0,
-    #3b5bff 14px,
+    #4c61c9 0,
+    #4c61c9 14px,
     #05070d 14px,
     #05070d 28px
   );
@@ -61,7 +61,7 @@ textarea:focus-visible {
 .card,
 .ticket {
   background: #0e1220;
-  border: 2px solid #3b5bff;
+  border: 2px solid #4c61c9;
   border-radius: 14px;
 }
 

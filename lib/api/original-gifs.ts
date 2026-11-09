@@ -1,21 +1,30 @@
 /*
-Your own original GIFs (the ones you generate yourself and want in the
-store, as opposed to the live Tenor/Giphy search results). Zero setup:
-drop a .gif/.png/.webp file into public/original-gifs/ and it appears on
-the site automatically — nothing to edit here.
+Your own original GIFs/stickers, served from a Supabase Storage bucket
+instead of being committed into git -- binary files don't belong in a repo,
+they bloat every future clone/pull/push forever. This reads the bucket's
+file list live (cached 5 min) so dropping a new file into Supabase Storage
+is still zero-code, same as the old local-folder approach, just pointed at
+a better place.
 
-The title shown on the site is the filename, prettified (dashes/underscores
-become spaces, capitalized) — so name your files descriptively, e.g.
-"shy-wave-hello.gif" becomes "Shy Wave Hello". Rename the file any time to
-change the title.
+Setup (one-time, in your Supabase dashboard):
+1. Storage -> New bucket -> name it "original-gifs" -> toggle "Public bucket" on.
+2. Upload your GIF/PNG files directly into it (drag-and-drop in the dashboard).
+3. In Vercel, make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+   are set (same two values from your Supabase project's Settings -> API --
+   these may already be set from earlier).
+
+The title shown on the site is the filename, prettified -- name files like
+"shy-wave-hello.gif" to get "Shy Wave Hello" automatically.
 */
 
-import fs from "node:fs";
-import path from "node:path";
+import { cached } from "@/lib/cache";
 import type { GifItem } from "./gifs";
 
-const DIR = path.join(process.cwd(), "public", "original-gifs");
-const EXTENSIONS = new Set([".gif", ".png", ".webp", ".jpg", ".jpeg"]);
+const BUCKET = "original-gifs";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const IMAGE_EXT = new Set([".gif", ".png", ".webp", ".jpg", ".jpeg"]);
 
 function titleFromFilename(filename: string): string {
   const base = filename.replace(/\.[^.]+$/, "");
@@ -29,51 +38,71 @@ function idFromFilename(filename: string): string {
   return `original-${filename.replace(/\.[^.]+$/, "")}`;
 }
 
-/** Every file currently in public/original-gifs, newest file first. */
-export function listOriginalGifs(): GifItem[] {
-  let entries: fs.Dirent[];
-  try {
-    entries = fs.readdirSync(DIR, { withFileTypes: true });
-  } catch {
-    return []; // folder doesn't exist yet — fine, just means 0 uploaded so far
-  }
+function publicUrl(filename: string): string {
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(filename)}`;
+}
 
-  const files = entries
-    .filter((e) => e.isFile() && EXTENSIONS.has(path.extname(e.name).toLowerCase()))
-    .map((e) => {
-      const full = path.join(DIR, e.name);
-      const mtime = fs.statSync(full).mtimeMs;
-      return { name: e.name, mtime };
-    })
-    .sort((a, b) => b.mtime - a.mtime);
+type StorageObject = { name: string; metadata?: { size?: number } };
 
+/** Every file in the Supabase Storage bucket, newest upload first. Cached
+ * 5 minutes so new uploads show up quickly without hitting Supabase on
+ * every single page view. */
+async function listBucket(): Promise<StorageObject[]> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
+
+  return cached("original-gifs:bucket-list", 300, async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY as string,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          limit: 1000,
+          sortBy: { column: "created_at", order: "desc" },
+        }),
+      });
+      if (!res.ok) {
+        console.error("[original-gifs] Supabase Storage list failed:", res.status, await res.text().catch(() => ""));
+        return [];
+      }
+      const data: StorageObject[] = await res.json();
+      return data.filter((f) => IMAGE_EXT.has("." + (f.name.split(".").pop() || "").toLowerCase()));
+    } catch (err) {
+      console.error("[original-gifs] Supabase Storage list error:", err);
+      return [];
+    }
+  });
+}
+
+export async function listOriginalGifs(): Promise<GifItem[]> {
+  const files = await listBucket();
   return files.map(
-    ({ name }): GifItem => ({
-      id: idFromFilename(name),
+    (f): GifItem => ({
+      id: idFromFilename(f.name),
       source: "original" as GifItem["source"],
-      title: titleFromFilename(name),
-      previewUrl: `/original-gifs/${name}`,
-      fullUrl: `/original-gifs/${name}`,
+      title: titleFromFilename(f.name),
+      previewUrl: publicUrl(f.name),
+      fullUrl: publicUrl(f.name),
       width: 480,
       height: 480,
     })
   );
 }
 
-export function getOriginalGifById(id: string): GifItem | null {
+export async function getOriginalGifById(id: string): Promise<GifItem | null> {
   const name = id.replace(/^original-/, "");
-  return listOriginalGifs().find((g) => g.id === `original-${name}`) ?? null;
+  const all = await listOriginalGifs();
+  return all.find((g) => g.id === `original-${name}`) ?? null;
 }
 
-export function searchOriginalGifs(query: string, limit: number): GifItem[] {
+export async function searchOriginalGifs(query: string, limit: number): Promise<GifItem[]> {
+  const all = await listOriginalGifs();
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  const all = listOriginalGifs();
   if (!words.length) return all.slice(0, limit);
 
-  // Matches if the title contains ANY query word (not the whole phrase) —
-  // e.g. query "cute anime girl" matches a file titled "Anime Girl Blush".
-  // Falls back to the newest originals if nothing matches, so this section
-  // of the homepage/stickers page isn't just empty for an unmatched query.
   const matched = all.filter((g) => {
     const title = g.title.toLowerCase();
     return words.some((w) => title.includes(w));

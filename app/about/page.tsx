@@ -219,7 +219,7 @@ export default async function AboutPage() {
       />
 
       {/* Hero */}
-      <section className="overflow-hidden border-b-2 border-ink bg-beam text-white" aria-labelledby="about-heading">
+      <section className="overflow-hidden border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white" aria-labelledby="about-heading">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[1.3fr_1fr]">
           <div>
             <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "About" }]} />

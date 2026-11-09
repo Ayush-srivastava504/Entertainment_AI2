@@ -7,3 +7,7 @@ out/
 coverage/
 *.log
 tsconfig.tsbuildinfo
+
+# Source files for crawler/upload-original-gifs.mjs -- these get uploaded to
+# Supabase Storage, not committed to git (same reasoning as lib/api/original-gifs.ts).
+/original-gifs-for-supabase/

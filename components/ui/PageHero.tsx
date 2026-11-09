@@ -11,7 +11,7 @@ export function PageHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="border-b-2 border-ink bg-beam text-white">
+    <section className="border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         {kicker && (
           <p className="inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">{kicker}</p>

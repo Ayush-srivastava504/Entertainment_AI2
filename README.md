@@ -47,15 +47,20 @@ entertainment-ai/
 └── db/schema.sql
 ```
 
-## Adding your own 100 original GIFs (ChatGPT-generated)
+## Adding your own original GIFs (Supabase Storage)
 
-No code or database work needed — this is purely a file upload:
+Originally these lived directly in the git repo (`public/original-gifs/`). That's gone now — committing dozens of MB of binary GIF/image files into git makes every future clone/pull/push slower forever, since git never shrinks back down once something's been added to its history. They're served from **Supabase Storage** instead: same "just drop files in" simplicity, no code, no database work, but without bloating the repo.
 
-1. Name each file descriptively with dashes, e.g. `shy-wave-hello.gif`, `blush-smile.gif`. The site turns this into the display title automatically ("Shy Wave Hello").
-2. Upload all the files into the `public/original-gifs/` folder in your GitHub repo (GitHub's web uploader works fine for a batch of files — drag and drop).
-3. Push/merge — Vercel redeploys automatically, and every file in that folder now appears on the homepage, `/stickers`, and gets its own `/gif/original-<filename>` page, automatically, with its own AI caption.
+**One-time setup, in your Supabase dashboard:**
+1. Go to **Storage** → **New bucket** → name it exactly `original-gifs` → toggle **Public bucket** ON (this is what lets the site display them without extra auth code).
+2. In Vercel, confirm `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set (Project Settings → API in Supabase, same two values from earlier in this build — they may already be in Vercel, just unused until now).
 
-These are prioritized ahead of Tenor/Giphy results in search, since they're your unique content. Re-run `db/schema.sql` once (see below) before uploading — it now also accepts `"original"` as a caption source.
+**Every time you want to add GIFs:**
+1. Name each file descriptively with dashes, e.g. `shy-wave-hello.gif`. The site turns this into the display title automatically ("Shy Wave Hello").
+2. In Supabase → Storage → the `original-gifs` bucket, click **Upload files** and drag your files in.
+3. That's it — no redeploy needed. The site re-checks the bucket every 5 minutes, so new uploads appear on the homepage, `/stickers`, and get their own `/gif/original-<filename>` page (with its own AI caption) shortly after upload.
+
+These are prioritized ahead of Tenor/Giphy results in search, since they're your unique content. Re-run `db/schema.sql` once if you haven't already (see below) — it accepts `"original"` as a caption source.
 
 ## New: Anime stickers & GIFs
 

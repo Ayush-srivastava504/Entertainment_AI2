@@ -9,6 +9,7 @@ import { Faq } from "@/components/ui/Faq";
 import { Slate } from "@/components/ui/Slate";
 import { CtaBand } from "@/components/ui/CtaBand";
 import LikeButton from "@/components/LikeButton";
+import ShareButton from "@/components/ShareButton";
 import CommentSection from "@/components/CommentSection";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { WATCH_ORDER_TOPICS, matchesFranchiseTopic } from "@/lib/topics";
@@ -177,7 +178,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
         dangerouslySetInnerHTML={{ __html: jsonLdString(watchLd) }}
       />
 
-      <section className="border-b-2 border-ink bg-beam text-white">
+      <section className="border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white">
         <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
           <nav aria-label="Breadcrumb" className="text-sm text-white/80">
             <Link href="/" className="hover:underline">Home</Link>
@@ -207,8 +208,9 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
           {franchise.intro && (
             <p className="mt-5 max-w-2xl font-body text-xl leading-relaxed text-white/90">{franchise.intro}</p>
           )}
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap gap-3">
             <LikeButton type="watch-order" slug={franchise.slug} initialLikes={franchise.likes} tone="onDark" />
+            <ShareButton title={`${franchise.title} watch order`} text={`${franchise.title} watch order on Animegirl4u`} contentType="watch-order" tone="onDark" />
           </div>
         </div>
       </section>

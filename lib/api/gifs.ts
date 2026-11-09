@@ -70,7 +70,7 @@ async function searchGiphy(query: string, limit: number): Promise<GifItem[]> {
  * from disk so not cached the same way), then Tenor + Giphy interleaved to
  * fill the rest, cached 1 hour so repeat loads don't burn API quota. */
 export async function searchGifs(query: string, limit = 12): Promise<GifItem[]> {
-  const originals = searchOriginalGifs(query, limit);
+  const originals = await searchOriginalGifs(query, limit);
   const remaining = limit - originals.length;
   if (remaining <= 0) return originals;
 

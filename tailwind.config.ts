@@ -16,10 +16,12 @@ const config: Config = {
         ink: "#EAF0FF",      // text (near-white, cool blue tint)
         muted: "#8C97C2",    // secondary text (muted blue-gray)
         fog: "#1E2740",      // rules and borders (dark blue)
-        beam: "#3B5BFF",     // primary: links, hero fields, buttons (electric blue)
-        beamDeep: "#2540C9", // hover/pressed state of beam
+        beam: "#4C61C9",     // primary: links, small buttons, pills (softened blue — less saturated than the old #3B5BFF so it doesn't glare in small doses either)
+        beamDeep: "#38459A", // hover/pressed state of beam
         cue: "#FF5C5C",      // spoiler + destructive markers (kept red for function, brightened for dark bg)
         tape: "#5EC8FF",     // highlights, focus ring, stars (icy blue, was yellow)
+        heroFrom: "#141A38", // large hero-panel gradient start (near-navy, replaces flat full-bleed beam)
+        heroTo: "#2A3466",   // large hero-panel gradient end (muted indigo, same hue family as beam but much lower saturation/brightness so big panels don't strain the eyes)
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
@@ -29,8 +31,8 @@ const config: Config = {
         // Was a dark-navy offset shadow for a light background — invisible
         // against the new near-black page, so this is now a blue glow
         // offset instead, which keeps the same "cutout card" look.
-        block: "4px 4px 0 0 #3B5BFF",
-        blockSm: "3px 3px 0 0 #3B5BFF",
+        block: "4px 4px 0 0 #4C61C9",
+        blockSm: "3px 3px 0 0 #4C61C9",
       },
     },
   },

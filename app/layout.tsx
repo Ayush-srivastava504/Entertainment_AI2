@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, Literata } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import AppBridge from "@/components/AppBridge";
 import { buildOgImageUrl } from "@/lib/og";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { graph, jsonLdString, organizationNode, websiteNode } from "@/lib/jsonld";
@@ -165,6 +166,7 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <AppBridge />
         <Nav />
         <main id="main-content" className="flex-1">{children}</main>
         <Footer />

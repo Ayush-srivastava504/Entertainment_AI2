@@ -181,7 +181,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(pageJsonLd) }}
       />
 
-      <section className="overflow-hidden border-b-2 border-ink bg-beam text-white" aria-labelledby="home-heading">
+      <section className="overflow-hidden border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white" aria-labelledby="home-heading">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
           <div>
             <p className="inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">

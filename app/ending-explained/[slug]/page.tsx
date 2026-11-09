@@ -12,6 +12,7 @@ import { Slate } from "@/components/ui/Slate";
 import { SpoilerGate } from "@/components/ui/SpoilerGate";
 import LikeButton from "@/components/LikeButton";
 import FavoriteButton from "@/components/FavoriteButton";
+import ShareButton from "@/components/ShareButton";
 import CommentSection from "@/components/CommentSection";
 import { getFranchiseForTitle, getFranchiseEntries } from "@/lib/api/franchises";
 import type { MediaItem } from "@/lib/api/normalize";
@@ -231,7 +232,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       />
 
       {/* Title card */}
-      <section className="overflow-hidden border-b-2 border-ink bg-beam text-white">
+      <section className="overflow-hidden border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-12 sm:py-16 lg:grid-cols-[1fr_260px]">
           <div>
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-x-2 text-sm text-white/80">
@@ -266,6 +267,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             <div className="mt-6 flex flex-wrap gap-3">
               <LikeButton type={item.kind} slug={item.slug} initialLikes={item.likes} tone="onDark" />
               <FavoriteButton id={`${item.kind}:${item.id}`} type={item.kind} title={item.title} tone="onDark" />
+              <ShareButton title={`${item.title} ending explained`} text={`${item.title} ending explained on Animegirl4u`} contentType={item.kind} tone="onDark" />
             </div>
           </div>
           <div className="mx-auto w-48 rotate-2 overflow-hidden rounded-xl border-4 border-white bg-fog shadow-block lg:w-full">

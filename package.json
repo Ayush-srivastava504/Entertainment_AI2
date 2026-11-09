@@ -22,6 +22,7 @@
     "crawl:movies": "node crawler/tmdb-crawler.mjs",
     "crawl:movies:full": "node crawler/tmdb-crawler.mjs --full",
     "crawl:watch-providers": "node crawler/watch-providers-crawler.mjs",
+    "upload:original-gifs": "node crawler/upload-original-gifs.mjs ./original-gifs-for-supabase",
     "generate:ending-explained": "node crawler/ending-explained-generator.mjs",
     "generate:ending-explained:movies": "node crawler/ending-explained-generator.mjs --table=movies",
     "generate:ending-explained:anime": "node crawler/ending-explained-generator.mjs --table=anime",
