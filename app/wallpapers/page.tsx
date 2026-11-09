@@ -11,7 +11,7 @@ const BASE_URL = getBaseUrl();
 const PATH = "/wallpapers";
 const TITLE = `Anime Girl Wallpapers — Free HD Backgrounds | ${SITE_NAME}`;
 const DESCRIPTION =
-  "Free anime girl wallpapers to save and set as your phone or desktop background — cyberpunk, vampire, fox spirit, gamer and lo-fi styles.";
+  "Free anime girl wallpapers to save and set as your phone or desktop background — cyberpunk, vampire, gothic, fantasy, sketch, fox spirit, gamer, lo-fi and more.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

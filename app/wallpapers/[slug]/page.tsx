@@ -113,7 +113,10 @@ export default async function WallpaperDetailPage({ params }: { params: Promise<
           </div>
 
           <p className="mt-3 text-xs text-muted">
-            {wallpaper.width}×{wallpaper.height}px, WebP. Sized for phone screens — not a 4K desktop wallpaper.
+            {wallpaper.width}×{wallpaper.height}px, WebP.{" "}
+            {Math.max(wallpaper.width, wallpaper.height) >= 1000
+              ? "Good for phones and tablets; not a 4K desktop wallpaper."
+              : "Sized for phone screens — not a 4K desktop wallpaper."}
           </p>
         </div>
 
