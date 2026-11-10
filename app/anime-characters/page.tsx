@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/characters";
 import { getPopularCharacters, getTrendingCharacters, type DbCharacter } from "@/lib/characters-db";
 import { socialMeta } from "@/lib/og";
+import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 
 function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "trendingRank" | "popularRank" }) {
   return (
@@ -54,9 +55,30 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const page = Math.max(1, Math.min(200, Number(sp.page) || 1));
   const [trending, popular] = !q && page === 1 ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
 
+  const pageUrl = `${BASE_URL}/anime-characters`;
+  const jsonLd = graph(
+    {
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: TITLE,
+      description: DESCRIPTION,
+      inLanguage: "en",
+      isPartOf: { "@id": WEBSITE_ID },
+      breadcrumb: { "@id": `${pageUrl}#breadcrumb` },
+    },
+    {
+      "@id": `${pageUrl}#breadcrumb`,
+      ...breadcrumbNode([
+        { name: "Home", path: "/" },
+        { name: "Characters", path: "/anime-characters" },
+      ]),
+    }
+  );
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="bg-gradient-to-b from-heroFrom to-heroTo">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
           <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters" }]} />

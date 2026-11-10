@@ -98,6 +98,16 @@ export const STICKER_COLLECTIONS: StickerCollection[] = [
     description: "Looping animated anime girl GIFs: sakura nights, neon headphones, sunsets and Kerala scenes.",
     match: (g) => /\.gif$/i.test(g.fullUrl),
   },
+  // Catch-all, must stay LAST: every original that fits no series prefix
+  // above (e.g. "happy_hearts.png"). Without it those /gif pages had no hub
+  // to link them, leaving them orphaned in the sitemap.
+  {
+    slug: "reactions",
+    label: "Reactions",
+    heading: "Cute Anime Girl Reaction Stickers",
+    description: "Cute anime girl reaction stickers: happy hearts, shy blushes, angry pouts, sleepy kittens, boba tea and more.",
+    match: (g) => !STICKER_COLLECTIONS.some((c) => c.slug !== "reactions" && belongsTo(c, g)),
+  },
 ];
 
 function belongsTo(c: StickerCollection, g: GifItem): boolean {

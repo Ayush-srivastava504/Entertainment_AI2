@@ -60,6 +60,13 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
   const i = leads.indexOf(lead);
   const prev = i > 0 ? leads[i - 1] : null;
   const next = i < leads.length - 1 ? leads[i + 1] : null;
+  // Link neighbours straight to their full profile when one exists, so these
+  // links don't point at URLs that just 308 onward.
+  const neighbourSlugs = await getDbSlugsByIds([prev, next].filter((l): l is NonNullable<typeof l> => !!l).map((l) => l.character.id));
+  const leadHref = (l: NonNullable<typeof prev>) => {
+    const s = neighbourSlugs.get(l.character.id);
+    return s ? `/anime-characters/${s}` : `/anime-characters/leads/${l.character.slug}`;
+  };
   const url = `${BASE_URL}/anime-characters/leads/${c.slug}`;
 
   const facts = [
@@ -177,7 +184,7 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
 
         <nav aria-label="More trending leads" className="mt-10 flex items-center justify-between gap-3">
           {prev ? (
-            <Link href={`/anime-characters/leads/${prev.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            <Link href={leadHref(prev)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
               ← {prev.character.name}
             </Link>
           ) : (
@@ -187,7 +194,7 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
             All {leads.length} leads
           </Link>
           {next ? (
-            <Link href={`/anime-characters/leads/${next.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            <Link href={leadHref(next)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
               {next.character.name} →
             </Link>
           ) : (
