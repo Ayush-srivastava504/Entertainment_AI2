@@ -13,6 +13,14 @@ const BASE_URL = getBaseUrl();
 
 type Params = { slug: string };
 
+export const revalidate = 3600;
+// Without generateStaticParams a dynamic [param] route is rendered fresh on
+// every request even with `revalidate` set. An empty list means: build each
+// page on its first visit, then serve it from cache (ISR) for an hour.
+export async function generateStaticParams() {
+  return [];
+}
+
 /** Cut at a word boundary so meta descriptions never end mid-word. */
 function snip(text: string, max: number): string {
   const t = text.replace(/\s+/g, " ").trim();
@@ -100,7 +108,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
   const id = parseCharacterId(slug);
   const c = id ? await getCharacter(id) : null;
-  if (!c) return { title: { absolute: `Character not found | ${SITE_NAME}` }, robots: { index: false } };
+  // Redirects / 404s also run here: metadata is blocking for search bots
+  // (htmlLimitedBots), so they get a real 308/404 even though the page body
+  // streams behind loading.tsx.
+  if (!c) notFound();
+  if (slug !== characterSlug(c)) permanentRedirect(`/anime-characters/${characterSlug(c)}`);
 
   const title = fitTitle([`${c.name}: Anime Character Profile & Voice Actors`, `${c.name} Anime Character Profile`]);
   const description = snip(c.about ?? `Profile of ${c.name}: appearances and voice actors.`, 155);

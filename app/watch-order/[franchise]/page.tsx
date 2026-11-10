@@ -17,13 +17,22 @@ import { formatDate, snippet, fitTitle } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
+// Without generateStaticParams a dynamic [param] route is rendered fresh on
+// every request even with `revalidate` set. An empty list means: build each
+// page on its first visit, then serve it from cache (ISR) for an hour.
+export async function generateStaticParams() {
+  return [];
+}
 
 const BASE_URL = getBaseUrl();
 
 export async function generateMetadata({ params }: { params: Promise<{ franchise: string }> }) {
   const { franchise: slug } = await params;
   const franchise = await getPublishedFranchiseBySlug(slug);
-  if (!franchise) return {};
+  // Redirects / 404s also run here: metadata is blocking for search bots
+  // (htmlLimitedBots), so they get a real 308/404 even though the page body
+  // streams behind loading.tsx.
+  if (!franchise) notFound();
 
   const url = `${BASE_URL}/watch-order/${franchise.slug}`;
   const title = fitTitle([`${franchise.title} Watch Order: The Complete Guide`, `${franchise.title} Watch Order Guide`, `${franchise.title} Watch Order`]);

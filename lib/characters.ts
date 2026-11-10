@@ -34,7 +34,9 @@ export interface CharacterPage {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 async function jikan(path: string): Promise<any | null> {
   try {
-    const res = await fetch(`${JIKAN}${path}`, { next: { revalidate: REVALIDATE } });
+    // Jikan (MyAnimeList) is often slow or down. Never let it hold a page for
+    // more than a few seconds; callers already treat null as "no data".
+    const res = await fetch(`${JIKAN}${path}`, { next: { revalidate: REVALIDATE }, signal: AbortSignal.timeout(4000) });
     if (!res.ok) return null;
     return await res.json();
   } catch {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/characters";
@@ -51,10 +52,8 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const sp = await searchParams;
   const q = (sp.q ?? "").trim().slice(0, 80);
   const page = Math.max(1, Math.min(200, Number(sp.page) || 1));
-  const data = q ? await searchCharacters(q, page) : await getTopCharacters(page);
   const [trending, popular] = !q && page === 1 ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
 
-  const href = (p: number) => `/anime-characters?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
 
   return (
     <>
@@ -98,45 +97,73 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
         )}
         <h2 className="font-display text-xl font-bold">{q ? `Results for “${q}”` : popular.length ? "Browse more characters" : "Most loved characters"}</h2>
 
-        {data.items.length === 0 ? (
-          <p className="mt-6 text-muted">No characters found{q ? " — try another spelling." : " right now. Please try again shortly."}</p>
-        ) : (
-          <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {data.items.map((c) => (
-              <li key={c.id}>
-                <Link
-                  href={`/anime-characters/${characterSlug(c)}`}
-                  className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
-                >
-                  {c.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={c.image} alt={c.name} loading="lazy" className="aspect-[3/4] w-full object-cover" />
-                  )}
-                  <div className="p-3">
-                    <p className="font-semibold leading-tight">{c.name}</p>
-                    {c.nameKanji && <p className="text-sm text-muted">{c.nameKanji}</p>}
-                    <p className="mt-1 text-sm text-muted">♥ {c.favorites.toLocaleString()}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+        <Suspense fallback={<CharacterGridSkeleton />}>
+          <BrowseCharacters q={q} page={page} />
+        </Suspense>
+      </div>
+    </>
+  );
+}
 
-        <div className="mt-8 flex items-center justify-between">
-          {page > 1 ? (
-            <Link href={href(page - 1)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
-              ← Previous
+function CharacterGridSkeleton() {
+  return (
+    <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" aria-hidden="true">
+      {Array.from({ length: 8 }, (_, i) => (
+        <li key={i} className="overflow-hidden rounded-2xl border-2 border-ink bg-surface">
+          <div className="aspect-[3/4] w-full animate-pulse bg-fog" />
+          <div className="space-y-2 p-3">
+            <div className="h-4 w-3/4 animate-pulse rounded-full bg-fog" />
+            <div className="h-3 w-1/2 animate-pulse rounded-full bg-fog" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Live MyAnimeList (Jikan) results. Streamed so a slow API never blocks the page. */
+async function BrowseCharacters({ q, page }: { q: string; page: number }) {
+  const data = q ? await searchCharacters(q, page) : await getTopCharacters(page);
+  const href = (p: number) => `/anime-characters?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
+
+  if (data.items.length === 0) {
+    return <p className="mt-6 text-muted">No characters found{q ? " — try another spelling." : " right now. Please try again shortly."}</p>;
+  }
+  return (
+    <>
+      <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {data.items.map((c) => (
+          <li key={c.id}>
+            <Link
+              href={`/anime-characters/${characterSlug(c)}`}
+              className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
+            >
+              {c.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={c.image} alt={c.name} loading="lazy" className="aspect-[3/4] w-full object-cover" />
+              )}
+              <div className="p-3">
+                <p className="font-semibold leading-tight">{c.name}</p>
+                {c.nameKanji && <p className="text-sm text-muted">{c.nameKanji}</p>}
+                <p className="mt-1 text-sm text-muted">♥ {c.favorites.toLocaleString()}</p>
+              </div>
             </Link>
-          ) : (
-            <span />
-          )}
-          {data.hasNext && (
-            <Link href={href(page + 1)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
-              Next →
-            </Link>
-          )}
-        </div>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-8 flex items-center justify-between">
+        {page > 1 ? (
+          <Link href={href(page - 1)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            ← Previous
+          </Link>
+        ) : (
+          <span />
+        )}
+        {data.hasNext && (
+          <Link href={href(page + 1)} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            Next →
+          </Link>
+        )}
       </div>
     </>
   );

@@ -23,6 +23,12 @@ import { formatDate, readingMinutes, snippet, toParagraphs, fitTitle } from "@/l
 import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
+// Without generateStaticParams a dynamic [param] route is rendered fresh on
+// every request even with `revalidate` set. An empty list means: build each
+// page on its first visit, then serve it from cache (ISR) for an hour.
+export async function generateStaticParams() {
+  return [];
+}
 
 const BASE_URL = getBaseUrl();
 
@@ -46,8 +52,12 @@ async function resolveTitle(
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const resolved = await resolveTitle(slug);
-  if (!resolved) return {};
+  // Redirects / 404s also run here: metadata is blocking for search bots
+  // (htmlLimitedBots), so they get a real 308/404 even though the page body
+  // streams behind loading.tsx.
+  if (!resolved) notFound();
   const { item } = resolved;
+  if (!resolved.isCanonical) permanentRedirect(`/ending-explained/${item.slug}`);
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   // The root layout appends " | Animegirl4u". "& Meaning" targets the second
@@ -109,14 +119,14 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
   }
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
-  const similar =
-    item.kind === "movie"
-      ? await getSimilarMovies(item.id, item.genres, 8)
-      : await getSimilarAnime(item.id, item.genres, 8);
-  const { newer, older } = await getAdjacentGuides(item.kind, item.id);
+  // Independent lookups run in parallel instead of one after another.
+  const [similar, { newer, older }, franchise] = await Promise.all([
+    item.kind === "movie" ? getSimilarMovies(item.id, item.genres, 8) : getSimilarAnime(item.id, item.genres, 8),
+    getAdjacentGuides(item.kind, item.id),
+    getFranchiseForTitle(item.kind, item.id),
+  ]);
   const relatedTopics = ENDING_TOPICS.filter((t) => matchesMediaTopic(item, t)).slice(0, 4);
 
-  const franchise = await getFranchiseForTitle(item.kind, item.id);
   // Other guides in the same franchise, so each guide links to its siblings.
   const siblingGuides = franchise
     ? (await getFranchiseEntries(franchise.id, "release"))
