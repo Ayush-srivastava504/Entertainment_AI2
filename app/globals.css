@@ -94,7 +94,7 @@ details > summary::-webkit-details-marker {
   }
 }
 
-/* ---------- Loading screen (components/ui/LoadingScreen.tsx) ---------- */
+/* ---------- Loading screen (components/NavigationLoader.tsx) ---------- */
 /* A soft light sweep over the skeleton blocks. */
 .ag-shimmer {
   background: linear-gradient(100deg, #141a2e 30%, #24305a 50%, #141a2e 70%);
@@ -116,6 +116,14 @@ details > summary::-webkit-details-marker {
   0%, 100% { opacity: 0.25; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1); }
 }
+/* Top progress bar during in-site navigation (components/NavigationLoader.tsx). */
+.ag-progress { width: 0; animation: ag-progress 8s cubic-bezier(.1,.7,.3,1) forwards; }
+@keyframes ag-progress {
+  0% { width: 0; }
+  20% { width: 45%; }
+  100% { width: 92%; }
+}
 @media (prefers-reduced-motion: reduce) {
   .ag-shimmer, .ag-bob, .ag-dot { animation: none; }
+  .ag-progress { animation: none; width: 60%; }
 }
