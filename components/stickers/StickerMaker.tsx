@@ -384,9 +384,11 @@ export default function StickerMaker() {
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,440px)_1fr]">
-      <div>
+      {/* On phones the preview sticks under the 70px header while the
+          controls scroll beneath it, so edits stay visible. */}
+      <div className={`self-start ${loaded ? "max-md:sticky max-md:top-[70px] max-md:z-10 max-md:bg-paper max-md:pb-2 max-md:pt-2" : ""}`}>
         <div
-          className={`relative overflow-hidden rounded-2xl border-2 ${dragOver ? "border-tape" : "border-ink"} shadow-block`}
+          className={`relative mx-auto w-full overflow-hidden rounded-2xl border-2 max-md:max-w-[45svh] ${dragOver ? "border-tape" : "border-ink"} shadow-block`}
           style={{
             backgroundImage: "conic-gradient(#2a3150 25%, #1b2036 0 50%, #2a3150 0 75%, #1b2036 0)",
             backgroundSize: "24px 24px",
