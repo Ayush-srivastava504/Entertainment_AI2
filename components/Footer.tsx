@@ -106,6 +106,7 @@ export default async function Footer() {
           <Link href="/anime-characters/leads" className={linkClass}>Trending anime leads</Link>
           <Link href="/wallpapers" className={linkClass}>Wallpapers</Link>
           <Link href="/stickers" className={linkClass}>Stickers &amp; GIFs</Link>
+          <Link href="/stickers/maker" className={linkClass}>Sticker maker</Link>
           <Link href="/games" className={linkClass}>Games</Link>
           <Link href="/games/spin" className={linkClass}>Spin for avatars</Link>
         </div>

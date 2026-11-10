@@ -132,7 +132,10 @@ export default async function StickerCollectionPage({ params }: { params: Params
         </div>
       )}
 
-      <p className="mt-10">
+      <p className="mt-10 flex flex-wrap gap-x-6 gap-y-2">
+        <Link href="/stickers/maker" className="text-sm font-semibold text-beam underline underline-offset-4 hover:text-beamDeep">
+          Make your own sticker from a photo
+        </Link>
         <Link href="/stickers" className="text-sm font-semibold text-beam underline underline-offset-4 hover:text-beamDeep">
           ← All stickers &amp; GIFs
         </Link>

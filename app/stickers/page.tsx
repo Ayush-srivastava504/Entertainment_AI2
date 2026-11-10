@@ -90,6 +90,17 @@ export default async function StickersPage({
       <h1 className="mt-3 font-display text-3xl font-extrabold sm:text-4xl">Anime girl stickers &amp; GIFs</h1>
       <p className="mt-2 max-w-2xl text-muted">{DESCRIPTION}</p>
 
+      <Link
+        href={`${PATH}/maker`}
+        className="mt-5 flex max-w-xl items-center justify-between gap-4 rounded-2xl border-2 border-ink bg-gradient-to-r from-heroFrom to-heroTo p-4 shadow-block transition hover:-translate-y-0.5"
+      >
+        <span>
+          <span className="block font-display text-lg font-extrabold text-white">Make your own sticker</span>
+          <span className="block text-sm text-white/80">Turn any photo into a sticker: cut out, outline, caption. Free, on your phone.</span>
+        </span>
+        <span className="shrink-0 rounded-full bg-beam px-4 py-2 text-sm font-bold text-white">Open maker →</span>
+      </Link>
+
       <form action={PATH} method="get" role="search" className="mt-5 flex max-w-xl gap-2">
         <label htmlFor="gif-q" className="sr-only">
           Search GIFs and stickers

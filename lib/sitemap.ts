@@ -110,6 +110,7 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/privacy` },
       { loc: `${BASE_URL}/delete-data` },
       { loc: `${BASE_URL}/stickers` },
+      { loc: `${BASE_URL}/stickers/maker` },
       ...STICKER_COLLECTIONS.map((c) => ({ loc: `${BASE_URL}/stickers/${c.slug}` })),
       { loc: `${BASE_URL}/wallpapers` },
       { loc: `${BASE_URL}/anime-characters/leads` },
