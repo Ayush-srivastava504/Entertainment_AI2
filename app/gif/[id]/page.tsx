@@ -8,6 +8,10 @@ import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
 
+// Cache each GIF page for an hour (ISR) so crawlers and visitors get a fast,
+// pre-rendered page instead of a fresh Supabase + caption lookup every time.
+export const revalidate = 3600;
+
 type Params = Promise<{ id: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {

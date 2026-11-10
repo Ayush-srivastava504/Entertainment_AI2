@@ -36,6 +36,8 @@ async function generateCaption(title: string): Promise<string | null> {
         max_tokens: 200,
         temperature: 0.7,
       }),
+      // A slow model must never hold the page: give up and render without a caption.
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
     const data = await res.json();
