@@ -13,6 +13,8 @@ browsers that can't encode WebP (older Safari) fall back to PNG.
 */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+// Type-only import: the AI module itself is loaded on demand (see runAi).
+import type * as AnimeCutout from "@/lib/anime-cutout";
 
 const S = 512;
 const MAX_SRC = 900;
@@ -230,6 +232,13 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
   const [canShare, setCanShare] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [readyMade, setReadyMade] = useState(false);
+  // Optional anime AI cut-out (lib/anime-cutout.ts): warning panel + progress.
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiSaved, setAiSaved] = useState(false);
+  const [aiStage, setAiStage] = useState<string | null>(null);
+  const aiBusy = aiStage !== null;
+  const ai = useRef<typeof AnimeCutout | null>(null);
+  const loadAi = async () => (ai.current ??= await import("@/lib/anime-cutout"));
 
   useEffect(() => {
     try {
@@ -357,6 +366,49 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
     if (mask[sy * b.w + sx]) return;
     flood(b.data.data, b.w, b.h, mask, [sy * b.w + sx], tolerance);
     commitMask(mask);
+  }
+
+  async function openAiPanel() {
+    setAiOpen(true);
+    setAiSaved(await (await loadAi()).isModelSaved());
+  }
+
+  async function runAi() {
+    const b = base.current;
+    if (!b || aiBusy) return;
+    setAiOpen(false);
+    setNote(null);
+    setError(null);
+    setAiStage("Starting the AI…");
+    try {
+      const m = await loadAi();
+      const alpha = await m.animeAlpha(b.data, (st) => {
+        if (st.step === "download") setAiStage(st.pct === 100 ? "AI model ready…" : `Downloading AI model… ${st.pct ?? 0}%`);
+        else
+          setAiStage(
+            st.backend === "webgpu"
+              ? "Cutting out the character (GPU)… a few seconds"
+              : "Cutting out the character… this can take 1–3 minutes on this device"
+          );
+      });
+      const mask = current().slice();
+      for (let p = 0; p < alpha.length; p++) if (alpha[p] < 128) mask[p] = 1;
+      commitMask(mask);
+      setAiSaved(await m.isModelSaved());
+      setNote("AI cut-out done. Use Tap to erase or Undo to fix any spot.");
+    } catch (e) {
+      setError(
+        `The AI cut-out couldn't finish${e instanceof Error && e.message ? ` (${e.message})` : ""}. ` +
+          "Your device may be low on memory: try a computer or a newer phone, or use Remove background."
+      );
+    } finally {
+      setAiStage(null);
+    }
+  }
+
+  async function deleteAiModel() {
+    await (await loadAi()).deleteSavedModel();
+    setAiSaved(false);
   }
 
   function undo() {
@@ -493,6 +545,15 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
             onPointerUp={onPointerUp}
             onPointerCancel={(e) => pointers.current.delete(e.pointerId)}
           />
+          {aiBusy && (
+            <div role="status" aria-live="polite" className="absolute inset-0 flex items-center justify-center bg-paper/75 p-6 text-center">
+              <p className="font-semibold">
+                <span className="mx-auto mb-3 block h-8 w-8 animate-spin rounded-full border-4 border-tape border-t-transparent" aria-hidden="true" />
+                {aiStage}
+                <span className="mt-2 block text-xs font-normal text-muted">Keep this page open.</span>
+              </p>
+            </div>
+          )}
           {!loaded && (
             <button
               type="button"
@@ -539,8 +600,11 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
         <fieldset>
           <legend className="font-display text-lg font-extrabold">1. Background</legend>
           <div className="mt-2 flex flex-wrap gap-2">
-            <button type="button" className={`${btn} bg-beam text-white hover:bg-beamDeep`} onClick={removeBackground}>
+            <button type="button" className={`${btn} bg-beam text-white hover:bg-beamDeep`} onClick={removeBackground} disabled={aiBusy}>
               Remove background
+            </button>
+            <button type="button" className={pill(aiOpen)} aria-expanded={aiOpen} onClick={() => (aiOpen ? setAiOpen(false) : openAiPanel())} disabled={aiBusy}>
+              Anime AI cut-out
             </button>
             <button type="button" className={pill(mode === "erase")} aria-pressed={mode === "erase"} onClick={() => setMode(mode === "erase" ? "move" : "erase")}>
               Tap to erase
@@ -557,7 +621,58 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
             <span className="ml-2 text-muted">higher removes more similar colours</span>
             <input type="range" min={5} max={120} value={tolerance} onChange={(e) => setTolerance(+e.target.value)} className="mt-1 block w-full" />
           </label>
-          <p className="mt-1 text-xs text-muted">Works best when the subject is on a plain, even background.</p>
+          <p className="mt-1 text-xs text-muted">
+            Remove background works best on a plain, even background. For an anime character on a busy background, try
+            Anime AI cut-out.
+          </p>
+
+          {aiOpen && (
+            <div role="dialog" aria-labelledby="ai-title" className="mt-4 rounded-2xl border-2 border-tape/70 bg-tape/10 p-4 text-sm leading-relaxed">
+              <p id="ai-title" className="font-display text-base font-extrabold">Anime AI cut-out: optional, large download</p>
+              <ul className="mt-2 list-disc space-y-1.5 pl-5">
+                <li>
+                  <strong>What it does:</strong> an AI model trained on anime art finds the character and removes everything
+                  else, keeping hair, ribbons and props.
+                </li>
+                <li>
+                  <strong>Use it for:</strong> an anime character on a busy or coloured background (screenshots, fan art,
+                  stickers on a backdrop).
+                </li>
+                <li>
+                  <strong>Don&rsquo;t use it for:</strong> full scenery with no clear character, photos of real people
+                  (it is trained on anime), or plain backgrounds, where Remove background is instant.
+                </li>
+                <li>
+                  <strong>Download:</strong> about {ai.current?.MODEL_MB ?? 168} MB for the model plus 11 to 22 MB for the AI
+                  engine, once. Use Wi-Fi. It is then saved in this browser, so next time it starts straight away.
+                </li>
+                <li>
+                  <strong>Speed:</strong> a few seconds on newer phones and computers with WebGPU; otherwise 1 to 3 minutes.
+                  Older phones may run out of memory and reload the page.
+                </li>
+                <li>
+                  <strong>Privacy:</strong> it runs entirely on your device. Your image is never uploaded.
+                </li>
+              </ul>
+              <p className="mt-2 text-xs text-muted">
+                {aiSaved ? "The model is already saved on this device. " : ""}Model: anime-seg by SkyTNT (Apache-2.0), run with
+                ONNX Runtime Web.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button type="button" className={`${btn} bg-beam text-white hover:bg-beamDeep`} onClick={runAi}>
+                  {aiSaved ? "Cut out with AI" : `Download ${ai.current?.MODEL_MB ?? 168} MB & cut out`}
+                </button>
+                <button type="button" className={pill(false)} onClick={() => setAiOpen(false)}>
+                  Cancel
+                </button>
+                {aiSaved && (
+                  <button type="button" className={pill(false)} onClick={deleteAiModel}>
+                    Delete saved model
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </fieldset>
 
         <fieldset>

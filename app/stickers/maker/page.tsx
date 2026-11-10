@@ -48,6 +48,10 @@ const FAQ = [
     a: "\"Remove background\" clears every area connected to the edges of the photo that has a similar colour, so it works best when the subject is on a plain, even background. Use the strength slider to remove more or less, \"Tap to erase\" to clear any leftover patch, and Undo or Restore if it removes too much.",
   },
   {
+    q: "What is the Anime AI cut-out and when should I use it?",
+    a: "It is an optional AI model, trained on anime art, that finds the character and removes the rest of the picture, including hair and accessories. Use it for an anime character on a busy or coloured background. It is a one-time download of about 168 MB plus an 11 to 22 MB engine (use Wi-Fi), then saved in your browser. It takes a few seconds on newer phones and computers with WebGPU and 1 to 3 minutes otherwise, and very old phones may run out of memory. It runs on your device, so the image is never uploaded. It is not meant for full scenery or photos of real people.",
+  },
+  {
     q: "How do I add the sticker to WhatsApp or Telegram?",
     a: "Save the sticker, then add it the way your app supports: Telegram's @Stickers bot accepts 512 × 512 images, and WhatsApp lets you create a sticker from a saved image in its sticker panel on supported devices. On a phone the Share button sends the sticker straight to an app.",
   },
