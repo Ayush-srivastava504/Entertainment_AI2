@@ -6,25 +6,33 @@ import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Faq } from "@/components/ui/Faq";
 import StickerMaker from "@/components/stickers/StickerMaker";
+import { getGifById } from "@/lib/api/gifs";
 
 const PATH = "/stickers/maker";
 const TITLE = `Image to Sticker Maker: Turn Any Photo Into a Sticker | ${SITE_NAME}`;
 const DESCRIPTION =
   "Free image to sticker maker for your phone: remove the background, add a white outline and a caption, then save a 512x512 WebP sticker. Your photo never leaves your device.";
 
-export const metadata: Metadata = {
-  title: { absolute: TITLE },
-  description: DESCRIPTION,
-  alternates: { canonical: `${getBaseUrl()}${PATH}` },
-  ...socialMeta({
-    title: TITLE,
+type SP = Promise<{ src?: string | string[] }>;
+
+export async function generateMetadata({ searchParams }: { searchParams: SP }): Promise<Metadata> {
+  const { src } = await searchParams;
+  return {
+    title: { absolute: TITLE },
     description: DESCRIPTION,
-    path: PATH,
-    cardTitle: "Image to Sticker Maker",
-    cardSubtitle: "Photo in, sticker out. Free, on your phone",
-    badge: "STICKER MAKER",
-  }),
-};
+    alternates: { canonical: `${getBaseUrl()}${PATH}` },
+    ...socialMeta({
+      title: TITLE,
+      description: DESCRIPTION,
+      path: PATH,
+      cardTitle: "Image to Sticker Maker",
+      cardSubtitle: "Photo in, sticker out. Free, on your phone",
+      badge: "STICKER MAKER",
+    }),
+    // ?src= is the same tool with one sticker preloaded.
+    robots: src ? { index: false, follow: true } : undefined,
+  };
+}
 
 const FAQ = [
   {
@@ -44,13 +52,22 @@ const FAQ = [
     a: "Save the sticker, then add it the way your app supports: Telegram's @Stickers bot accepts 512 × 512 images, and WhatsApp lets you create a sticker from a saved image in its sticker panel on supported devices. On a phone the Share button sends the sticker straight to an app.",
   },
   {
+    q: "Can I turn a sticker from this site into a WhatsApp sticker?",
+    a: "Yes. Open any sticker on Animegirl4u and tap \"Make WhatsApp sticker\": it opens here already loaded and cut out. You can also download a sticker first and drop or pick the file here. Animated GIFs become a still sticker from their first frame.",
+  },
+  {
     q: "Is it free?",
     a: "Yes. There is no sign-up, no watermark and no limit on how many stickers you make.",
   },
 ];
 
-export default function StickerMakerPage() {
+export default async function StickerMakerPage({ searchParams }: { searchParams: SP }) {
   const BASE_URL = getBaseUrl();
+  // Only ids of this site's own stickers are accepted, never arbitrary URLs.
+  const raw = (await searchParams).src;
+  const srcId = (Array.isArray(raw) ? raw[0] : raw)?.slice(0, 200);
+  const item = srcId ? await getGifById(srcId).catch(() => null) : null;
+  const initial = item ? { url: item.fullUrl, title: item.title } : undefined;
   const jsonLd = graph(
     {
       "@type": "WebApplication",
@@ -86,7 +103,7 @@ export default function StickerMakerPage() {
       </p>
 
       <div className="mt-8">
-        <StickerMaker />
+        <StickerMaker initial={initial} />
       </div>
 
       <section className="mt-16 max-w-3xl" aria-labelledby="how-to">

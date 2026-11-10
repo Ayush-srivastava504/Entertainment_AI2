@@ -105,7 +105,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-xl font-extrabold">{item.title}</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <ShareButton title={item.title} text={`${item.title} — free anime GIF`} contentType="gif" />
           <a
             href={item.fullUrl}
@@ -116,6 +116,12 @@ export default async function GifDetailPage({ params }: { params: Params }) {
           >
             Download
           </a>
+          <Link
+            href={`/stickers/maker?src=${encodeURIComponent(item.id)}`}
+            className="inline-flex min-h-11 shrink-0 items-center rounded-full border-2 border-ink px-5 text-sm font-bold hover:bg-fog"
+          >
+            Make WhatsApp sticker
+          </Link>
         </div>
       </div>
 

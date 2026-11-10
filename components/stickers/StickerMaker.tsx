@@ -91,6 +91,14 @@ function flood(data: Uint8ClampedArray, w: number, h: number, mask: Uint8Array, 
   }
 }
 
+/** Share of edge pixels that are already transparent (0..1). */
+function transparentEdgeShare(data: ImageData, w: number, h: number) {
+  const seeds = edgeSeeds(w, h);
+  let t = 0;
+  for (const p of seeds) if (data.data[p * 4 + 3] <= 16) t++;
+  return t / seeds.length;
+}
+
 function edgeSeeds(w: number, h: number) {
   const out: number[] = [];
   for (let x = 0; x < w; x++) out.push(x, (h - 1) * w + x);
@@ -179,7 +187,7 @@ const btn =
   "inline-flex min-h-11 items-center justify-center rounded-full border-2 border-ink px-4 py-2 text-sm font-bold transition disabled:opacity-40";
 const pill = (on: boolean) => `${btn} ${on ? "bg-beam text-white" : "bg-surface hover:bg-fog"}`;
 
-export default function StickerMaker() {
+export default function StickerMaker({ initial }: { initial?: { url: string; title: string } }) {
   const preview = useRef<HTMLCanvasElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const base = useRef<Base | null>(null);
@@ -199,6 +207,7 @@ export default function StickerMaker() {
   const [note, setNote] = useState<string | null>(null);
   const [canShare, setCanShare] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [readyMade, setReadyMade] = useState(false);
 
   useEffect(() => {
     try {
@@ -209,6 +218,22 @@ export default function StickerMaker() {
   }, []);
 
   const set = (patch: Partial<Settings>) => setSettings((s) => ({ ...s, ...patch }));
+
+  // "Make WhatsApp sticker" on a sticker page opens the maker with it preloaded.
+  useEffect(() => {
+    if (!initial) return;
+    let cancelled = false;
+    fetch(initial.url)
+      .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(String(r.status)))))
+      .then((b) => {
+        if (!cancelled) openFile(new File([b], initial.title, { type: b.type || "image/png" }), true);
+      })
+      .catch(() => !cancelled && setError("Couldn't load that sticker. Download it and drop it here instead."));
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial?.url]);
 
   const commitMask = useCallback((mask: Uint8Array) => {
     if (!base.current) return;
@@ -221,7 +246,7 @@ export default function StickerMaker() {
     if (preview.current && cut.current) compose(preview.current, cut.current, settings);
   }, [settings, version]);
 
-  async function openFile(f: File | undefined) {
+  async function openFile(f: File | undefined, fromSite = false) {
     if (!f) return;
     setError(null);
     setNote(null);
@@ -247,7 +272,18 @@ export default function StickerMaker() {
       for (let p = 0; p < w * h; p++) if (data.data[p * 4 + 3] <= 16) mask[p] = 1;
       history.current = [];
       commitMask(mask);
-      setSettings((s) => ({ ...DEFAULTS, caption: s.caption, captionPos: s.captionPos, captionColor: s.captionColor }));
+      // An image that is already a transparent cut-out (e.g. a sticker
+      // downloaded from this site, which has its own white border) is ready
+      // as-is: no extra outline by default.
+      const cutOut = transparentEdgeShare(data, w, h) > 0.5;
+      setReadyMade(cutOut || fromSite);
+      setSettings((s) => ({
+        ...DEFAULTS,
+        outline: cutOut ? 0 : DEFAULTS.outline,
+        caption: s.caption,
+        captionPos: s.captionPos,
+        captionColor: s.captionColor,
+      }));
       setMode("move");
       setLoaded(true);
     } catch {
@@ -262,8 +298,16 @@ export default function StickerMaker() {
   function removeBackground() {
     const b = base.current;
     if (!b) return;
+    // Seed only from fully opaque edge pixels. Faint shadow pixels at the
+    // edge of a cut-out are black underneath, and seeding from them wiped
+    // out dark hair and clothes.
+    const seeds = edgeSeeds(b.w, b.h).filter((p) => b.data.data[p * 4 + 3] > 200);
+    if (!seeds.length) {
+      setNote("This image already has a transparent background, so there's nothing to remove.");
+      return;
+    }
     const mask = current().slice();
-    flood(b.data.data, b.w, b.h, mask, edgeSeeds(b.w, b.h), tolerance);
+    flood(b.data.data, b.w, b.h, mask, seeds, tolerance);
     commitMask(mask);
   }
 
@@ -423,7 +467,9 @@ export default function StickerMaker() {
               className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center"
             >
               <span className="rounded-full bg-beam px-6 py-3 font-bold text-white shadow-blockSm">Choose a photo</span>
-              <span className="text-sm text-muted">Take a picture or pick one from your gallery. On a computer you can drop it here.</span>
+              <span className="text-sm text-muted">
+                {initial ? "Loading your sticker…" : "Take a picture, pick one from your gallery, or drop in a sticker you downloaded here."}
+              </span>
             </button>
           )}
         </div>
@@ -441,6 +487,12 @@ export default function StickerMaker() {
         {error && (
           <p role="alert" className="mt-3 text-sm font-semibold text-cue">
             {error}
+          </p>
+        )}
+        {loaded && readyMade && (
+          <p className="mt-3 rounded-xl border-2 border-tape/60 bg-tape/10 p-3 text-sm">
+            This one is already cut out. Add a caption if you like, then tap <strong>Download sticker</strong> or{" "}
+            <strong>Share</strong> to send it to WhatsApp.
           </p>
         )}
         {loaded && (
