@@ -17,7 +17,7 @@ professional audit for a production business.
 - `.env` and `.env.*` are gitignored (only `.env.example` is tracked).
 - Server-only: `DATABASE_URL`, `REVALIDATION_SECRET`, `ADMIN_PASSWORD`,
   `ADMIN_SESSION_SECRET`, `TMDB_API_READ_ACCESS_TOKEN`, `GEMINI_API_KEY`,
-  `TENOR_API_KEY`, `GIPHY_API_KEY`, `INDEXNOW_KEY` (also served as a public key file by design).
+  `INDEXNOW_KEY` (also served as a public key file by design).
 - Exposed to the client by design: `NEXT_PUBLIC_SITE_URL`,
   `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (safe only while the `original-gifs` bucket
@@ -71,7 +71,7 @@ professional audit for a production business.
   you've deployed and can test against it:
   ```
   default-src 'self';
-  img-src 'self' https://image.tmdb.org https://*.myanimelist.net https://media.tenor.com https://*.giphy.com data:;
+  img-src 'self' https://image.tmdb.org https://*.myanimelist.net https://*.supabase.co data:;
   script-src 'self';
   style-src 'self' 'unsafe-inline';
   ```

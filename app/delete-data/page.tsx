@@ -5,9 +5,9 @@ import { socialMeta } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: { absolute: `Delete My Data | ${SITE_NAME}` },
-  description: `Remove the data ${SITE_NAME} stores about you or your device.`,
+  description: `How to remove the data ${SITE_NAME} stores about you or your device: likes, saved titles, coins, comments and push notifications.`,
   alternates: { canonical: `${getBaseUrl()}/delete-data` },
-  ...socialMeta({ title: `Delete My Data | ${SITE_NAME}`, description: `Remove the data ${SITE_NAME} stores about you or your device.`, path: "/delete-data", cardTitle: "Delete My Data", badge: "PRIVACY" }),
+  ...socialMeta({ title: `Delete My Data | ${SITE_NAME}`, description: `How to remove the data ${SITE_NAME} stores about you or your device: likes, saved titles, coins, comments and push notifications.`, path: "/delete-data", cardTitle: "Delete My Data", badge: "PRIVACY" }),
 };
 
 export default function DeleteDataPage() {

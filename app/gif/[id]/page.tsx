@@ -20,8 +20,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: { absolute: title },
     description,
     alternates: { canonical: `${getBaseUrl()}/gif/${id}` },
-    // Only your own originals are unique content; Tenor/Giphy pages are thin.
-    robots: item.source === "original" ? undefined : { index: false, follow: true },
     openGraph: { type: "website", title, description, images: [item.previewUrl] },
     twitter: { card: "summary_large_image", title, description, images: [item.previewUrl] },
   };

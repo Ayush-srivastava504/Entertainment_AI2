@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { fitTitle } from "@/lib/seo";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -67,7 +68,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
   const db = await getDbCharacterBySlug(slug);
   if (db) {
-    const title = `${db.name}${db.anime[0] ? ` (${db.anime[0].title})` : ""} — Profile & Voice Actors | ${SITE_NAME}`;
+    const show = db.anime[0]?.title;
+    const title = fitTitle([
+      ...(show ? [`${db.name} (${show}): Profile & Voice Actors`, `${db.name} (${show}) Profile`] : []),
+      `${db.name}: Anime Character Profile & Voice Actors`,
+      `${db.name} Anime Character Profile`,
+    ]);
     const description = describeDb(db);
     const url = `${BASE_URL}/anime-characters/${db.slug}`;
     return {
@@ -96,13 +102,16 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const c = id ? await getCharacter(id) : null;
   if (!c) return { title: { absolute: `Character not found | ${SITE_NAME}` }, robots: { index: false } };
 
-  const title = `${c.name} — Anime Character Profile, Voice Actors & Anime | ${SITE_NAME}`;
+  const title = fitTitle([`${c.name}: Anime Character Profile & Voice Actors`, `${c.name} Anime Character Profile`]);
   const description = snip(c.about ?? `Profile of ${c.name}: appearances and voice actors.`, 155);
   const url = `${BASE_URL}/anime-characters/${characterSlug(c)}`;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
+    // Live MyAnimeList (Jikan) fallback, not a saved profile: thin and not in
+    // the sitemap, so keep it out of the index but let crawlers follow links.
+    robots: { index: false, follow: true },
     ...socialMeta({
       title,
       description,
@@ -191,7 +200,7 @@ export default async function CharacterPage({ params }: { params: Promise<Params
                     <li key={`${v.name}-${i}`} className="flex items-center gap-2 rounded-full border-2 border-ink bg-surface py-1 pl-1 pr-4">
                       {v.image && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={v.image} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
+                        <img src={v.image} alt={`${v.name}, voice actor`} loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                       )}
                       <span className="text-sm font-semibold">{v.name}</span>
                       <span className="text-xs text-muted">{v.language}</span>
@@ -353,7 +362,7 @@ async function DbProfile({ c }: { c: DbCharacter }) {
                         <li key={`${g.lang}-${v.name}`} className="flex items-center gap-2 rounded-full border-2 border-ink bg-surface py-1 pl-1 pr-4">
                           {v.image && (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={v.image} alt="" width={36} height={36} loading="lazy" className="h-9 w-9 rounded-full object-cover" />
+                            <img src={v.image} alt={`${v.name}, voice actor`} width={36} height={36} loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                           )}
                           <span className="text-sm font-semibold">{v.name}</span>
                         </li>

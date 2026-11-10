@@ -143,7 +143,19 @@ export const WATCH_ORDER_INDEX_FAQ: FaqItem[] = [
 export const ABOUT_FAQ: FaqItem[] = [
   {
     q: "What is Animegirl4u?",
-    a: "Animegirl4u is a guide site for movie and anime endings and franchise watch orders. It explains what happened in a finale and tells you the best order to start a series.",
+    a: "Animegirl4u is an independent anime fan site. It offers free original anime girl GIFs, stickers and wallpapers, profiles of popular and trending anime characters, browser mini-games, ending explained guides and franchise watch orders.",
+  },
+  {
+    q: "Are the GIFs and wallpapers free to download?",
+    a: "Yes. Every GIF, sticker and wallpaper is free and downloads directly from Animegirl4u, with no sign-up and no redirect to another app. They are original images made for the site and are meant for personal use, such as chats, profile pictures and phone backgrounds.",
+  },
+  {
+    q: "Is Animegirl4u affiliated with any anime studio?",
+    a: "No. Animegirl4u is an independent fan site and is not affiliated with any studio, publisher or streaming service. Anime titles and characters belong to their respective owners.",
+  },
+  {
+    q: "Where does the character information come from?",
+    a: "Character profiles use AniList data for names, appearances and voice actors. Overviews are written to be spoiler-free.",
   },
   {
     q: "Are ending explained guides spoiler-free?",

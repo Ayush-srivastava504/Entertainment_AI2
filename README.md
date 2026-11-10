@@ -5,8 +5,7 @@ deployed on Vercel. Live at <https://animegirl4u.com>.
 
 Postgres is the single source of truth for catalog content. Pages read the
 database; nothing calls TMDB, AniList or Jikan at request time. The only
-request-time external calls are GIF/sticker search (Tenor, Giphy), original
-GIFs (Supabase Storage) and per-GIF captions (Gemini, cached in Postgres).
+request-time external calls are original GIFs/stickers (Supabase Storage) and per-GIF captions (Gemini, cached in Postgres).
 
 ```
 GitHub Actions (crawl.yml)  ->  crawlers + AI generators  ->  Postgres

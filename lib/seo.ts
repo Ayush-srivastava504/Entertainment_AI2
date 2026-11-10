@@ -1,5 +1,7 @@
 /* Small text helpers shared by the guide templates. */
 
+import { SITE_NAME } from "@/lib/site";
+
 /** Trims to a search-snippet length on a word boundary, adding an ellipsis only when it cut. */
 export function snippet(text: string, max = 158): string {
   const t = text.replace(/\s+/g, " ").trim();
@@ -42,4 +44,18 @@ export function formatDate(iso?: string): string | undefined {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return undefined;
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
+}
+
+/**
+ * Search titles get cut off past ~60 characters. Returns the first variant
+ * that fits with " | Animegirl4u" appended, else the first that fits without
+ * it, else the last variant truncated. Pass variants from most to least
+ * descriptive, keyword first.
+ */
+export function fitTitle(variants: string[], max = 60): string {
+  const suffix = ` | ${SITE_NAME}`;
+  for (const v of variants) if (v.length + suffix.length <= max) return v + suffix;
+  for (const v of variants) if (v.length <= max) return v;
+  const last = variants[variants.length - 1];
+  return `${last.slice(0, max - 1).trimEnd()}…`;
 }

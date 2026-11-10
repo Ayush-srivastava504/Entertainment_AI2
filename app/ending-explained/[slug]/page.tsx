@@ -19,7 +19,7 @@ import type { MediaItem } from "@/lib/api/normalize";
 import { getAdjacentGuides } from "@/lib/api/guides";
 import { ENDING_TOPICS, matchesMediaTopic } from "@/lib/topics";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
-import { formatDate, readingMinutes, snippet, toParagraphs } from "@/lib/seo";
+import { formatDate, readingMinutes, snippet, toParagraphs, fitTitle } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
@@ -52,7 +52,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   // The root layout appends " | Animegirl4u". "& Meaning" targets the second
   // half of the intent ("ending explained" + "what does the ending mean").
-  const title = `${item.title}${item.year ? ` (${item.year})` : ""} Ending Explained & Meaning`;
+  const yr = item.year ? ` (${item.year})` : "";
+  const title = fitTitle([`${item.title}${yr} Ending Explained & Meaning`, `${item.title}${yr} Ending Explained`, `${item.title} Ending Explained`]);
   const description = snippet(
     item.endingExplained?.metaDescription ||
       item.endingExplained?.keyTakeaways?.[0] ||
@@ -70,7 +71,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     robots: item.noindex ? { index: false, follow: true } : undefined,

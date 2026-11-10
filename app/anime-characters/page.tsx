@@ -34,7 +34,7 @@ function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "tre
 }
 
 const BASE_URL = getBaseUrl();
-const TITLE = `Anime Characters — Profiles, Voice Actors & Fans' Favorites | ${SITE_NAME}`;
+const TITLE = `Anime Characters: Profiles & Voice Actors | ${SITE_NAME}`;
 const DESCRIPTION =
   "Browse the most loved anime characters: profiles, nicknames, which anime they appear in and who voices them. Search any character.";
 

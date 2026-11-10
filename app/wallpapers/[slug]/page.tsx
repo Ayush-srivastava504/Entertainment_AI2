@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { fitTitle } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
@@ -20,8 +21,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!wallpaper) return {};
 
   const path = `/wallpapers/${wallpaper.slug}`;
-  const title = `${wallpaper.title} — Free Download | ${SITE_NAME}`;
-  const description = `Download this free ${wallpaper.categoryLabel.toLowerCase()} anime girl wallpaper and set it as your phone background. Part of the ${SITE_NAME} wallpaper collection.`;
+  const title = fitTitle([`${wallpaper.title}: Free Download`, wallpaper.title]);
+  // Unique per wallpaper (the old text was identical across a whole category).
+  const description = `Free download: ${wallpaper.title.replace(/ wallpaper$/i, "")}, a ${wallpaper.width}x${wallpaper.height} ${wallpaper.categoryLabel.toLowerCase()} anime girl wallpaper for your phone. No sign-up, from the ${SITE_NAME} collection.`;
 
   return {
     title: { absolute: title },

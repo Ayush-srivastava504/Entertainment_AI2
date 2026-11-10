@@ -16,12 +16,13 @@ Tables: `anime`, `movies`, `franchises`, `franchise_entries`, `comments`,
    `NEXT_PUBLIC_SITE_URL`, `REVALIDATION_SECRET`. For the admin panel:
    `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` (`openssl rand -hex 32`).
 3. Optional: `UPSTASH_REDIS_REST_URL`/`_TOKEN` (shared cache across instances),
-   `TENOR_API_KEY`, `GIPHY_API_KEY`, `GEMINI_API_KEY` (GIF captions),
+   `GEMINI_API_KEY` (GIF captions),
    `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY`, `INDEXNOW_KEY`,
    `ANDROID_SHA256_CERT_FINGERPRINTS`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
 
-Without the Tenor/Giphy keys the sticker sections render empty. Without
-`GEMINI_API_KEY`, GIFs still work and only the captions are skipped.
+Stickers and GIFs come only from your own originals in Supabase Storage (no
+third-party GIF APIs). Without `GEMINI_API_KEY`, GIFs still work and only the
+captions are skipped.
 
 ## Custom domain
 
@@ -42,7 +43,6 @@ bucket named `original-gifs`.
 
 New uploads appear within about 5 minutes on the homepage and `/stickers`, each
 with its own `/gif/original-<filename>` page and a cached Gemini caption.
-Originals rank ahead of Tenor and Giphy results in search.
 
 ## Revalidation
 

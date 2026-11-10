@@ -71,7 +71,10 @@ async function load() {
     getPublishedAnimeSlugs({ strict: true }),
     getPublishedFranchiseSlugs({ strict: true }),
   ]);
-  return { movies: movies as Row[], anime: anime as Row[], franchises: franchises as Row[] };
+  // A row with an empty/blank slug would emit "/watch-order/" or
+  // "/ending-explained/", duplicates of the hub pages. Never list those.
+  const valid = (rows: Row[]) => rows.filter((r) => typeof r.slug === "string" && r.slug.trim() !== "");
+  return { movies: valid(movies as Row[]), anime: valid(anime as Row[]), franchises: valid(franchises as Row[]) };
 }
 
 const chunks = <T,>(rows: T[]) => {

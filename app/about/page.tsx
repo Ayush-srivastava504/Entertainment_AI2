@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
-import { buildOgImageUrl } from "@/lib/og";
+import { socialMeta } from "@/lib/og";
 import { ABOUT_FAQ } from "@/lib/faq";
 import { breadcrumbNode, graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -15,30 +15,22 @@ export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 const PATH = "/about";
-const TITLE = `About ${SITE_NAME}: How We Explain Endings and Order Franchises`;
+const TITLE = `About ${SITE_NAME}: Free Anime Girl GIFs, Wallpapers & Guides`;
 const DESCRIPTION =
-  "Meet Animegirl4u: plain-English ending explained guides for movies and anime, franchise watch orders, and a clear look at how every guide is researched, drafted, checked and corrected.";
+  "Animegirl4u is an independent anime fan site with free original anime girl GIFs and wallpapers, character profiles, mini-games and anime guides.";
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: `${BASE_URL}${PATH}` },
-  openGraph: {
-    type: "website",
-    url: `${BASE_URL}${PATH}`,
-    siteName: SITE_NAME,
+  ...socialMeta({
     title: TITLE,
     description: DESCRIPTION,
-    images: [
-      {
-        url: buildOgImageUrl({ title: `About ${SITE_NAME}`, subtitle: "Endings, explained. Franchises, in order.", badge: "ABOUT" }),
-        width: 1200,
-        height: 630,
-        alt: `About ${SITE_NAME}`,
-      },
-    ],
-  },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
+    path: PATH,
+    cardTitle: `About ${SITE_NAME}`,
+    cardSubtitle: "Anime girl GIFs, wallpapers, characters and guides, free",
+    badge: "ABOUT",
+  }),
 };
 
 const pageJsonLd = graph(
@@ -68,8 +60,8 @@ const pageJsonLd = graph(
 const linkClass = "font-semibold text-beam underline underline-offset-4";
 
 const jumpLinks = [
-  { id: "what-is-animegirl4u", label: "What we publish" },
-  { id: "how-guides-are-made", label: "How guides are made" },
+  { id: "what-is-animegirl4u", label: "What you'll find" },
+  { id: "how-guides-are-made", label: "Where content comes from" },
   { id: "find-titles", label: "Finding titles" },
   { id: "your-data", label: "Likes & comments" },
   { id: "next", label: "What's next" },
@@ -77,23 +69,59 @@ const jumpLinks = [
 ];
 
 const facts = [
-  { label: "Guide types", value: "2", note: "Endings and watch orders" },
-  { label: "Covers", value: "Movies + anime", note: "One library" },
-  { label: "Spoilers", value: "Hidden", note: "Until you tap reveal" },
-  { label: "Account needed", value: "None", note: "Read, like, save, comment" },
+  { label: "GIFs & wallpapers", value: "Original", note: "Download straight from this site" },
+  { label: "Anime characters", value: "Profiles", note: "Most loved and trending" },
+  { label: "Price", value: "Free", note: "Everything on the site" },
+  { label: "Account needed", value: "None", note: "Download, play, read, comment" },
 ];
 
 const pillars = [
   {
+    id: "stickers",
+    tag: "Send it",
+    title: "Anime girl GIFs & stickers",
+    text: "Cute, shy, excited and sad anime girl reactions for chats and Discord. Every GIF is original to Animegirl4u and downloads directly from this site, with no detour to another app.",
+    points: ["Original GIFs, not reposts", "One-tap download", "Free for personal use"],
+    href: "/stickers",
+    cta: "Browse stickers & GIFs",
+    tone: "bg-surface",
+  },
+  {
+    id: "wallpapers",
+    tag: "Save it",
+    title: "Anime girl wallpapers",
+    text: "Phone and tablet wallpapers grouped by mood: cyberpunk, fantasy, gothic, vampire, lo-fi, sketch and more. Each one lists its exact resolution before you download.",
+    points: ["Original art made for Animegirl4u", "Honest sizes, never upscaled", "Free downloads"],
+    href: "/wallpapers",
+    cta: "Browse wallpapers",
+    tone: "bg-tape",
+  },
+  {
+    id: "characters",
+    tag: "Meet them",
+    title: "Anime characters",
+    text: "Profiles of the most loved and currently trending anime characters, with the series they appear in, Japanese and English voice actors, and spoiler-free overviews.",
+    points: ["Ranked by fan favourites", "Trending characters each season", "Voice actors and appearances"],
+    href: "/anime-characters",
+    cta: "Explore anime characters",
+    tone: "bg-surface",
+  },
+  {
+    id: "games",
+    tag: "Play",
+    title: "Anime mini-games",
+    text: "Quick browser games, from Memory Match and Four in a Row to Slide 15, that earn coins for the spin wheel, where you collect chibi avatars to download.",
+    points: ["No downloads or sign-up", "Works on phones", "Collect and save avatars"],
+    href: "/games",
+    cta: "Play the games",
+    tone: "bg-tape",
+  },
+  {
     id: "ending-explained",
     tag: "After you watch",
-    title: "Ending Explained",
+    title: "Ending explained",
     text: "The credits rolled and the questions started. Each guide walks through a recap, the ending itself, what it means, and the questions viewers ask most.",
-    points: [
-      "Spoiler-light recap first",
-      "Ending stays behind a reveal button",
-      "Facts kept apart from interpretation",
-    ],
+    points: ["Spoiler-light recap first", "Ending stays behind a reveal button", "Facts kept apart from interpretation"],
     href: "/ending-explained",
     cta: "Browse ending guides",
     tone: "bg-surface",
@@ -101,13 +129,9 @@ const pillars = [
   {
     id: "watch-order",
     tag: "Before you start",
-    title: "Watch Order",
+    title: "Watch order",
     text: "Long franchises hide their best route. Each guide lists every entry in a sensible order and says where release order and story order part ways.",
-    points: [
-      "Release, story and recommended orders explained",
-      "Notes on what fits where",
-      "Reviewed by a person before it goes live",
-    ],
+    points: ["Release, story and recommended orders", "Notes on what fits where", "Reviewed by a person before it goes live"],
     href: "/watch-order",
     cta: "Browse watch orders",
     tone: "bg-tape",
@@ -116,20 +140,20 @@ const pillars = [
 
 const process = [
   {
-    title: "Start with facts",
-    text: "Movie details and cast come from TMDB. Anime details come from public anime databases. Every guide begins with real catalog data.",
+    title: "Original art",
+    text: "GIFs, stickers and wallpapers are original images created for Animegirl4u and hosted here, so downloads come straight from this site.",
   },
   {
-    title: "Draft with AI help",
-    text: "AI helps draft ending explanations from those facts. It is a writing aid, never a replacement for checking.",
+    title: "Trusted data",
+    text: "Character profiles use AniList data, movie details come from TMDB, and anime details come from public anime databases.",
   },
   {
-    title: "Check before publishing",
-    text: "Each ending guide must pass a minimum-length check. Watch orders stay hidden until a person reviews and approves them.",
+    title: "AI as a writing aid",
+    text: "AI helps draft guide text and character overviews from those facts, with spoilers stripped out. It never replaces checking.",
   },
   {
-    title: "Correct in the open",
-    text: "Found a mistake? Comment on the guide. Reports are reviewed and guides are corrected when needed.",
+    title: "Checked and corrected",
+    text: "Guides must pass quality checks, watch orders wait for human approval, and reported mistakes are reviewed and fixed.",
   },
 ];
 
@@ -165,12 +189,14 @@ const findCards = [
 const yourData = [
   { title: "No account needed", text: "Like a title or save it for later without signing up. Likes and saved titles live in your own browser, so they do not follow you to another device." },
   { title: "Comments, moderated", text: "Comments are open without an account. They may be reviewed and removed through moderation, and factual corrections are checked against the guide." },
+  { title: "An independent fan site", text: "Animegirl4u is not affiliated with any anime studio, publisher or streaming service. Anime titles and characters belong to their respective owners; character profiles and guides are fan commentary." },
 ];
 
 const nextUp = [
-  "More ending explained and watch order guides across movies, anime and franchises",
-  "Easier ways to find the titles and guides that match what you want to watch",
-  "Steady improvements to readability, navigation and every screen size",
+  "New original GIFs, stickers and wallpaper collections",
+  "More anime character profiles as each season's shows trend",
+  "New mini-games and more collectible avatars",
+  "More ending explained and watch order guides, added gradually",
 ];
 
 /* ---------- small pieces ---------- */
@@ -220,34 +246,35 @@ export default async function AboutPage() {
 
       {/* Hero */}
       <section className="overflow-hidden border-b-2 border-ink bg-gradient-to-br from-heroFrom to-heroTo text-white" aria-labelledby="about-heading">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[1.3fr_1fr]">
-          <div>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+          <div className="min-w-0">
             <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "About" }]} />
             <p className="mt-5 inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">About {SITE_NAME}</p>
             <h1
               id="about-heading"
               className="mt-4 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
             >
-              Endings, explained.
+              Anime girls, characters
               <br />
-              <span className="text-tape">Franchises, in order.</span>
+              <span className="text-tape">and stories, all free.</span>
             </h1>
             <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-white/90 sm:text-xl">
-              {SITE_NAME} exists for the moment the credits roll and the questions start, and for the moment before,
-              when a franchise has more entries than you can count.
+              {SITE_NAME} is an independent fan site for people who love anime: original anime girl GIFs and wallpapers to
+              download, profiles of the characters everyone talks about, quick games, and clear guides for when a series
+              ends.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/ending-explained"
+                href="/stickers"
                 className="inline-flex min-h-[48px] items-center rounded-full border-2 border-ink bg-tape px-6 py-3 font-bold text-ink shadow-blockSm transition hover:-translate-y-0.5"
               >
-                Read ending guides
+                Get anime girl GIFs
               </Link>
               <Link
-                href="/watch-order"
+                href="/wallpapers"
                 className="inline-flex min-h-[48px] items-center rounded-full border-2 border-white/70 px-6 py-3 font-bold text-white transition hover:bg-white hover:text-ink"
               >
-                Find a watch order
+                Browse wallpapers
               </Link>
             </div>
           </div>
@@ -290,11 +317,11 @@ export default async function AboutPage() {
       <section id="what-is-animegirl4u" aria-labelledby="publish-heading" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionHeading
           id="publish-heading"
-          kicker="What we publish"
-          title="Two kinds of guide, one clear promise"
-          intro="Every page uses plain language, short sections and a predictable order, so you never need a second tab to decode the guide itself."
+          kicker="What you'll find"
+          title="Everything on Animegirl4u, in one place"
+          intro="Six sections, all free and without sign-ups. Pick what you came for."
         />
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {pillars.map((p) => (
             <article
               key={p.id}
@@ -304,7 +331,7 @@ export default async function AboutPage() {
               <p className="w-fit rounded-full border-2 border-ink bg-paper px-3 py-1 text-xs font-bold uppercase tracking-wide">
                 {p.tag}
               </p>
-              <h3 className="mt-4 font-display text-3xl font-extrabold tracking-tight">{p.title}</h3>
+              <h3 className="mt-4 font-display text-2xl font-extrabold tracking-tight">{p.title}</h3>
               <p className="mt-3 font-body text-base leading-relaxed text-ink/85">{p.text}</p>
               <ul className="mt-5 space-y-2.5">
                 {p.points.map((pt) => (
@@ -340,9 +367,9 @@ export default async function AboutPage() {
       <section id="how-guides-are-made" aria-labelledby="made-heading" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionHeading
           id="made-heading"
-          kicker="Our process"
-          title="How every guide is made"
-          intro="A guide is only useful if you can trust it, so here is exactly what happens between a catalog entry and a published page."
+          kicker="Where content comes from"
+          title="Original art, trusted data, checked guides"
+          intro="You should know where what you download and read comes from. Here is exactly how it is made."
         />
         <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {process.map((step, i) => (
@@ -391,7 +418,7 @@ export default async function AboutPage() {
       <section className="border-y-2 border-ink bg-tape" aria-label="Community and roadmap">
         <div className="mx-auto grid max-w-6xl gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2">
           <div id="your-data" className="scroll-mt-24 rounded-2xl border-2 border-ink bg-surface p-6 shadow-block sm:p-8">
-            <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">Likes, saved titles and comments</h2>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">Likes, comments and who we are</h2>
             <div className="mt-6 space-y-5">
               {yourData.map((d) => (
                 <div key={d.title}>

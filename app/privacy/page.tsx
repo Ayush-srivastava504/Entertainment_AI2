@@ -5,9 +5,9 @@ import { socialMeta } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: { absolute: `Privacy Policy | ${SITE_NAME}` },
-  description: `How ${SITE_NAME} and its Android app handle your data.`,
+  description: `How ${SITE_NAME} and its Android app handle your data: what is stored in your browser, comments, analytics and how to delete it.`,
   alternates: { canonical: `${getBaseUrl()}/privacy` },
-  ...socialMeta({ title: `Privacy Policy | ${SITE_NAME}`, description: `How ${SITE_NAME} and its Android app handle your data.`, path: "/privacy", cardTitle: "Privacy Policy", badge: "PRIVACY" }),
+  ...socialMeta({ title: `Privacy Policy | ${SITE_NAME}`, description: `How ${SITE_NAME} and its Android app handle your data: what is stored in your browser, comments, analytics and how to delete it.`, path: "/privacy", cardTitle: "Privacy Policy", badge: "PRIVACY" }),
 };
 
 export default function PrivacyPage() {

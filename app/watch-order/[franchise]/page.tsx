@@ -13,7 +13,7 @@ import ShareButton from "@/components/ShareButton";
 import CommentSection from "@/components/CommentSection";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { WATCH_ORDER_TOPICS, matchesFranchiseTopic } from "@/lib/topics";
-import { formatDate, snippet } from "@/lib/seo";
+import { formatDate, snippet, fitTitle } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
   if (!franchise) return {};
 
   const url = `${BASE_URL}/watch-order/${franchise.slug}`;
-  const title = `${franchise.title} Watch Order: The Complete Guide`;
+  const title = fitTitle([`${franchise.title} Watch Order: The Complete Guide`, `${franchise.title} Watch Order Guide`, `${franchise.title} Watch Order`]);
   const description = snippet(
     franchise.metaDescription || franchise.intro || `The best order to watch ${franchise.title}: release order, chronological order and which entries you can skip.`
   );
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
   });
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     robots: franchise.noindex ? { index: false, follow: true } : undefined,

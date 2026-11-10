@@ -147,7 +147,7 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
                     <li key={v.name} className="flex items-center gap-2 rounded-full border-2 border-ink bg-surface py-1 pl-1 pr-4">
                       {v.image && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={v.image} alt="" loading="lazy" className="h-9 w-9 rounded-full object-cover" />
+                        <img src={v.image} alt={`${v.name}, voice actor`} loading="lazy" className="h-9 w-9 rounded-full object-cover" />
                       )}
                       <span className="text-sm font-semibold">{v.name}</span>
                       <span className="text-xs text-muted">Japanese</span>
