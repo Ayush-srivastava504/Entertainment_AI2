@@ -60,11 +60,11 @@ export function indexXml(items: { loc: string; lastmod?: Date }[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
 
-// Movies are held back from the sitemap on purpose while the site is new --
-// fewer indexed URLs while Google is still building trust in the domain.
-// Flip this to true once that trust is established and you want movie pages
-// discovered again; nothing else needs to change.
-const INCLUDE_MOVIES = false;
+// Movie guides were held back while the domain was new. They are just as
+// substantial as the anime guides (~1,300-1,600 words, none noindexed) and
+// were already linked from the /ending-explained hub, so leaving them out
+// only slowed discovery and sent mixed signals. Set false to hold back again.
+const INCLUDE_MOVIES = true;
 
 async function load() {
   const [movies, anime, franchises] = await Promise.all([

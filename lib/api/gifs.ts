@@ -18,6 +18,9 @@ export type GifItem = {
   fullUrl: string;
   width: number;
   height: number;
+  /** What the image shows, from lib/data/sticker-descriptions.json. */
+  alt?: string;
+  description?: string;
 };
 
 /** Original GIFs matching the query (all originals if nothing matches). */

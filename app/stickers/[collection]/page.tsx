@@ -106,6 +106,26 @@ export default async function StickerCollectionPage({ params }: { params: Params
         ))}
       </div>
 
+      {items.some((g) => g.description) && (
+        <section className="mt-12 max-w-3xl" aria-labelledby="in-collection">
+          <h2 id="in-collection" className="font-display text-2xl font-extrabold">
+            What&rsquo;s in the {c.label} collection
+          </h2>
+          <ul className="mt-4 space-y-3">
+            {items
+              .filter((g) => g.description)
+              .map((g) => (
+                <li key={g.id} className="leading-relaxed">
+                  <Link href={`/gif/${g.id}`} className="font-semibold text-beam underline underline-offset-2">
+                    {shortStickerTitle(g, c)}
+                  </Link>
+                  : <span className="text-muted">{g.description}</span>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
+
       {!items.length && (
         <div className="mt-8 rounded-2xl border-2 border-dashed border-ink/30 p-8 text-center">
           <p className="font-semibold">No stickers in this collection yet.</p>

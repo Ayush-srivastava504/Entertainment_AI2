@@ -19,6 +19,11 @@ The title shown on the site is the filename, prettified -- name files like
 
 import { cached } from "@/lib/cache";
 import type { GifItem } from "./gifs";
+import DESCRIPTIONS from "@/lib/data/sticker-descriptions.json";
+
+// Per-sticker alt + description written from the actual image by
+// scripts/describe-stickers.mjs.
+const DESC = DESCRIPTIONS as Record<string, { alt: string; description: string }>;
 
 const BUCKET = "original-gifs";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -102,6 +107,8 @@ export async function listOriginalGifs(): Promise<GifItem[]> {
       fullUrl: publicUrl(f.name),
       width: 480,
       height: 480,
+      alt: DESC[idFromFilename(f.name)]?.alt,
+      description: DESC[idFromFilename(f.name)]?.description,
     })
   );
 }

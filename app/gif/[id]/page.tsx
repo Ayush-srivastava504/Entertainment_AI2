@@ -8,6 +8,7 @@ import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
 import { socialMeta } from "@/lib/og";
+import { snippet } from "@/lib/seo";
 import { collectionForSticker, getStickersInCollection } from "@/lib/sticker-collections";
 
 // Cache each GIF page for an hour (ISR) so crawlers and visitors get a fast,
@@ -22,7 +23,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!item) return { title: "GIF not found", robots: { index: false } };
   const title = `${item.title} | ${SITE_NAME}`;
   const kind = /\.gif$/i.test(item.fullUrl) ? "GIF" : "sticker";
-  const description = `Download the "${item.title}" anime girl ${kind}, free, on ${SITE_NAME}.`;
+  const description = item.description
+    ? snippet(`${item.description} Free ${kind} download on ${SITE_NAME}.`, 158)
+    : `Download the "${item.title}" anime girl ${kind}, free, on ${SITE_NAME}.`;
   return {
     title: { absolute: title },
     description,
@@ -32,7 +35,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title,
       description,
       path: `/gif/${id}`,
-      image: { url: item.previewUrl, width: item.width, height: item.height, alt: item.title },
+      image: { url: item.previewUrl, alt: item.alt ?? item.title },
     }),
   };
 }
@@ -71,7 +74,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
       thumbnailUrl: item.previewUrl,
       url: `${BASE_URL}${path}`,
       name: item.title,
-      description: caption || item.title,
+      description: item.description || caption || item.title,
       encodingFormat: /\.png$/i.test(item.fullUrl) ? "image/png" : /\.webp$/i.test(item.fullUrl) ? "image/webp" : /\.jpe?g$/i.test(item.fullUrl) ? "image/jpeg" : "image/gif",
       isPartOf: { "@id": WEBSITE_ID },
       breadcrumb: { "@id": `${BASE_URL}${path}#breadcrumb` },
@@ -91,7 +94,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.fullUrl}
-          alt={item.title}
+          alt={item.alt ?? item.title}
           width={item.width}
           height={item.height}
           loading="eager"
@@ -116,6 +119,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
         </div>
       </div>
 
+      {item.description && <p className="mt-4 leading-relaxed text-ink">{item.description}</p>}
       {caption && (
         <p className="mt-4 border-t-2 border-ink/10 pt-4 text-sm leading-relaxed text-muted">{caption}</p>
       )}
@@ -127,12 +131,6 @@ export default async function GifDetailPage({ params }: { params: Params }) {
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <dt className="text-muted">Format</dt>
           <dd className="font-semibold">{format}{isAnimated ? ", animated" : ", still image"}</dd>
-          {item.width > 0 && item.height > 0 && (
-            <>
-              <dt className="text-muted">Size</dt>
-              <dd className="font-semibold">{item.width} × {item.height} px</dd>
-            </>
-          )}
           {collection && (
             <>
               <dt className="text-muted">Collection</dt>
@@ -159,7 +157,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
                 className="block overflow-hidden rounded-xl border-2 border-ink bg-surface"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.previewUrl} alt={g.title} width={g.width} height={g.height} loading="lazy" decoding="async" className="aspect-square h-full w-full object-contain" />
+                <img src={g.previewUrl} alt={g.alt ?? g.title} width={g.width} height={g.height} loading="lazy" decoding="async" className="aspect-square h-full w-full object-contain" />
               </Link>
             ))}
           </div>

@@ -10,7 +10,7 @@ export default function StickerCard({ item, label, eager }: { item: GifItem; lab
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.previewUrl}
-          alt={`${item.title} sticker`}
+          alt={item.alt ?? `${item.title} sticker`}
           width={item.width}
           height={item.height}
           loading={eager ? "eager" : "lazy"}
