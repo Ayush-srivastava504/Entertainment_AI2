@@ -98,11 +98,6 @@ export default function NavigationLoader() {
           <span className="ag-dot h-2.5 w-2.5 rounded-full bg-tape [animation-delay:150ms]" />
           <span className="ag-dot h-2.5 w-2.5 rounded-full bg-tape [animation-delay:300ms]" />
         </div>
-        <div className="mt-6 grid w-full grid-cols-3 gap-2" aria-hidden="true">
-          {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="ag-shimmer aspect-[3/4] rounded-xl border-2 border-ink/50" />
-          ))}
-        </div>
       </div>
     </div>
   );

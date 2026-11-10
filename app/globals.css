@@ -95,16 +95,6 @@ details > summary::-webkit-details-marker {
 }
 
 /* ---------- Loading screen (components/NavigationLoader.tsx) ---------- */
-/* A soft light sweep over the skeleton blocks. */
-.ag-shimmer {
-  background: linear-gradient(100deg, #141a2e 30%, #24305a 50%, #141a2e 70%);
-  background-size: 300% 100%;
-  animation: ag-shimmer 1.4s ease-in-out infinite;
-}
-@keyframes ag-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0 0; }
-}
 /* The logo gently bobs; the three dots pulse in turn. */
 .ag-bob { animation: ag-bob 1.6s ease-in-out infinite; }
 @keyframes ag-bob {
@@ -124,6 +114,6 @@ details > summary::-webkit-details-marker {
   100% { width: 92%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ag-shimmer, .ag-bob, .ag-dot { animation: none; }
+  .ag-bob, .ag-dot { animation: none; }
   .ag-progress { animation: none; width: 60%; }
 }
