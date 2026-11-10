@@ -5,6 +5,8 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { socialMeta } from "@/lib/og";
+import StickerCard from "@/components/stickers/StickerCard";
+import { STICKER_COLLECTIONS, getStickersInCollection } from "@/lib/sticker-collections";
 
 export const revalidate = 3600;
 
@@ -38,7 +40,16 @@ export default async function StickersPage({
 }) {
   const raw = (await searchParams).q;
   const q = (Array.isArray(raw) ? raw[0] : raw)?.trim().slice(0, 80) || DEFAULT_QUERY;
-  const gifs = await searchGifs(q, 24);
+  const [gifs, covers] = await Promise.all([
+    searchGifs(q, 24),
+    Promise.all(
+      STICKER_COLLECTIONS.map(async (c) => {
+        const items = await getStickersInCollection(c.slug).catch(() => []);
+        return { c, cover: items[0], count: items.length };
+      })
+    ),
+  ]);
+  const collections = covers.filter((x) => x.count > 0);
   const BASE_URL = getBaseUrl();
 
   const pageJsonLd = graph(
@@ -105,44 +116,41 @@ export default async function StickersPage({
         ))}
       </div>
 
+      {collections.length > 0 && (
+        <section aria-labelledby="sticker-collections" className="mt-8">
+          <h2 id="sticker-collections" className="font-display text-xl font-extrabold">
+            Sticker collections
+          </h2>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {collections.map(({ c, cover, count }) => (
+              <Link
+                key={c.slug}
+                href={`${PATH}/${c.slug}`}
+                className="group overflow-hidden rounded-xl border-2 border-ink bg-surface hover:border-beam"
+              >
+                <div className="flex aspect-square items-center justify-center bg-ink/5 p-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={cover!.previewUrl} alt={c.heading} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
+                </div>
+                <div className="px-2 py-1.5">
+                  <p className="truncate text-sm font-bold group-hover:text-beam">{c.label}</p>
+                  <p className="text-xs text-muted">{count} stickers</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {gifs.length > 0 && (
-        <p className="mt-6 text-sm text-muted">
+        <p className="mt-8 text-sm text-muted">
           {gifs.length} results for &ldquo;{q}&rdquo;
         </p>
       )}
 
       <div className="mt-3 columns-2 gap-3 sm:columns-3 md:columns-4">
         {gifs.map((g, i) => (
-          <div
-            key={g.id}
-            className="mb-3 break-inside-avoid overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block"
-          >
-            <Link href={`/gif/${g.id}`} className="block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={g.previewUrl}
-                alt={g.title}
-                width={g.width}
-                height={g.height}
-                loading={i < 4 ? "eager" : "lazy"}
-                decoding="async"
-                className="h-auto w-full"
-              />
-            </Link>
-            <div className="flex items-center justify-between gap-2 px-2 py-1.5">
-              <span className="truncate text-xs font-semibold text-ink/80">{g.title}</span>
-              <a
-                href={g.fullUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Download ${g.title}`}
-                className="shrink-0 rounded-full bg-beam px-2.5 py-1 text-xs font-bold text-white hover:bg-beamDeep"
-              >
-                ↓
-              </a>
-            </div>
-          </div>
+          <StickerCard key={g.id} item={g} eager={i < 4} />
         ))}
       </div>
 

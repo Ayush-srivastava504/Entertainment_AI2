@@ -10,6 +10,7 @@ the one field worth getting right: it is the real last content change.
 */
 
 import { listOriginalGifs } from "@/lib/api/original-gifs";
+import { STICKER_COLLECTIONS } from "@/lib/sticker-collections";
 import { getPublishedMovieSlugs } from "@/lib/api/movies";
 import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
@@ -109,6 +110,7 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/privacy` },
       { loc: `${BASE_URL}/delete-data` },
       { loc: `${BASE_URL}/stickers` },
+      ...STICKER_COLLECTIONS.map((c) => ({ loc: `${BASE_URL}/stickers/${c.slug}` })),
       { loc: `${BASE_URL}/wallpapers` },
       { loc: `${BASE_URL}/anime-characters/leads` },
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),

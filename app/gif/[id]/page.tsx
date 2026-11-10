@@ -7,6 +7,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
+import { collectionForSticker, getStickersInCollection } from "@/lib/sticker-collections";
 
 // Cache each GIF page for an hour (ISR) so crawlers and visitors get a fast,
 // pre-rendered page instead of a fresh Supabase + caption lookup every time.
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const item = await getGifById(id);
   if (!item) return { title: "GIF not found", robots: { index: false } };
   const title = `${item.title} | ${SITE_NAME}`;
-  const description = `Download the "${item.title}" anime GIF, free, on ${SITE_NAME}.`;
+  const kind = /\.gif$/i.test(item.fullUrl) ? "GIF" : "sticker";
+  const description = `Download the "${item.title}" anime girl ${kind}, free, on ${SITE_NAME}.`;
   return {
     title: { absolute: title },
     description,
@@ -34,12 +36,21 @@ export default async function GifDetailPage({ params }: { params: Params }) {
   const item = await getGifById(id);
   if (!item) notFound();
 
+  const collection = collectionForSticker(item);
   // Neither of these may ever block or crash the page.
   const [caption, more] = await Promise.all([
     getOrCreateCaption(item),
-    searchGifs(item.title.split(/\s+/).slice(0, 3).join(" ") || "anime girl", 9).catch(() => []),
+    (collection
+      ? getStickersInCollection(collection.slug)
+      : searchGifs(item.title.split(/\s+/).slice(0, 3).join(" ") || "anime girl", 9)
+    ).catch(() => []),
   ]);
   const related = more.filter((g) => g.id !== item.id).slice(0, 8);
+  const crumbs = [
+    { name: "Home", path: "/" },
+    { name: "Stickers & GIFs", path: "/stickers" },
+    ...(collection ? [{ name: collection.label, path: `/stickers/${collection.slug}` }] : []),
+  ];
 
   const BASE_URL = getBaseUrl();
   const path = `/gif/${id}`;
@@ -58,18 +69,14 @@ export default async function GifDetailPage({ params }: { params: Params }) {
     },
     {
       "@id": `${BASE_URL}${path}#breadcrumb`,
-      ...breadcrumbNode([
-        { name: "Home", path: "/" },
-        { name: "Stickers & GIFs", path: "/stickers" },
-        { name: item.title, path },
-      ]),
+      ...breadcrumbNode([...crumbs, { name: item.title, path }]),
     }
   );
 
   return (
     <article className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(pageJsonLd) }} />
-      <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Stickers & GIFs", href: "/stickers" }, { name: item.title }]} />
+      <Breadcrumbs items={[...crumbs.map((c) => ({ name: c.name, href: c.path })), { name: item.title }]} />
 
       <div className="mt-5 overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -106,7 +113,9 @@ export default async function GifDetailPage({ params }: { params: Params }) {
 
       {related.length > 0 && (
         <section className="mt-10 border-t-2 border-ink/10 pt-6">
-          <h2 className="font-display text-lg font-extrabold">More like this</h2>
+          <h2 className="font-display text-lg font-extrabold">
+            {collection ? `More ${collection.label} stickers` : "More like this"}
+          </h2>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {related.map((g) => (
               <Link
@@ -115,14 +124,22 @@ export default async function GifDetailPage({ params }: { params: Params }) {
                 className="block overflow-hidden rounded-xl border-2 border-ink bg-surface"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.previewUrl} alt={g.title} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                <img src={g.previewUrl} alt={g.title} loading="lazy" decoding="async" className="aspect-square h-full w-full object-contain" />
               </Link>
             ))}
           </div>
         </section>
       )}
 
-      <p className="mt-8">
+      <p className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+        {collection && (
+          <Link
+            href={`/stickers/${collection.slug}`}
+            className="text-sm font-semibold text-beam underline underline-offset-4 hover:text-beamDeep"
+          >
+            All {collection.heading}
+          </Link>
+        )}
         <Link href="/stickers" className="text-sm font-semibold text-beam underline underline-offset-4 hover:text-beamDeep">
           ← Back to all stickers &amp; GIFs
         </Link>
