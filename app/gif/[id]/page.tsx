@@ -120,8 +120,8 @@ export default async function GifDetailPage({ params }: { params: Params }) {
         <p className="mt-4 border-t-2 border-ink/10 pt-4 text-sm leading-relaxed text-muted">{caption}</p>
       )}
 
-      {/* Real per-item facts, so each page says more than its title even
-          before a caption exists. */}
+      {/* Per-item facts only. Shared boilerplate here made every /gif page
+          read alike; the unique text is the caption above. */}
       <section className="mt-6 rounded-2xl border-2 border-ink/10 p-4 text-sm" aria-labelledby="gif-details">
         <h2 id="gif-details" className="font-display text-base font-extrabold">About this {kindLabel}</h2>
         <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
@@ -144,11 +144,6 @@ export default async function GifDetailPage({ params }: { params: Params }) {
           <dt className="text-muted">Licence</dt>
           <dd className="font-semibold">Free for personal use: chats, profiles and reactions</dd>
         </dl>
-        {collection && <p className="mt-3 leading-relaxed text-muted">{collection.description}</p>}
-        <p className="mt-3 leading-relaxed text-muted">
-          Tap Download to save &ldquo;{item.title}&rdquo; as a {format} file, or use Share to send this page. In most
-          chat apps you can paste the saved {kindLabel} straight into a conversation{isAnimated ? " and it will keep looping" : ""}.
-        </p>
       </section>
 
       {related.length > 0 && (
