@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 import { countGuides, getGuidesPage, GUIDES_PER_PAGE, type GuideType } from "@/lib/api/guides";
 import { Pagination } from "@/components/ui/Pagination";
 import type { Metadata } from "next";
@@ -35,11 +36,21 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   if (page > 1) qs.set("page", String(page));
   const canonical = `${BASE_URL}/ending-explained${qs.toString() ? `?${qs}` : ""}`;
   const label = active === "movie" ? "Movie " : active === "anime" ? "Anime " : "";
+  const title = `${label}Ending Explained Guides${page > 1 ? `, Page ${page}` : ""}`;
+  const description =
+    "Spoiler-forward breakdowns of how your favorite movies and anime actually end: a recap, the final scene explained, what it means, and a quick FAQ for each title.";
   return {
-    title: `${label}Ending Explained Guides${page > 1 ? `, Page ${page}` : ""}`,
-    description:
-      "Spoiler-forward breakdowns of how your favorite movies and anime actually end: a recap, the final scene explained, what it means, and a quick FAQ for each title.",
+    title,
+    description,
     alternates: { canonical },
+    ...socialMeta({
+      title: `${title} | Animegirl4u`,
+      description,
+      path: canonical.replace(BASE_URL, ""),
+      cardTitle: `${label}Ending Explained Guides`,
+      cardSubtitle: "Recap, final scene and what it means",
+      badge: "ENDING EXPLAINED",
+    }),
     // Filtered views are subsets of the main list: keep them out of the index
     // but let crawlers follow every link on them.
     robots: active !== "all" ? { index: false, follow: true } : undefined,

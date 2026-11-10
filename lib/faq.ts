@@ -5,6 +5,72 @@ pages, About). Per-title FAQs come from the generated guide content instead.
 
 import type { FaqItem } from "@/components/ui/Faq";
 
+/*
+Homepage FAQ: the "anime girl" questions people search (wallpapers, drawing,
+cutest characters), then the site questions. Rendered once by <Faq>, which
+emits a single FAQPage JSON-LD block for the page; keep it to one FAQ per page.
+Answers must stay true to what the site offers (e.g. wallpapers are HD,
+phone-sized, not 4K/8K).
+*/
+export const ANIME_GIRL_FAQ: FaqItem[] = [
+  {
+    q: "Who is the best anime girl?",
+    a: "There is no single winner, but fan favourite counts on AniList keep a few names near the top: Zero Two from Darling in the FRANXX, Mikasa Ackerman from Attack on Titan, Rem from Re:Zero and Makima from Chainsaw Man. Each wins for a different reason: Zero Two for her style, Mikasa for her loyalty and strength, Rem for her devotion, Makima for being unforgettable. Browse the most loved anime characters on Animegirl4u to see the full ranking.",
+  },
+  {
+    q: "Who are the 10 cutest anime characters?",
+    a: "A popular top 10 of cute anime girls: Anya Forger (Spy x Family), Nezuko Kamado (Demon Slayer), Rem (Re:Zero), Marin Kitagawa (My Dress-Up Darling), Megumin (KonoSuba), Chika Fujiwara (Kaguya-sama: Love Is War), Hinata Hyuga (Naruto), Mai Sakurajima (Rascal Does Not Dream of Bunny Girl Senpai), Zero Two (Darling in the FRANXX) and Frieren (Frieren: Beyond Journey's End). Cute is personal, so treat it as a starting point.",
+  },
+  {
+    q: "What are some cute girly anime?",
+    a: "For soft, cute and girly vibes try K-On!, Laid-Back Camp, Bocchi the Rock!, Komi Can't Communicate, My Dress-Up Darling and Spy x Family. If you want cute plus romance, Kaguya-sama: Love Is War, Horimiya and Toradora! are easy favourites.",
+  },
+  {
+    q: "Why are anime girls so cute?",
+    a: "Anime character design leans on big expressive eyes, small noses and mouths, soft rounded faces and bright hair colours. Those features read as youthful and friendly, and they make emotions easy to see at a glance. Add exaggerated reactions like blushing, pouting or sparkling eyes and you get the cute look anime is famous for.",
+  },
+  {
+    q: "Do you like big girls anime?",
+    a: "If you mean tall, strong heroines, anime has plenty: Mikasa Ackerman in Attack on Titan, Maki Zen'in in Jujutsu Kaisen and Erza Scarlet in Fairy Tail are fan favourites because they are powerful, confident and carry their own stories. Anime has room for every body type, and many of the best-loved characters are the ones who break the usual mould.",
+  },
+  {
+    q: "How to draw cute anime girls?",
+    a: "Start with a circle for the head and add a soft, short jawline. Place the eyes about halfway down the face and make them large, with a big pupil and one or two white highlights. Keep the nose a small dot or line and the mouth small. Draw the hair in big clumps rather than single strands, then add a blush on the cheeks. Copying finished sketches is the fastest way to learn, so use the anime girl sketch wallpapers on Animegirl4u as practice references.",
+  },
+  {
+    q: "Cute anime girl drawing: what makes it look cute?",
+    a: "Proportions do most of the work: a slightly bigger head, larger eyes set lower on the face, a small chin and short limbs all read as cute. Rounded shapes, a gentle smile or a wink, hair clips and ribbons, and soft blush lines finish the look.",
+  },
+  {
+    q: "Cute anime girl easy: what is the simplest way to start?",
+    a: "Draw a chibi. Make the head about as big as the body, give it two large oval eyes with highlights, a tiny mouth and a simple fringe of hair. Chibi drawings forgive mistakes and look cute almost straight away, which makes them perfect for beginners.",
+  },
+  {
+    q: "Where can I get an anime girl wallpaper in 4K?",
+    a: "A true 4K wallpaper is 3840 x 2160 pixels. The wallpapers on Animegirl4u are free HD images sized for phones and tablets (up to about 1,670 pixels on the long side), not 4K, and each one lists its exact size before you download. Avoid stretching a small image to 4K, as it will look soft.",
+  },
+  {
+    q: "Anime girl wallpaper 8K: does it exist?",
+    a: "8K wallpapers (7680 x 4320 pixels) are rare and only make sense on 8K screens. Most phones and laptops display 1080p to 4K, so a sharp HD or 4K image looks the same there. Animegirl4u offers HD phone wallpapers, not 8K.",
+  },
+  {
+    q: "What is a good anime girl wallpaper 4K for phone?",
+    a: "Phones are tall, so pick a portrait wallpaper. Most phone screens are around 1080 x 2400 pixels, which means a sharp portrait image of that size looks great without being 4K. The portrait wallpapers on Animegirl4u are made for exactly that.",
+  },
+  {
+    q: "Where can I find a cute anime wallpaper girl?",
+    a: "Browse the Sketch collection for soft pencil-drawn cute anime girls, or the Lo-fi and Fox Spirit collections for cosy, gentle art. Every wallpaper is free to download.",
+  },
+  {
+    q: "Where can I find a cool anime wallpaper girl?",
+    a: "For cool and edgy looks, try the Cyberpunk collection (neon cities and holograms), Gothic (lace, roses and cathedral windows) or Crazy (wild punk energy). For heroic art, the Fantasy collection has mages, knights and dragon riders.",
+  },
+  {
+    q: "What is the most beautiful anime girl wallpaper?",
+    a: "Beauty is personal, but the most-saved styles tend to be detailed fantasy art and moody gothic portraits. Start with the Fantasy collection, where scenes like the Moonlight Mage and the Luminous Fairy show off rich colour and lighting.",
+  },
+];
+
 export const HOME_FAQ: FaqItem[] = [
   {
     q: "What is an ending explained guide?",

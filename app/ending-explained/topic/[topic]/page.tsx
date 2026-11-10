@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 import { getRecentPublishedMovies } from "@/lib/api/movies";
 import { getRecentPublishedAnime } from "@/lib/api/anime";
 import { MediaGrid } from "@/components/media/MediaGrid";
@@ -23,6 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
     title: `${topic.title}: Ending Explained Guides`,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/ending-explained/topic/${topic.slug}` },
+    ...socialMeta({
+      title: `${topic.title}: Ending Explained Guides | Animegirl4u`,
+      description: topic.description,
+      path: `/ending-explained/topic/${topic.slug}`,
+      cardTitle: topic.title,
+      cardSubtitle: "Ending explained guides",
+      badge: "ENDING EXPLAINED",
+    }),
   };
 }
 

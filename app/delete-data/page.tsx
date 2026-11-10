@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import DeleteDataClient from "./DeleteDataClient";
+import { socialMeta } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: { absolute: `Delete My Data | ${SITE_NAME}` },
   description: `Remove the data ${SITE_NAME} stores about you or your device.`,
   alternates: { canonical: `${getBaseUrl()}/delete-data` },
+  ...socialMeta({ title: `Delete My Data | ${SITE_NAME}`, description: `Remove the data ${SITE_NAME} stores about you or your device.`, path: "/delete-data", cardTitle: "Delete My Data", badge: "PRIVACY" }),
 };
 
 export default function DeleteDataPage() {

@@ -4,6 +4,7 @@ import { searchGifs } from "@/lib/api/gifs";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { socialMeta } from "@/lib/og";
 
 export const revalidate = 3600;
 
@@ -16,8 +17,7 @@ export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: `${getBaseUrl()}${PATH}` },
-  openGraph: { type: "website", url: `${getBaseUrl()}${PATH}`, siteName: SITE_NAME, title: TITLE, description: DESCRIPTION },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
+  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH, cardTitle: "Anime Girl Stickers & GIFs", cardSubtitle: "Free to download and send", badge: "STICKERS" }),
 };
 
 const trendingTags = [

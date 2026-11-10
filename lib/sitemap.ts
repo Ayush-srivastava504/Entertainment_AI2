@@ -102,12 +102,12 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       { loc: `${BASE_URL}/ending-explained`, lastmod: newest(guides) },
       { loc: `${BASE_URL}/watch-order`, lastmod: newest(franchises) },
       { loc: `${BASE_URL}/about` },
-      { loc: `${BASE_URL}/characters` },
+      { loc: `${BASE_URL}/anime-characters` },
       { loc: `${BASE_URL}/privacy` },
       { loc: `${BASE_URL}/delete-data` },
       { loc: `${BASE_URL}/stickers` },
       { loc: `${BASE_URL}/wallpapers` },
-      { loc: `${BASE_URL}/characters/leads` },
+      { loc: `${BASE_URL}/anime-characters/leads` },
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),
       ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];
@@ -117,7 +117,7 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
     // Character profiles (Supabase). A DB error must not take the whole
     // "pages" sitemap down, so just leave them out of this build.
     try {
-      for (const c of await getCharacterSitemapRows()) entries.push({ loc: `${BASE_URL}/characters/${c.slug}`, lastmod: c.updatedAt });
+      for (const c of await getCharacterSitemapRows()) entries.push({ loc: `${BASE_URL}/anime-characters/${c.slug}`, lastmod: c.updatedAt });
     } catch (err) {
       console.error("sitemap: character rows unavailable:", err);
     }

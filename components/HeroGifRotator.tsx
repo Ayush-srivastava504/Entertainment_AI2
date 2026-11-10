@@ -21,7 +21,7 @@ export default function HeroGifRotator() {
       <div className="aspect-square w-full overflow-hidden rounded-xl bg-paper">
         {src && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt="Anime girl GIF" className="h-full w-full object-cover" />
+          <img src={src} alt="Cute anime girl GIF" className="h-full w-full object-cover" />
         )}
       </div>
     </div>

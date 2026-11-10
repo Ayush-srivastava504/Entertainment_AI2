@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/media/SearchBar";
 import { MediaGrid } from "@/components/media/MediaGrid";
 import { PageHero } from "@/components/ui/PageHero";
 import { getBaseUrl } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 
 const BASE_URL = getBaseUrl();
 
@@ -11,6 +12,7 @@ export const metadata = {
   title: "Search | Animegirl4u",
   description: "Search ending explained guides and watch order guides by title.",
   alternates: { canonical: `${BASE_URL}/search` },
+  ...socialMeta({ title: "Search | Animegirl4u", description: "Search ending explained guides and watch order guides by title.", path: "/search", cardTitle: "Search Animegirl4u", cardSubtitle: "Ending explained and watch order guides" }),
   robots: { index: false, follow: true },
 };
 

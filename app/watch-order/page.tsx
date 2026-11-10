@@ -8,6 +8,7 @@ import { CtaBand } from "@/components/ui/CtaBand";
 import { WATCH_ORDER_INDEX_FAQ } from "@/lib/faq";
 import { WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
+import { socialMeta } from "@/lib/og";
 
 export const revalidate = 3600;
 
@@ -18,6 +19,7 @@ export const metadata = {
   description:
     "The correct order to watch every franchise: release order, chronological order, or the best-experience recommended order.",
   alternates: { canonical: `${BASE_URL}/watch-order` },
+  ...socialMeta({ title: "Watch Order Guides | Animegirl4u", description: "The correct order to watch every franchise: release order, chronological order, or the best-experience recommended order.", path: "/watch-order", cardTitle: "Watch Order Guides", cardSubtitle: "Release, chronological and recommended order for every franchise", badge: "WATCH ORDER" }),
 };
 
 export default async function WatchOrderIndexPage() {

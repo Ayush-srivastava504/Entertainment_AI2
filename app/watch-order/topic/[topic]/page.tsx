@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 import { getAllPublishedFranchises } from "@/lib/api/franchises";
 import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
@@ -21,6 +22,14 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
     title: `${topic.title}: Watch Order Guides`,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/watch-order/topic/${topic.slug}` },
+    ...socialMeta({
+      title: `${topic.title}: Watch Order Guides | Animegirl4u`,
+      description: topic.description,
+      path: `/watch-order/topic/${topic.slug}`,
+      cardTitle: topic.title,
+      cardSubtitle: "Watch order guides",
+      badge: "WATCH ORDER",
+    }),
   };
 }
 

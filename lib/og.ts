@@ -8,6 +8,9 @@ resolves relative image URLs in metadata against `metadataBase`, which is
 already set in app/layout.tsx, so callers don't need to know BASE_URL.
 */
 
+import type { Metadata } from "next";
+import { getBaseUrl, SITE_NAME } from "@/lib/site";
+
 export interface OgImageParams {
   /** Main headline, e.g. a movie/anime title or page heading. */
   title: string;
@@ -29,4 +32,37 @@ export function buildOgImageUrl(params: OgImageParams): string {
   if (params.poster) qs.set("poster", params.poster);
   if (params.rating) qs.set("rating", params.rating.slice(0, 16));
   return `/api/og?${qs.toString()}`;
+}
+
+/**
+ * Open Graph + Twitter tags for one page: its own URL, title and description,
+ * and a branded 1200x630 card from /api/og (or a given image). Without this a
+ * page inherits the root layout's tags, which point og:url at the homepage, so
+ * a shared link previews (and can resolve) as the homepage.
+ */
+export function socialMeta(o: {
+  title: string;
+  description: string;
+  /** Site path, e.g. "/watch-order". */
+  path: string;
+  /** Card text; defaults to `title`. */
+  cardTitle?: string;
+  cardSubtitle?: string;
+  badge?: string;
+  poster?: string;
+  /** Use this image instead of a generated card (e.g. a wallpaper). */
+  image?: { url: string; width?: number; height?: number; alt?: string };
+  type?: "website" | "article" | "profile";
+}): Pick<Metadata, "openGraph" | "twitter"> {
+  const url = `${getBaseUrl()}${o.path}`;
+  const image = o.image ?? {
+    url: buildOgImageUrl({ title: o.cardTitle ?? o.title, subtitle: o.cardSubtitle, badge: o.badge, poster: o.poster }),
+    width: 1200,
+    height: 630,
+    alt: o.cardTitle ?? o.title,
+  };
+  return {
+    openGraph: { type: o.type ?? "website", url, siteName: SITE_NAME, title: o.title, description: o.description, images: [image] },
+    twitter: { card: "summary_large_image", title: o.title, description: o.description, images: [image.url] },
+  };
 }

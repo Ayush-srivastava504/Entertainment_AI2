@@ -4,6 +4,7 @@ import { getAllAvatars } from "@/lib/games/avatars";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import CoinBadge from "@/components/games/CoinBadge";
 import AvatarCollection from "@/components/games/AvatarCollection";
+import { socialMeta } from "@/lib/og";
 
 const TITLE = `Games & Collectibles | ${SITE_NAME}`;
 const DESCRIPTION = "Play cute anime girl mini-games, earn coins, and spin the wheel to collect avatars you can download.";
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: `${getBaseUrl()}/games` },
+  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/games", cardTitle: "Anime Mini-Games", cardSubtitle: "Play, earn coins and collect avatars", badge: "GAMES" }),
   // Keep this section out of search results for now, same reasoning as the
   // sitemap: new, unproven pages don't need to compete for crawl budget yet.
   robots: { index: false, follow: true },

@@ -11,7 +11,8 @@ import { SearchBar } from "@/components/media/SearchBar";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { TitleRequestForm } from "@/components/TitleRequestForm";
-import { HOME_FAQ } from "@/lib/faq";
+import { ANIME_GIRL_FAQ, HOME_FAQ } from "@/lib/faq";
+import { AnimeGirlGuide } from "@/components/home/AnimeGirlGuide";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { buildOgImageUrl } from "@/lib/og";
 import { graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
@@ -21,9 +22,12 @@ export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
-const TITLE = `${SITE_NAME}: Free Anime Girl GIFs & Stickers, Ending Explained, Watch Order`;
+// "anime girl" leads the title (the head term); pfp / cute / sad cover the
+// biggest modifiers people search with it. Keep the title under ~60 chars.
+const TITLE = `Anime Girl PFPs, Cute & Sad GIFs, Wallpapers | ${SITE_NAME}`;
 const DESCRIPTION =
-  "Download free anime girl GIFs and stickers for reactions, chats, and more. Plus plain-English ending explained guides and the right watch order for every franchise.";
+  "Free anime girl GIFs, cute and sad anime girl reactions, anime pfp picks and HD wallpapers. Plus anime character profiles, drawing tips and ending guides.";
+const OG_IMAGE = buildOgImageUrl({ title: "Anime Girl PFPs, GIFs & Wallpapers", subtitle: "Cute, sad and iconic anime girls. Free to save.", badge: "ANIMEGIRL4U" });
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -35,20 +39,26 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: TITLE,
     description: DESCRIPTION,
-    images: [
-      {
-        url: buildOgImageUrl({ title: SITE_NAME, subtitle: "Anime girl GIFs & stickers, free.", badge: "ANIMEGIRL4U" }),
-        width: 1200,
-        height: 630,
-        alt: `${SITE_NAME}: free anime girl GIFs and stickers`,
-      },
-    ],
+    locale: "en_US",
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "Anime girl PFPs, cute and sad GIFs and wallpapers on Animegirl4u" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
+  keywords: [
+    "anime girl",
+    "cute anime girl",
+    "anime girl pfp",
+    "anime pfp",
+    "sad anime girl",
+    "sad anime gif",
+    "anime girl drawing",
+    "anime characters",
+    "anime girl wallpaper",
+  ],
 };
 
 const steps = [
@@ -135,7 +145,7 @@ export default async function HomePage() {
       about: { "@id": ORG_ID },
       primaryImageOfPage: {
         "@type": "ImageObject",
-        url: `${BASE_URL}${buildOgImageUrl({ title: SITE_NAME, subtitle: "Endings explained. Franchises in order.", badge: "ANIMEGIRL4U" })}`,
+        url: `${BASE_URL}${OG_IMAGE}`,
         width: 1200,
         height: 630,
       },
@@ -185,17 +195,17 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-12">
           <div className="min-w-0">
             <p className="inline-block rounded-full bg-tape px-3 py-1 text-sm font-bold text-ink">
-              Free anime girl GIFs & stickers
+              Free anime girl GIFs, pfps &amp; wallpapers
             </p>
             <h1
               id="home-heading"
               className="mt-4 break-words font-display text-[2rem] font-extrabold leading-[1.08] tracking-tight min-[400px]:text-4xl sm:text-6xl lg:text-7xl"
             >
-              Anime girl GIFs & stickers, ready to send
+              Anime girl GIFs, PFPs &amp; wallpapers, free to save
             </h1>
             <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-white/90 sm:text-xl">
-              Download free anime girl reaction GIFs and stickers. Plus, when you finish the show: plain-English
-              ending explained guides and the right watch order for every franchise.
+              Cute anime girl reactions, sad anime GIFs for the feels, anime pfp picks and phone wallpapers, all free.
+              Plus anime character profiles and plain-English ending explained guides for when the show is over.
             </p>
             <div className="mt-8 max-w-xl">
               <SearchBar path="/stickers" size="lg" />
@@ -241,7 +251,7 @@ export default async function HomePage() {
           <div>
             <p className="text-sm font-bold uppercase text-beam">Fresh off the reel</p>
             <h2 id="gifs-heading" className="font-display text-2xl font-extrabold sm:text-3xl">
-              Anime girl stickers &amp; GIFs
+              Cute &amp; sad anime girl GIFs and stickers
             </h2>
           </div>
           <Link href="/stickers" className="shrink-0 text-sm font-bold text-beam underline underline-offset-4">
@@ -488,18 +498,20 @@ export default async function HomePage() {
         </ul>
       </section>
 
+      <AnimeGirlGuide />
+
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20" aria-labelledby="questions-heading">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
           <div>
             <h2 id="questions-heading" className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Questions, answered
+              Anime girl FAQ
             </h2>
             <p className="mt-4 max-w-sm font-body text-lg text-muted">
-              What the guides are, how they are made, and what to expect.
+              The cutest anime characters, wallpapers in 4K, how to draw a cute anime girl, and how Animegirl4u works.
             </p>
           </div>
           <div>
-            <Faq items={HOME_FAQ} title="About the guides" id="faq" headingLevel={3} />
+            <Faq items={[...ANIME_GIRL_FAQ, ...HOME_FAQ.slice(0, 3), HOME_FAQ[5]]} title="Questions, answered" id="faq" headingLevel={3} />
             <div className="mt-8 border-t-2 border-ink pt-6">
               <h3 className="font-display text-2xl font-bold text-ink">Request an Ending</h3>
               <p className="mt-2 font-body text-base leading-relaxed text-muted">

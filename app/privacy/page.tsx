@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: { absolute: `Privacy Policy | ${SITE_NAME}` },
   description: `How ${SITE_NAME} and its Android app handle your data.`,
   alternates: { canonical: `${getBaseUrl()}/privacy` },
+  ...socialMeta({ title: `Privacy Policy | ${SITE_NAME}`, description: `How ${SITE_NAME} and its Android app handle your data.`, path: "/privacy", cardTitle: "Privacy Policy", badge: "PRIVACY" }),
 };
 
 export default function PrivacyPage() {

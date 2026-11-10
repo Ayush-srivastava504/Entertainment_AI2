@@ -62,10 +62,12 @@ export const metadata: Metadata = {
   // No site-wide canonical here: a root-level canonical is inherited by every
   // page that doesn't set its own (favorites, admin...) and would point them
   // all at the homepage. Each page sets its own alternates.canonical.
+  // Fallback only. No og:url here: an inherited og:url would make every page
+  // without its own tags share as the homepage. Pages set their own via
+  // socialMeta() in lib/og.ts.
   openGraph: {
     siteName: SITE_NAME,
     type: "website",
-    url: BASE_URL,
     title: `${SITE_NAME} — ${TAGLINE}`,
     description:
       "Free anime girl GIFs and stickers to download, plus Ending Explained breakdowns and Watch Order guides for every franchise.",

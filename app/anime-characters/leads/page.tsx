@@ -5,6 +5,7 @@ import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getTrendingLeads } from "@/lib/characters";
 import { getDbSlugsByIds } from "@/lib/characters-db";
+import { socialMeta } from "@/lib/og";
 
 const BASE_URL = getBaseUrl();
 
@@ -16,15 +17,16 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: `${BASE_URL}/characters/leads` },
+  alternates: { canonical: `${BASE_URL}/anime-characters/leads` },
+  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/anime-characters/leads", cardTitle: "Female Leads of 50 Trending Anime", cardSubtitle: "Profiles, voice actors and the series they star in", badge: "CHARACTERS" }),
 };
 
 export default async function TrendingLeadsPage() {
   const { items } = getTrendingLeads();
-  // Link straight to each profile's name slug ("/characters/mikasa-ackerman"),
+  // Link straight to each profile's name slug ("/anime-characters/mikasa-ackerman"),
   // not the old id URL, so no internal link goes through a redirect.
   const slugs = await getDbSlugsByIds(items.map((l) => l.character.id));
-  const profileHref = (l: (typeof items)[number]) => `/characters/${slugs.get(l.character.id) ?? l.character.slug}`;
+  const profileHref = (l: (typeof items)[number]) => `/anime-characters/${slugs.get(l.character.id) ?? l.character.slug}`;
 
   const jsonLd = graph(
     {
@@ -39,8 +41,8 @@ export default async function TrendingLeadsPage() {
     },
     breadcrumbNode([
       { name: "Home", path: "/" },
-      { name: "Characters", path: "/characters" },
-      { name: "Trending leads", path: "/characters/leads" },
+      { name: "Characters", path: "/anime-characters" },
+      { name: "Trending leads", path: "/anime-characters/leads" },
     ])
   );
 
@@ -50,7 +52,7 @@ export default async function TrendingLeadsPage() {
 
       <div className="bg-gradient-to-b from-heroFrom to-heroTo">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/characters" }, { name: "Trending leads" }]} />
+          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/anime-characters" }, { name: "Trending leads" }]} />
           <h1 className="mt-3 font-display text-3xl font-extrabold text-white sm:text-4xl">Female Leads of 50 Trending Anime</h1>
           <p className="mt-2 max-w-2xl text-white/90">{DESCRIPTION}</p>
         </div>

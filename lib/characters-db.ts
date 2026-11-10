@@ -81,8 +81,8 @@ export async function getDbCharacterBySlug(slug: string): Promise<DbCharacter | 
 }
 
 /**
-Old profile URLs were "/characters/<anilistId>-<name>". Profiles now live at a
-name-only slug ("/characters/mikasa-ackerman"). Given an old-style slug, return
+Old profile URLs were "/anime-characters/<anilistId>-<name>". Profiles now live at a
+name-only slug ("/anime-characters/mikasa-ackerman"). Given an old-style slug, return
 the new one so the page can 301 to it, or null if it isn't a legacy URL of a
 saved profile. The name part must match exactly, so a Jikan/MAL id that happens
 to equal an AniList id is never hijacked.

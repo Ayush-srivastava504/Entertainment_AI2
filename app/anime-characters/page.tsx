@@ -4,6 +4,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/characters";
 import { getPopularCharacters, getTrendingCharacters, type DbCharacter } from "@/lib/characters-db";
+import { socialMeta } from "@/lib/og";
 
 function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "trendingRank" | "popularRank" }) {
   return (
@@ -11,7 +12,7 @@ function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "tre
       {items.map((c) => (
         <li key={c.id}>
           <Link
-            href={`/characters/${c.slug}`}
+            href={`/anime-characters/${c.slug}`}
             className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
           >
             {c.image && (
@@ -40,7 +41,8 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: `${BASE_URL}/characters` },
+  alternates: { canonical: `${BASE_URL}/anime-characters` },
+  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/anime-characters", cardTitle: "Anime Characters", cardSubtitle: "Profiles, voice actors and the most loved characters", badge: "CHARACTERS" }),
 };
 
 type SP = { q?: string; page?: string };
@@ -52,7 +54,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const data = q ? await searchCharacters(q, page) : await getTopCharacters(page);
   const [trending, popular] = !q && page === 1 ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
 
-  const href = (p: number) => `/characters?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
+  const href = (p: number) => `/anime-characters?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
 
   return (
     <>
@@ -61,7 +63,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
           <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters" }]} />
           <h1 className="mt-3 font-display text-3xl font-extrabold text-white sm:text-4xl">Anime Characters</h1>
           <p className="mt-2 max-w-2xl text-white/90">{DESCRIPTION}</p>
-          <form action="/characters" className="mt-5 flex max-w-xl gap-2">
+          <form action="/anime-characters" className="mt-5 flex max-w-xl gap-2">
             <input
               name="q"
               defaultValue={q}
@@ -73,7 +75,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               Search
             </button>
           </form>
-          <Link href="/characters/leads" className="mt-4 inline-block font-semibold text-white underline">
+          <Link href="/anime-characters/leads" className="mt-4 inline-block font-semibold text-white underline">
             Female leads of 50 trending anime →
           </Link>
         </div>
@@ -103,7 +105,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
             {data.items.map((c) => (
               <li key={c.id}>
                 <Link
-                  href={`/characters/${characterSlug(c)}`}
+                  href={`/anime-characters/${characterSlug(c)}`}
                   className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
                 >
                   {c.image && (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getDbSlugsByIds } from "@/lib/characters-db";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getLeadBySlug, getTrendingLeads } from "@/lib/characters";
@@ -25,20 +26,21 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { character: c, anime: a } = lead;
   const title = `${c.name} — Main Lead of ${a.title} | ${SITE_NAME}`;
   const description = (c.about ? c.about.replace(/\s+/g, " ").slice(0, 155) : `${c.name} is the female lead of ${a.title}: profile, voice actor and series info.`).trim();
-  const url = `${BASE_URL}/characters/leads/${c.slug}`;
+  const url = `${BASE_URL}/anime-characters/leads/${c.slug}`;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    openGraph: {
-      type: "profile",
-      url,
-      siteName: SITE_NAME,
+    ...socialMeta({
       title,
       description,
-      images: c.image ? [{ url: c.image, alt: c.name }] : undefined,
-    },
-    twitter: { card: "summary_large_image", title, description },
+      path: `/anime-characters/leads/${c.slug}`,
+      cardTitle: c.name,
+      cardSubtitle: `Main lead of ${a.title}`,
+      badge: "ANIME CHARACTER",
+      poster: c.image ?? undefined,
+      type: "profile",
+    }),
   };
 }
 
@@ -47,18 +49,18 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
   const lead = getLeadBySlug(slug);
   if (!lead) notFound();
 
-  // Every lead now has a full profile at /characters/<slug> (Supabase-backed).
+  // Every lead now has a full profile at /anime-characters/<slug> (Supabase-backed).
   // One URL per character avoids duplicate content; fall back to this simple
   // page only while the profile row is missing.
   const profileSlug = (await getDbSlugsByIds([lead.character.id])).get(lead.character.id);
-  if (profileSlug) permanentRedirect(`/characters/${profileSlug}`);
+  if (profileSlug) permanentRedirect(`/anime-characters/${profileSlug}`);
 
   const { character: c, anime: a } = lead;
   const leads = getTrendingLeads().items;
   const i = leads.indexOf(lead);
   const prev = i > 0 ? leads[i - 1] : null;
   const next = i < leads.length - 1 ? leads[i + 1] : null;
-  const url = `${BASE_URL}/characters/leads/${c.slug}`;
+  const url = `${BASE_URL}/anime-characters/leads/${c.slug}`;
 
   const facts = [
     c.age ? ["Age", c.age] : null,
@@ -83,9 +85,9 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
     },
     breadcrumbNode([
       { name: "Home", path: "/" },
-      { name: "Characters", path: "/characters" },
-      { name: "Trending leads", path: "/characters/leads" },
-      { name: c.name, path: `/characters/leads/${c.slug}` },
+      { name: "Characters", path: "/anime-characters" },
+      { name: "Trending leads", path: "/anime-characters/leads" },
+      { name: c.name, path: `/anime-characters/leads/${c.slug}` },
     ])
   );
 
@@ -98,8 +100,8 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
           <Breadcrumbs
             items={[
               { name: "Home", href: "/" },
-              { name: "Characters", href: "/characters" },
-              { name: "Trending leads", href: "/characters/leads" },
+              { name: "Characters", href: "/anime-characters" },
+              { name: "Trending leads", href: "/anime-characters/leads" },
               { name: c.name },
             ]}
           />
@@ -175,17 +177,17 @@ export default async function LeadPage({ params }: { params: Promise<Params> }) 
 
         <nav aria-label="More trending leads" className="mt-10 flex items-center justify-between gap-3">
           {prev ? (
-            <Link href={`/characters/leads/${prev.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            <Link href={`/anime-characters/leads/${prev.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
               ← {prev.character.name}
             </Link>
           ) : (
             <span />
           )}
-          <Link href="/characters/leads" className="text-sm font-semibold underline">
+          <Link href="/anime-characters/leads" className="text-sm font-semibold underline">
             All {leads.length} leads
           </Link>
           {next ? (
-            <Link href={`/characters/leads/${next.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
+            <Link href={`/anime-characters/leads/${next.character.slug}`} className="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-5 font-semibold hover:bg-tape">
               {next.character.name} →
             </Link>
           ) : (

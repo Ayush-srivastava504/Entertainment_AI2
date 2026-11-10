@@ -32,6 +32,10 @@ const nextConfig = {
         destination: "https://animegirl4u.com/:path*",
         permanent: true,
       },
+      // Character pages moved from /characters to /anime-characters (the
+      // keyword people actually search). 301 so existing rankings carry over.
+      { source: "/characters", destination: "/anime-characters", permanent: true },
+      { source: "/characters/:path*", destination: "/anime-characters/:path*", permanent: true },
     ];
   },
 

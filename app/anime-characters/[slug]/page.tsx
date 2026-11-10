@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getCharacter, parseCharacterId } from "@/lib/characters";
@@ -68,20 +69,28 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (db) {
     const title = `${db.name}${db.anime[0] ? ` (${db.anime[0].title})` : ""} — Profile & Voice Actors | ${SITE_NAME}`;
     const description = describeDb(db);
-    const url = `${BASE_URL}/characters/${db.slug}`;
+    const url = `${BASE_URL}/anime-characters/${db.slug}`;
     return {
       title: { absolute: title },
       description,
       alternates: { canonical: url },
       robots: db.noindex ? { index: false, follow: true } : undefined,
-      openGraph: { type: "profile", url, siteName: SITE_NAME, title, description, images: db.image ? [{ url: db.image, alt: db.name }] : undefined },
-      twitter: { card: "summary_large_image", title, description },
+      ...socialMeta({
+        title,
+        description,
+        path: `/anime-characters/${db.slug}`,
+        cardTitle: db.name,
+        cardSubtitle: db.anime[0] ? `${db.anime[0].title} · profile & voice actors` : "Anime character profile & voice actors",
+        badge: "ANIME CHARACTER",
+        poster: db.image ?? undefined,
+        type: "profile",
+      }),
     };
   }
 
   // Old "<id>-<name>" URL of a saved profile: the page itself 301s to the name slug.
   const moved = await getLegacyCharacterRedirect(slug);
-  if (moved) permanentRedirect(`/characters/${moved}`);
+  if (moved) permanentRedirect(`/anime-characters/${moved}`);
 
   const id = parseCharacterId(slug);
   const c = id ? await getCharacter(id) : null;
@@ -89,20 +98,21 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
   const title = `${c.name} — Anime Character Profile, Voice Actors & Anime | ${SITE_NAME}`;
   const description = snip(c.about ?? `Profile of ${c.name}: appearances and voice actors.`, 155);
-  const url = `${BASE_URL}/characters/${characterSlug(c)}`;
+  const url = `${BASE_URL}/anime-characters/${characterSlug(c)}`;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    openGraph: {
-      type: "profile",
-      url,
-      siteName: SITE_NAME,
+    ...socialMeta({
       title,
       description,
-      images: c.image ? [{ url: c.image, alt: c.name }] : undefined,
-    },
-    twitter: { card: "summary_large_image", title, description },
+      path: `/anime-characters/${characterSlug(c)}`,
+      cardTitle: c.name,
+      cardSubtitle: "Anime character profile & voice actors",
+      badge: "ANIME CHARACTER",
+      poster: c.image ?? undefined,
+      type: "profile",
+    }),
   };
 }
 
@@ -112,9 +122,9 @@ export default async function CharacterPage({ params }: { params: Promise<Params
   const db = await getDbCharacterBySlug(slug);
   if (db) return <DbProfile c={db} />;
 
-  // Profiles moved from "/characters/<id>-<name>" to "/characters/<name>": 301 so rankings carry over.
+  // Profiles moved from "/anime-characters/<id>-<name>" to "/anime-characters/<name>": 301 so rankings carry over.
   const moved = await getLegacyCharacterRedirect(slug);
-  if (moved) permanentRedirect(`/characters/${moved}`);
+  if (moved) permanentRedirect(`/anime-characters/${moved}`);
 
   const id = parseCharacterId(slug);
   if (!id) notFound();
@@ -122,20 +132,20 @@ export default async function CharacterPage({ params }: { params: Promise<Params
   if (!c) notFound();
 
   const canonical = characterSlug(c);
-  if (slug !== canonical) permanentRedirect(`/characters/${canonical}`);
+  if (slug !== canonical) permanentRedirect(`/anime-characters/${canonical}`);
 
   const jsonLd = graph(
     {
       "@type": "ProfilePage",
-      "@id": `${BASE_URL}/characters/${canonical}#webpage`,
-      url: `${BASE_URL}/characters/${canonical}`,
+      "@id": `${BASE_URL}/anime-characters/${canonical}#webpage`,
+      url: `${BASE_URL}/anime-characters/${canonical}`,
       name: c.name,
       mainEntity: { "@type": "Person", name: c.name, alternateName: c.nameKanji ?? undefined, image: c.image ?? undefined },
     },
     breadcrumbNode([
       { name: "Home", path: "/" },
-      { name: "Characters", path: "/characters" },
-      { name: c.name, path: `/characters/${canonical}` },
+      { name: "Characters", path: "/anime-characters" },
+      { name: c.name, path: `/anime-characters/${canonical}` },
     ])
   );
 
@@ -145,7 +155,7 @@ export default async function CharacterPage({ params }: { params: Promise<Params
 
       <div className="bg-gradient-to-b from-heroFrom to-heroTo">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/characters" }, { name: c.name }]} />
+          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/anime-characters" }, { name: c.name }]} />
         </div>
       </div>
 
@@ -218,7 +228,7 @@ export default async function CharacterPage({ params }: { params: Promise<Params
 }
 
 async function DbProfile({ c }: { c: DbCharacter }) {
-  const url = `${BASE_URL}/characters/${c.slug}`;
+  const url = `${BASE_URL}/anime-characters/${c.slug}`;
   const related = await getRelatedCharacters(c, 6);
   const faq = faqFor(c);
   const first = c.anime[0];
@@ -258,8 +268,8 @@ async function DbProfile({ c }: { c: DbCharacter }) {
     },
     breadcrumbNode([
       { name: "Home", path: "/" },
-      { name: "Characters", path: "/characters" },
-      { name: c.name, path: `/characters/${c.slug}` },
+      { name: "Characters", path: "/anime-characters" },
+      { name: c.name, path: `/anime-characters/${c.slug}` },
     ]),
     ...(faq.length
       ? [
@@ -278,7 +288,7 @@ async function DbProfile({ c }: { c: DbCharacter }) {
 
       <div className="bg-gradient-to-b from-heroFrom to-heroTo">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/characters" }, { name: c.name }]} />
+          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Characters", href: "/anime-characters" }, { name: c.name }]} />
         </div>
       </div>
 
@@ -400,7 +410,7 @@ async function DbProfile({ c }: { c: DbCharacter }) {
             <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
               {related.map((r) => (
                 <li key={r.id}>
-                  <Link href={`/characters/${r.slug}`} className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-blockSm hover:-translate-y-0.5">
+                  <Link href={`/anime-characters/${r.slug}`} className="block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-blockSm hover:-translate-y-0.5">
                     {r.image && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={r.image} alt={r.name} width={230} height={325} loading="lazy" className="aspect-[3/4] w-full object-cover" />
@@ -414,8 +424,8 @@ async function DbProfile({ c }: { c: DbCharacter }) {
         )}
 
         <p className="mt-10 flex flex-wrap gap-4 text-sm font-semibold">
-          <Link href="/characters" className="underline">All anime characters</Link>
-          <Link href="/characters/leads" className="underline">Trending anime leads</Link>
+          <Link href="/anime-characters" className="underline">All anime characters</Link>
+          <Link href="/anime-characters/leads" className="underline">Trending anime leads</Link>
         </p>
       </div>
     </>
