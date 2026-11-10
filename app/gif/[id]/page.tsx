@@ -7,6 +7,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
+import CopyStickerButton from "@/components/stickers/CopyStickerButton";
 import { socialMeta } from "@/lib/og";
 import { snippet } from "@/lib/seo";
 import { collectionForSticker, getStickersInCollection } from "@/lib/sticker-collections";
@@ -116,13 +117,12 @@ export default async function GifDetailPage({ params }: { params: Params }) {
           >
             Download
           </a>
-          <Link
-            href={`/stickers/maker?src=${encodeURIComponent(item.id)}`}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-full border-2 border-ink px-5 text-sm font-bold hover:bg-fog"
-          >
-            Make WhatsApp sticker
-          </Link>
         </div>
+      </div>
+
+      {/* One tap: builds a 512x512 sticker and copies it to the clipboard. */}
+      <div className="mt-3">
+        <CopyStickerButton id={item.id} url={item.fullUrl} title={item.title} />
       </div>
 
       {item.description && <p className="mt-4 leading-relaxed text-ink">{item.description}</p>}

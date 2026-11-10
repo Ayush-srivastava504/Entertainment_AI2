@@ -16,14 +16,15 @@ its engine.
 
 | Step | Control | Notes |
 |---|---|---|
-| Add an image | "Choose a photo" (camera or gallery on phones), drag and drop on desktop, or **"Make WhatsApp sticker"** on any `/gif/[id]` page | The button opens `/stickers/maker?src=<sticker id>` with that sticker preloaded. |
+| One-tap copy | **"Make WhatsApp sticker"** on any `/gif/[id]` page (`components/stickers/CopyStickerButton.tsx`) | Builds a 512 x 512 transparent sticker (16 px margin) and copies it to the clipboard as PNG, ready to paste into WhatsApp. If the browser can't copy images it opens the share sheet, then the maker. "Edit in sticker maker" next to it opens `/stickers/maker?src=<sticker id>`. |
+| Add an image | "Choose a photo" (camera or gallery on phones), drag and drop on desktop, or "Edit in sticker maker" on a `/gif/[id]` page | |
 | Remove the background | **Remove background** (instant, colour based) with a Strength slider | Best on plain, even backgrounds. |
 | | **Anime AI cut-out** (optional, large download) | Best for an anime character on a busy background. See section 4. |
 | | **Tap to erase**, **Undo**, **Restore** | Tap any leftover patch; Undo keeps the last 15 steps. |
 | Frame it | Drag to move, pinch or slider to zoom, **Re-centre** | Square, Rounded or Circle shape. |
 | Border | White outline slider (0 to 20 px) | Images that are already transparent default to 0, because site stickers already have a border. |
 | Caption | Text (max 40 characters), Top or Bottom, 5 colours | Auto-shrinks to fit; dark outline (light outline on black text). |
-| Save | **Download sticker (WebP)**, **PNG**, **Share** (phones) | WebP quality steps down until the file is at or under 100 KB. Browsers that cannot encode WebP get a PNG and are told so. |
+| Save | **Copy sticker**, **Download sticker (WebP)**, **PNG**, **Share** (phones) | Copy puts a transparent PNG on the clipboard (browsers only allow PNG there). WebP quality steps down until the file is at or under 100 KB. Safari on iPhone cannot encode WebP, so downloads there are PNG, and the visitor is told so. |
 
 On phones the preview sticks under the header while the controls scroll
 beneath it, so every change stays visible.

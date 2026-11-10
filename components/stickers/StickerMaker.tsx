@@ -491,6 +491,23 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
     return new File([png], "animegirl4u-sticker.png", { type: "image/png" });
   }
 
+  /** Copies the sticker to the clipboard as a transparent PNG (the only
+   * image type browsers allow there), ready to paste into WhatsApp. The
+   * ClipboardItem gets a Promise so the write starts inside the tap (Safari). */
+  async function copySticker() {
+    if (!cut.current) return;
+    const out = makeCanvas(S, S);
+    compose(out, cut.current, settings);
+    const png = toBlob(out, "image/png").then((b) => b ?? Promise.reject(new Error("encode")));
+    try {
+      if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") throw new Error("no image clipboard");
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
+      setNote("Sticker copied! Open WhatsApp, long-press the message box and tap Paste.");
+    } catch {
+      setNote("This browser can't copy images. Use Share or Download instead.");
+    }
+  }
+
   async function download(format: "webp" | "png") {
     const f = await render(format);
     if (!f) return;
@@ -588,8 +605,8 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
         )}
         {loaded && readyMade && (
           <p className="mt-3 rounded-xl border-2 border-tape/60 bg-tape/10 p-3 text-sm">
-            This one is already cut out. Add a caption if you like, then tap <strong>Download sticker</strong> or{" "}
-            <strong>Share</strong> to send it to WhatsApp.
+            This one is already cut out. Add a caption if you like, then tap <strong>Copy sticker</strong> and paste it
+            into WhatsApp, or use <strong>Share</strong> or <strong>Download</strong>.
           </p>
         )}
         {loaded && (
@@ -742,7 +759,10 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
         <fieldset>
           <legend className="font-display text-lg font-extrabold">4. Save your sticker</legend>
           <div className="mt-2 flex flex-wrap gap-2">
-            <button type="button" className={`${btn} bg-beam text-white hover:bg-beamDeep`} onClick={() => download("webp")}>
+            <button type="button" className={`${btn} bg-beam text-white hover:bg-beamDeep`} onClick={copySticker}>
+              Copy sticker
+            </button>
+            <button type="button" className={pill(false)} onClick={() => download("webp")}>
               Download sticker (WebP)
             </button>
             {canShare && (
