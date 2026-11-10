@@ -99,6 +99,28 @@ function transparentEdgeShare(data: ImageData, w: number, h: number) {
   return t / seeds.length;
 }
 
+/** Average colour of the most common opaque colour along the border: the background. */
+function dominantEdgeColor(d: Uint8ClampedArray, seeds: number[]) {
+  const buckets = new Map<string, { n: number; r: number; g: number; b: number }>();
+  for (const p of seeds) {
+    const i = p * 4;
+    if (d[i + 3] <= 200) continue;
+    const k = `${d[i] >> 4},${d[i + 1] >> 4},${d[i + 2] >> 4}`;
+    const e = buckets.get(k) ?? { n: 0, r: 0, g: 0, b: 0 };
+    e.n++;
+    e.r += d[i];
+    e.g += d[i + 1];
+    e.b += d[i + 2];
+    buckets.set(k, e);
+  }
+  let best: { n: number; r: number; g: number; b: number } | null = null;
+  for (const e of buckets.values()) if (!best || e.n > best.n) best = e;
+  return best ? [best.r / best.n, best.g / best.n, best.b / best.n] : null;
+}
+
+/** Already a cut-out when at least a quarter of the border is transparent. */
+const CUTOUT_EDGE_SHARE = 0.25;
+
 function edgeSeeds(w: number, h: number) {
   const out: number[] = [];
   for (let x = 0; x < w; x++) out.push(x, (h - 1) * w + x);
@@ -226,7 +248,7 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
     fetch(initial.url)
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(String(r.status)))))
       .then((b) => {
-        if (!cancelled) openFile(new File([b], initial.title, { type: b.type || "image/png" }), true);
+        if (!cancelled) openFile(new File([b], initial.title, { type: b.type || "image/png" }));
       })
       .catch(() => !cancelled && setError("Couldn't load that sticker. Download it and drop it here instead."));
     return () => {
@@ -246,7 +268,7 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
     if (preview.current && cut.current) compose(preview.current, cut.current, settings);
   }, [settings, version]);
 
-  async function openFile(f: File | undefined, fromSite = false) {
+  async function openFile(f: File | undefined) {
     if (!f) return;
     setError(null);
     setNote(null);
@@ -275,8 +297,8 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
       // An image that is already a transparent cut-out (e.g. a sticker
       // downloaded from this site, which has its own white border) is ready
       // as-is: no extra outline by default.
-      const cutOut = transparentEdgeShare(data, w, h) > 0.5;
-      setReadyMade(cutOut || fromSite);
+      const cutOut = transparentEdgeShare(data, w, h) >= CUTOUT_EDGE_SHARE;
+      setReadyMade(cutOut);
       setSettings((s) => ({
         ...DEFAULTS,
         outline: cutOut ? 0 : DEFAULTS.outline,
@@ -298,14 +320,25 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
   function removeBackground() {
     const b = base.current;
     if (!b) return;
-    // Seed only from fully opaque edge pixels. Faint shadow pixels at the
-    // edge of a cut-out are black underneath, and seeding from them wiped
-    // out dark hair and clothes.
-    const seeds = edgeSeeds(b.w, b.h).filter((p) => b.data.data[p * 4 + 3] > 200);
-    if (!seeds.length) {
+    const d = b.data.data;
+    const border = edgeSeeds(b.w, b.h);
+    if (transparentEdgeShare(b.data, b.w, b.h) >= CUTOUT_EDGE_SHARE) {
       setNote("This image already has a transparent background, so there's nothing to remove.");
       return;
     }
+    // Seed only from border pixels that match the background colour. The
+    // subject often touches the edge of the image (hair, clothes cropped by
+    // the frame); seeding from every border pixel erased it.
+    const bg = dominantEdgeColor(d, border);
+    if (!bg) return;
+    const t2 = tolerance * tolerance;
+    const seeds = border.filter((p) => {
+      const i = p * 4;
+      if (d[i + 3] <= 200) return false;
+      const dr = d[i] - bg[0], dg = d[i + 1] - bg[1], db = d[i + 2] - bg[2];
+      return dr * dr + dg * dg + db * db <= t2;
+    });
+    setNote(null);
     const mask = current().slice();
     flood(b.data.data, b.w, b.h, mask, seeds, tolerance);
     commitMask(mask);
