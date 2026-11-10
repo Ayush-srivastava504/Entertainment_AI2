@@ -24,73 +24,61 @@ const GAMES = [
     href: "/games/memory",
     title: "Memory Match",
     blurb: "Flip cards, find the matching pairs of avatars. Fewer moves = more coins.",
-    emoji: "🧠",
   },
   {
     href: "/games/match3",
     title: "Gem Match-3",
     blurb: "Swap gems to line up 3+ in a row before your moves run out.",
-    emoji: "💎",
   },
   {
     href: "/games/tetris",
     title: "Chibi Blocks",
     blurb: "Falling-block puzzle: clear lines for coins, with a bonus every 4 lines.",
-    emoji: "🧱",
   },
   {
     href: "/games/g2048",
     title: "2048",
     blurb: "Slide and merge tiles to reach 2048. Higher score = more coins.",
-    emoji: "🔢",
   },
   {
     href: "/games/snake",
     title: "Snake",
     blurb: "Eat strawberries, grow longer, don't crash. It speeds up as you go.",
-    emoji: "🐍",
   },
   {
     href: "/games/whack",
     title: "Whack-an-Avatar",
     blurb: "Tap avatars as they pop up for 30 seconds -- but dodge the bombs!",
-    emoji: "🔨",
   },
   {
     href: "/games/minesweeper",
     title: "Minesweeper",
     blurb: "Classic 9x9 mine clearing. Win for a 50 coin prize.",
-    emoji: "🚩",
   },
   {
     href: "/games/tictactoe",
     title: "Tic-Tac-Toe",
     blurb: "Beat the computer for 25 coins. A draw still pays 8.",
-    emoji: "⭕",
   },
   {
     href: "/games/simon",
     title: "Pattern Pop",
     blurb: "Watch the pads light up and repeat the pattern. It grows every round.",
-    emoji: "🎵",
   },
   {
     href: "/games/reaction",
     title: "Reaction Rush",
     blurb: "Tap the instant the box turns green. Five rounds, faster = more coins.",
-    emoji: "⚡",
   },
   {
     href: "/games/four",
     title: "Four in a Row",
     blurb: "Drop discs and connect four before the computer does. Win 30 coins, a draw pays 10.",
-    emoji: "🔴",
   },
   {
     href: "/games/slide",
     title: "Slide 15",
     blurb: "Slide the numbered tiles back into order. Fewer moves = more coins.",
-    emoji: "🧩",
   },
 ];
 
@@ -114,8 +102,7 @@ export default async function GamesHubPage() {
             href={g.href}
             className="rounded-2xl border-2 border-ink bg-surface p-5 shadow-block transition-transform hover:-translate-y-0.5"
           >
-            <div className="text-3xl">{g.emoji}</div>
-            <h2 className="mt-2 font-display text-xl font-bold">{g.title}</h2>
+            <h2 className="font-display text-xl font-bold">{g.title}</h2>
             <p className="mt-1 text-sm text-muted">{g.blurb}</p>
           </Link>
         ))}
