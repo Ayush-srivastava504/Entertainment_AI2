@@ -40,14 +40,23 @@ const TITLE = `Anime Characters: Profiles & Voice Actors | ${SITE_NAME}`;
 const DESCRIPTION =
   "Browse the most loved anime characters: profiles, nicknames, which anime they appear in and who voices them. Search any character.";
 
-export const metadata: Metadata = {
-  title: { absolute: TITLE },
-  description: DESCRIPTION,
-  alternates: { canonical: `${BASE_URL}/anime-characters` },
-  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/anime-characters", cardTitle: "Anime Characters", cardSubtitle: "Profiles, voice actors and the most loved characters", badge: "CHARACTERS" }),
-};
-
 type SP = { q?: string; page?: string };
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<SP> }): Promise<Metadata> {
+  const sp = await searchParams;
+  // ?q= search results and ?page=2..200 are live MyAnimeList listings whose
+  // cards link to noindexed fallback profiles. Their canonical pointed at
+  // page 1 even though the content differs, which Google ignores and then
+  // spends crawl budget on up to 200 near-empty variants.
+  const isVariant = !!(sp.q ?? "").trim() || (Number(sp.page) || 1) > 1;
+  return {
+    title: { absolute: TITLE },
+    description: DESCRIPTION,
+    alternates: { canonical: `${BASE_URL}/anime-characters` },
+    ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/anime-characters", cardTitle: "Anime Characters", cardSubtitle: "Profiles, voice actors and the most loved characters", badge: "CHARACTERS" }),
+    robots: isVariant ? { index: false, follow: true } : undefined,
+  };
+}
 
 export default async function CharactersPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;

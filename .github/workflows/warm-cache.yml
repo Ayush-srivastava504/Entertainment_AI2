@@ -1,0 +1,26 @@
+# Re-fills the ISR cache after every successful PRODUCTION deploy on Vercel,
+# so Googlebot never lands on ~1,000 cold renders (slow, and 500s under
+# parallel load, which makes Google throttle crawling). Vercel's GitHub
+# integration emits the deployment_status event this listens to.
+name: Warm ISR cache
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+jobs:
+  warm:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Give the new deployment a moment to take over the production domain.
+      - run: sleep 30
+      - run: node scripts/warm-cache.mjs --base=https://animegirl4u.com --concurrency=3

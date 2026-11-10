@@ -7,6 +7,7 @@ import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
+import { socialMeta } from "@/lib/og";
 import { collectionForSticker, getStickersInCollection } from "@/lib/sticker-collections";
 
 // Cache each GIF page for an hour (ISR) so crawlers and visitors get a fast,
@@ -26,8 +27,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: { absolute: title },
     description,
     alternates: { canonical: `${getBaseUrl()}/gif/${id}` },
-    openGraph: { type: "website", title, description, images: [item.previewUrl] },
-    twitter: { card: "summary_large_image", title, description, images: [item.previewUrl] },
+    // socialMeta adds og:url + siteName, which the hand-written block lacked.
+    ...socialMeta({
+      title,
+      description,
+      path: `/gif/${id}`,
+      image: { url: item.previewUrl, width: item.width, height: item.height, alt: item.title },
+    }),
   };
 }
 
@@ -54,6 +60,9 @@ export default async function GifDetailPage({ params }: { params: Params }) {
 
   const BASE_URL = getBaseUrl();
   const path = `/gif/${id}`;
+  const isAnimated = /\.gif$/i.test(item.fullUrl);
+  const format = /\.png$/i.test(item.fullUrl) ? "PNG" : /\.webp$/i.test(item.fullUrl) ? "WebP" : /\.jpe?g$/i.test(item.fullUrl) ? "JPEG" : "GIF";
+  const kindLabel = isAnimated ? "GIF" : "sticker";
   const pageJsonLd = graph(
     {
       "@type": "ImageObject",
@@ -111,6 +120,37 @@ export default async function GifDetailPage({ params }: { params: Params }) {
         <p className="mt-4 border-t-2 border-ink/10 pt-4 text-sm leading-relaxed text-muted">{caption}</p>
       )}
 
+      {/* Real per-item facts, so each page says more than its title even
+          before a caption exists. */}
+      <section className="mt-6 rounded-2xl border-2 border-ink/10 p-4 text-sm" aria-labelledby="gif-details">
+        <h2 id="gif-details" className="font-display text-base font-extrabold">About this {kindLabel}</h2>
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+          <dt className="text-muted">Format</dt>
+          <dd className="font-semibold">{format}{isAnimated ? ", animated" : ", still image"}</dd>
+          {item.width > 0 && item.height > 0 && (
+            <>
+              <dt className="text-muted">Size</dt>
+              <dd className="font-semibold">{item.width} × {item.height} px</dd>
+            </>
+          )}
+          {collection && (
+            <>
+              <dt className="text-muted">Collection</dt>
+              <dd className="font-semibold">
+                <Link href={`/stickers/${collection.slug}`} className="text-beam underline underline-offset-2">{collection.heading}</Link>
+              </dd>
+            </>
+          )}
+          <dt className="text-muted">Licence</dt>
+          <dd className="font-semibold">Free for personal use: chats, profiles and reactions</dd>
+        </dl>
+        {collection && <p className="mt-3 leading-relaxed text-muted">{collection.description}</p>}
+        <p className="mt-3 leading-relaxed text-muted">
+          Tap Download to save &ldquo;{item.title}&rdquo; as a {format} file, or use Share to send this page. In most
+          chat apps you can paste the saved {kindLabel} straight into a conversation{isAnimated ? " and it will keep looping" : ""}.
+        </p>
+      </section>
+
       {related.length > 0 && (
         <section className="mt-10 border-t-2 border-ink/10 pt-6">
           <h2 className="font-display text-lg font-extrabold">
@@ -124,7 +164,7 @@ export default async function GifDetailPage({ params }: { params: Params }) {
                 className="block overflow-hidden rounded-xl border-2 border-ink bg-surface"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.previewUrl} alt={g.title} loading="lazy" decoding="async" className="aspect-square h-full w-full object-contain" />
+                <img src={g.previewUrl} alt={g.title} width={g.width} height={g.height} loading="lazy" decoding="async" className="aspect-square h-full w-full object-contain" />
               </Link>
             ))}
           </div>

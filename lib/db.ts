@@ -21,9 +21,41 @@ export function getPool(): Pool {
       connectionString,
       ssl: { rejectUnauthorized: false },
       max: 3,
+      // Serverless: release idle connections quickly so a burst of cold ISR
+      // renders (every deploy empties the cache) doesn't pin pooler slots,
+      // and fail fast instead of hanging until the function times out.
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
+      allowExitOnIdle: true,
     });
+    // Without a listener, an idle client dropped by the pooler emits an
+    // unhandled 'error' event that crashes the whole function instance.
+    pool.on("error", (err) => console.error("pg pool idle client error:", err.message));
+    // Retry once on transient connection failures (pooler client cap hit,
+    // connection reset). Crawlers fetch in parallel; a one-off 500 here
+    // makes Google slow its crawl rate for the whole site.
+    const p = pool;
+    const query = p.query.bind(p) as (...a: unknown[]) => Promise<unknown>;
+    (p as unknown as { query: unknown }).query = async (...args: unknown[]) => {
+      try {
+        return await query(...args);
+      } catch (err) {
+        if (!isTransientDbError(err)) throw err;
+        await new Promise((r) => setTimeout(r, 250 + Math.random() * 500));
+        return query(...args);
+      }
+    };
   }
   return pool;
+}
+
+function isTransientDbError(err: unknown): boolean {
+  const e = err as { code?: string; message?: string } | null;
+  const msg = e?.message ?? "";
+  return (
+    ["ECONNRESET", "ETIMEDOUT", "ECONNREFUSED", "57P01", "53300", "08006", "08001"].includes(e?.code ?? "") ||
+    /MaxClients|too many clients|Connection terminated|timeout exceeded when trying to connect|remaining connection slots/i.test(msg)
+  );
 }
 
 export type CommentContentType = "ending-explained" | "watch-order";

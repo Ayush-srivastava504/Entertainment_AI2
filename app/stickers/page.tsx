@@ -15,12 +15,22 @@ const TITLE = `Anime Girl Stickers & GIFs | ${SITE_NAME}`;
 const DESCRIPTION = "Browse and download anime girl GIFs and stickers — reactions, chibi, waves, blushes and more.";
 const PATH = "/stickers";
 
-export const metadata: Metadata = {
-  title: { absolute: TITLE },
-  description: DESCRIPTION,
-  alternates: { canonical: `${getBaseUrl()}${PATH}` },
-  ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH, cardTitle: "Anime Girl Stickers & GIFs", cardSubtitle: "Free to download and send", badge: "STICKERS" }),
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}): Promise<Metadata> {
+  const { q } = await searchParams;
+  return {
+    title: { absolute: TITLE },
+    description: DESCRIPTION,
+    alternates: { canonical: `${getBaseUrl()}${PATH}` },
+    ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH, cardTitle: "Anime Girl Stickers & GIFs", cardSubtitle: "Free to download and send", badge: "STICKERS" }),
+    // ?q= is an internal search result (any string, including empty results):
+    // keep those out of the index, but let crawlers follow the sticker links.
+    robots: q ? { index: false, follow: true } : undefined,
+  };
+}
 
 const trendingTags = [
   "cute anime girl",

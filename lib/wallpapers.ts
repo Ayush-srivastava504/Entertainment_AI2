@@ -9,12 +9,16 @@ portrait, square and landscape shapes; grid thumbnails are always cropped
 to the 260x368 portrait tile.
 */
 
+import DESCRIPTIONS from "./data/wallpaper-descriptions.json";
+
 export interface Wallpaper {
   slug: string;
   category: string;
   categoryLabel: string;
   title: string;
   alt: string;
+  /** What the image actually shows (lib/data/wallpaper-descriptions.json). */
+  description?: string;
   width: number;
   height: number;
   src: string;
@@ -1022,6 +1026,17 @@ export const WALLPAPERS: Wallpaper[] = [
     thumbSrc: "/wallpapers/gothic/gothic-anime-girl-10-thumb.webp",
   },
 ];
+
+// Per-image alt + description written from the actual pixels by
+// scripts/describe-wallpapers.mjs. Without them every page in a category
+// carried the same template text ("...wallpaper #6"), i.e. near-duplicates.
+for (const w of WALLPAPERS) {
+  const d = (DESCRIPTIONS as Record<string, { alt: string; description: string }>)[w.slug];
+  if (d) {
+    w.alt = d.alt;
+    w.description = d.description;
+  }
+}
 
 export function getWallpaper(slug: string): Wallpaper | undefined {
   return WALLPAPERS.find((w) => w.slug === slug);

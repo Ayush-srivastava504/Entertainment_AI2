@@ -24,9 +24,14 @@ export function Pagination({
     return s ? `${basePath}?${s}` : basePath;
   };
 
-  // 1 ... (page-2 .. page+2) ... last
+  // 1 ... (page-2 .. page+2) ... last, plus a jump link to every 5th page.
+  // Without the jumps, page 12 of 25 sat ~6 clicks from page 1, and the
+  // guides on it ~8 clicks from the homepage -- deep enough that Google
+  // leaves them at "Discovered - currently not indexed". With them, every
+  // page is at most 2 clicks from any other.
   const nums = new Set<number>([1, totalPages]);
   for (let p = page - 2; p <= page + 2; p++) if (p >= 1 && p <= totalPages) nums.add(p);
+  for (let p = 5; p < totalPages; p += 5) nums.add(p);
   const sorted = [...nums].sort((a, b) => a - b);
 
   const base = "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-ink px-4 py-2 font-bold transition";

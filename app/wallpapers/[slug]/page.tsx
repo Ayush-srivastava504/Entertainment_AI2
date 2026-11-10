@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
-import { fitTitle } from "@/lib/seo";
+import { fitTitle, snippet } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
@@ -23,7 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const path = `/wallpapers/${wallpaper.slug}`;
   const title = fitTitle([`${wallpaper.title}: Free Download`, wallpaper.title]);
   // Unique per wallpaper (the old text was identical across a whole category).
-  const description = `Free download: ${wallpaper.title.replace(/ wallpaper$/i, "")}, a ${wallpaper.width}x${wallpaper.height} ${wallpaper.categoryLabel.toLowerCase()} anime girl wallpaper for your phone. No sign-up, from the ${SITE_NAME} collection.`;
+  const fallback = `Free download: ${wallpaper.title.replace(/ wallpaper$/i, "")}, a ${wallpaper.width}x${wallpaper.height} ${wallpaper.categoryLabel.toLowerCase()} anime girl wallpaper for your phone. No sign-up, from the ${SITE_NAME} collection.`;
+  // Lead with what this image shows: the only text that differs page to page.
+  const description = wallpaper.description
+    ? snippet(`${wallpaper.alt.replace(/\.$/, "")}. Free ${wallpaper.width}x${wallpaper.height} phone wallpaper, no sign-up.`, 158)
+    : fallback;
 
   return {
     title: { absolute: title },
@@ -57,7 +61,7 @@ export default async function WallpaperDetailPage({ params }: { params: Promise<
       thumbnailUrl: `${BASE_URL}${wallpaper.thumbSrc}`,
       url: `${BASE_URL}${path}`,
       name: wallpaper.title,
-      description: wallpaper.alt,
+      description: wallpaper.description ?? wallpaper.alt,
       width: wallpaper.width,
       height: wallpaper.height,
       isPartOf: { "@id": WEBSITE_ID },
@@ -129,6 +133,9 @@ export default async function WallpaperDetailPage({ params }: { params: Promise<
           <h1 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
             {wallpaper.title}
           </h1>
+          {wallpaper.description && (
+            <p className="mt-3 max-w-prose font-body text-base leading-relaxed text-ink">{wallpaper.description}</p>
+          )}
           <p className="mt-3 max-w-prose font-body text-base leading-relaxed text-muted">
             A free {wallpaper.categoryLabel.toLowerCase()}-style anime girl wallpaper from the {SITE_NAME} collection.
             Tap &ldquo;Download wallpaper&rdquo; to save the image, then set it as your lock screen or home screen

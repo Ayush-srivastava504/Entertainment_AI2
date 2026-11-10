@@ -9,7 +9,9 @@ compatible endpoint keeps the crawler configuration small and predictable.
 
 import { withRetry, RetryableError, isRetryableHttpError } from "./retry.mjs";
 
-export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
+// "gemini-3.8-flash" was the old default: it does not exist and requests to
+// it hang until timeout, so every call wasted ~a minute before falling back.
+export const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
 const TIMEOUT_MS = 90_000;
 
 /** The model's safety filter refused this prompt. Retrying or switching models will not help. */
@@ -99,7 +101,7 @@ export function getConfiguredModel() {
 // Models are tried in order. A 503/429 on one model is usually that model's
 // capacity pool being busy, so switching models recovers far more often than
 // waiting. Override with GEMINI_MODEL / GEMINI_FALLBACK_MODELS (comma list).
-const DEFAULT_FALLBACKS = ["gemini-3.8-flash", "gemini-3.5-flash-lite"];
+const DEFAULT_FALLBACKS = ["gemini-3.5-flash-lite", "gemini-3.5-flash"];
 // Models the API said do not exist (404) are skipped for the rest of the run.
 const deadModels = new Set();
 let lastModelUsed = null;
