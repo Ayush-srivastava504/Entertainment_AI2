@@ -51,6 +51,19 @@ professional audit for a production business.
 - Hosting is Vercel plus managed Postgres; there is no self-managed server
   to patch.
 
+**Sticker maker** (`/stickers/maker`, see docs/STICKER_MAKER.md)
+- All image processing happens in the visitor's browser; no image is
+  uploaded and there is no server endpoint for it.
+- `?src=` only accepts the id of one of this site's own stickers. The server
+  resolves it with `getGifById`, so the page can never be made to load an
+  arbitrary URL.
+- The optional Anime AI cut-out loads third-party code and data only after
+  the visitor opts in: onnxruntime-web (exact version `1.20.1`) from
+  `cdn.jsdelivr.net` and the model from `huggingface.co`. Both are pinned
+  URLs, but they are not covered by Subresource Integrity (a native dynamic
+  `import()` cannot carry an integrity hash). Keep `ORT_VERSION` pinned to an
+  exact version in `lib/anime-cutout.ts`.
+
 ## What to double-check yourself
 
 - **Rate limiting is per server instance, in memory.** On Vercel, each
@@ -71,10 +84,17 @@ professional audit for a production business.
   you've deployed and can test against it:
   ```
   default-src 'self';
-  img-src 'self' https://image.tmdb.org https://*.myanimelist.net https://*.supabase.co data:;
-  script-src 'self';
+  img-src 'self' https://image.tmdb.org https://*.myanimelist.net https://*.supabase.co data: blob:;
+  script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval';
+  connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net https://huggingface.co https://*.hf.co;
   style-src 'self' 'unsafe-inline';
   ```
+  The jsDelivr, Hugging Face, `blob:` and `wasm-unsafe-eval` entries are
+  needed by the sticker maker's optional AI (the engine is WebAssembly and
+  the downloaded files are fetched from those hosts). Note that
+  `lib/anime-cutout.ts` builds its dynamic import with `new Function`, which a
+  CSP without `'unsafe-eval'` blocks; if you add a CSP, switch that to a plain
+  `import(/* webpackIgnore: true */ url)` and test it.
   Add it as another entry in the `headers()` array in `next.config.js`.
 - **Dependency updates**: run `npm audit` periodically — nothing here
   pins package versions against known CVEs on your behalf.

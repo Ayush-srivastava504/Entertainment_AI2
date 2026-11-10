@@ -7,7 +7,21 @@
 3. For an existing database that only lacks the request queue, run `npm run db:migrate:title-requests`.
 
 Tables: `anime`, `movies`, `franchises`, `franchise_entries`, `comments`,
-`title_requests`, `sync_state`, `device_tokens`, `gif_captions`.
+`title_requests`, `sync_state`, `device_tokens`, `gif_captions`, and
+`anime_characters` (from `db/migrations/20261110_anime_characters.sql`).
+
+### Connection string: use the transaction pooler on Vercel
+
+On Vercel, set `DATABASE_URL` to Supabase's **transaction pooler (port
+6543)**, not the session pooler (5432). Session mode holds one server
+connection per client and caps how many clients can connect; when a crawler
+requests many uncached pages at once, serverless instances exhaust it and
+pages return HTTP 500, which makes Google slow its crawling. The app uses no
+session-only features (no named prepared statements, `LISTEN` or session
+`SET`), so transaction mode is safe. `lib/db.ts` also retries a query once on
+transient connection errors.
+
+GitHub Actions should keep the session pooler (5432): see docs/CRAWLERS.md.
 
 ## Vercel
 
@@ -27,6 +41,8 @@ captions are skipped.
 ## Custom domain
 
 Add the domain in Vercel, point DNS at Vercel, then set `NEXT_PUBLIC_SITE_URL`.
+In Vercel -> Settings -> Domains, set the `www` domain to redirect to the apex
+with **308 Permanent**. (A 307 tells Google the move is temporary.)
 `lib/site.ts` always canonicalizes to the non-www origin, and `next.config.js`
 redirects `www.animegirl4u.com`. If the domain changes, also update that
 redirect, the hard-coded URL in `.github/workflows/crawl.yml`, and
@@ -43,6 +59,33 @@ bucket named `original-gifs`.
 
 New uploads appear within about 5 minutes on the homepage and `/stickers`, each
 with its own `/gif/original-<filename>` page and a cached Gemini caption.
+
+## Cache warming after deploys
+
+Every deploy starts with an empty ISR cache. `.github/workflows/warm-cache.yml`
+listens for Vercel's `deployment_status` event and, after a successful
+**Production** deploy, runs `node scripts/warm-cache.mjs` to fetch every
+sitemap URL once (3 at a time), so crawlers get cached pages. It needs no
+secrets. Run it by hand from the Actions tab, or locally with
+`npm run warm-cache`.
+
+## Sticker captions and descriptions
+
+After uploading new stickers:
+
+1. `npm run generate:gif-captions` (pre-generates captions; needs
+   `DATABASE_URL`, `GEMINI_API_KEY` and the Supabase keys).
+2. `node --env-file=.env scripts/describe-stickers.mjs`, review
+   `lib/data/sticker-descriptions.json`, commit and deploy.
+
+Stickers whose filename matches no collection prefix land in the "Reactions"
+collection (`lib/sticker-collections.ts`).
+
+## Sticker maker
+
+`/stickers/maker` needs no configuration. It runs in the browser. The
+optional Anime AI cut-out downloads its model from Hugging Face and its engine
+from jsDelivr, only when a visitor opts in. See docs/STICKER_MAKER.md.
 
 ## Revalidation
 

@@ -383,7 +383,10 @@ export default function StickerMaker({ initial }: { initial?: { url: string; tit
     try {
       const m = await loadAi();
       const alpha = await m.animeAlpha(b.data, (st) => {
-        if (st.step === "download") setAiStage(st.pct === 100 ? "AI model ready…" : `Downloading AI model… ${st.pct ?? 0}%`);
+        // At 100% the engine still has to load the model, which can take a
+        // minute on a CPU: say so instead of a "ready" that looks stuck.
+        if (st.step === "download")
+          setAiStage(st.pct === 100 ? "Setting up the AI on your device… can take a minute" : `Downloading AI model… ${st.pct ?? 0}%`);
         else
           setAiStage(
             st.backend === "webgpu"
