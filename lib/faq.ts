@@ -98,7 +98,7 @@ export const HOME_FAQ: FaqItem[] = [
   },
   {
     q: "Can't find the title you are looking for?",
-    a: "Search by title to check for an existing guide. If it is not here yet, send a title request using the form below.",
+    a: "Search by title to check for an existing guide. If it is not here yet, send a title request with the Request an Ending form on the Ending Explained page.",
   },
 ];
 
@@ -183,6 +183,6 @@ export const ABOUT_FAQ: FaqItem[] = [
   },
   {
     q: "How do I request a title that is missing?",
-    a: "Use the Request an Ending form on the home page. Requests are reviewed and considered for future guides.",
+    a: "Use the Request an Ending form at the bottom of the Ending Explained page. Requests are reviewed and considered for future guides.",
   },
 ];

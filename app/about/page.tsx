@@ -178,7 +178,7 @@ const findCards = [
   },
   {
     title: "Missing a title?",
-    text: "If a title has no guide yet, it has not been published. Send it through the Request an Ending form on the home page.",
+    text: "If a title has no guide yet, it has not been published. Send it through the Request an Ending form on the Ending Explained page.",
   },
   {
     title: "Follow the connections",

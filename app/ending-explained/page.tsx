@@ -11,6 +11,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { ENDING_INDEX_FAQ } from "@/lib/faq";
+import { TitleRequestForm } from "@/components/TitleRequestForm";
 import { ENDING_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 import { getTopRatedGuides } from "@/lib/api/hub";
@@ -215,6 +216,14 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
         <div className="mt-24">
           <Faq items={ENDING_INDEX_FAQ} title="Using the ending explained guides" />
         </div>
+
+        <section id="request" className="mt-16 max-w-2xl scroll-mt-24 border-t-2 border-ink pt-8" aria-labelledby="request-heading">
+          <h2 id="request-heading" className="font-display text-2xl font-bold text-ink">Request an Ending</h2>
+          <p className="mt-2 font-body text-base leading-relaxed text-muted">
+            Have a movie or anime in mind? Send the title for consideration in a future guide.
+          </p>
+          <TitleRequestForm />
+        </section>
       </div>
 
       <CtaBand
