@@ -17,22 +17,43 @@ export function snippet(text: string, max = 158): string {
  * honour real blank-line breaks if there are any, otherwise group sentences
  * into short paragraphs (3 per paragraph, no one-sentence orphan at the end).
  */
-export function toParagraphs(text: string | undefined | null, perParagraph = 3): string[] {
-  const t = (text ?? "").trim();
-  if (!t) return [];
-  const blocks = t.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
+// Stand-in for a period that must not end a sentence (restored on output).
+const KEEP_DOT = "․";
+const ABBREVIATIONS = /\b(?:Mr|Mrs|Ms|Dr|St|Jr|Sr|vs|Vol|Mt|Lt|Capt|Prof|Sgt|Ep|feat)\./g;
+
+/**
+ * `protect` lists phrases whose periods are not sentence ends, normally the
+ * title itself: without it "Kill. Bury. Print." was split into its own
+ * paragraph and the sentence it started was cut in half.
+ */
+export function toParagraphs(text: string | undefined | null, perParagraph = 3, protect: (string | undefined)[] = []): string[] {
+  const original = (text ?? "").trim();
+  if (!original) return [];
+  const blocks = original.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
   if (blocks.length > 1) return blocks;
 
-  const sentences = t.match(/[^.!?]+(?:[.!?]+["'”’)]*)(?:\s+|$)|[^.!?]+$/g)?.map((s) => s.trim()) ?? [t];
-  if (sentences.length <= perParagraph + 1) return [t];
+  let t = original;
+  for (const p of protect) if (p && p.includes(".")) t = t.split(p).join(p.replace(/\./g, KEEP_DOT));
+  t = t.replace(ABBREVIATIONS, (m) => m.replace(".", KEEP_DOT));
+  // "U.S.", "e.g." and similar: a period directly followed by a letter is never a sentence end.
+  t = t.replace(/\.(?=[A-Za-z]\.)/g, KEEP_DOT);
 
-  const out: string[] = [];
-  for (let i = 0; i < sentences.length; i += perParagraph) out.push(sentences.slice(i, i + perParagraph).join(" "));
-  if (out.length > 1 && out[out.length - 1].split(/(?<=[.!?])\s/).length < 2) {
-    const last = out.pop()!;
-    out[out.length - 1] += ` ${last}`;
+  // A sentence ends at . ! or ? (plus closing quotes/brackets) followed by
+  // whitespace and a capital letter, digit or opening quote.
+  const sentences = t
+    .split(/(?<=[.!?]["'”’)]*)\s+(?=["'“‘(]?[A-Z0-9])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (sentences.length <= perParagraph + 1) return [original];
+
+  const groups: string[][] = [];
+  for (let i = 0; i < sentences.length; i += perParagraph) groups.push(sentences.slice(i, i + perParagraph));
+  // No one-sentence orphan at the end.
+  if (groups.length > 1 && groups[groups.length - 1].length < 2) {
+    const last = groups.pop()!;
+    groups[groups.length - 1].push(...last);
   }
-  return out;
+  return groups.map((g) => g.join(" ").split(KEEP_DOT).join("."));
 }
 
 export function readingMinutes(wordCount?: number): number {

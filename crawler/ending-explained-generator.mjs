@@ -2,8 +2,12 @@
 Ending Explained generator (v2). Built for accuracy first:
 
   1. GROUND   Collects real facts: catalog synopsis, cast, genres, and the
-              plot section from Wikipedia (crawler/lib/wikipedia.mjs). Titles
-              with too little source material are skipped, not guessed.
+              plot section from Wikipedia (crawler/lib/wikipedia.mjs). A
+              title needs a full Plot/Synopsis/Story section that covers the
+              ending (coversEnding()). A premise or a catalog blurb alone is
+              skipped, never padded into a 300-word "ending" the sources do
+              not contain: that padding produced thin, invented guides that
+              Google crawled and declined to index.
   2. DRAFT    Asks the model for a structured JSON guide (meta description,
               key takeaways, recap, ending, themes, FAQ).
   3. VALIDATE Deterministic quality gate (crawler/lib/quality.mjs): length,
@@ -23,7 +27,7 @@ Ending Explained generator (v2). Built for accuracy first:
 import { getPool, recordSync, sleep } from "./db.mjs";
 import { generateWithGemini, getConfiguredModel, getLastModelUsed } from "./lib/ai.mjs";
 import { pingIndexNow } from "./lib/indexnow.mjs";
-import { fetchPlot } from "./lib/wikipedia.mjs";
+import { fetchPlot, coversEnding, MIN_FULL_PLOT_CHARS } from "./lib/wikipedia.mjs";
 import {
   GUIDE_SYSTEM_PROMPT,
   buildGuidePrompt,
@@ -110,6 +114,8 @@ async function gatherFacts(row, kind) {
     cast,
     catalogSynopsis: (row.synopsis ?? "").trim().slice(0, 2000),
     plot: "",
+    plotHeading: "",
+    plotCoversEnding: false,
     sources: ["catalog"],
     plotUrl: null,
   };
@@ -119,6 +125,8 @@ async function gatherFacts(row, kind) {
       const wiki = await fetchPlot({ title: row.title, year: row.year, kind });
       if (wiki) {
         facts.plot = wiki.text;
+        facts.plotHeading = wiki.heading;
+        facts.plotCoversEnding = coversEnding(wiki);
         facts.plotUrl = wiki.url;
         facts.sources.push("wikipedia");
       }
@@ -183,6 +191,15 @@ async function processTable(pool, table) {
         console.warn(`[ending-explained] ${label} skipped: only ${groundingChars} chars of source facts.`);
         continue;
       }
+      if (!facts.plotCoversEnding) {
+        const why = facts.plot
+          ? `plot source does not cover the ending ("${facts.plotHeading}" section, ${facts.plot.length} chars; needs a full plot of ${MIN_FULL_PLOT_CHARS}+)`
+          : "no Wikipedia plot section, catalog synopsis only";
+        stats.skipped++;
+        await markSkipped(pool, table, row.id, why);
+        console.warn(`[ending-explained] ${label} skipped: ${why}.`);
+        continue;
+      }
 
       const result = await produceGuide(facts);
       if (!result.guide) {
@@ -199,6 +216,8 @@ async function processTable(pool, table) {
             sources: facts.sources,
             verified: Boolean(result.verified),
             plotSource: facts.plotUrl,
+            plotSection: facts.plotHeading,
+            plotChars: facts.plot.length,
           },
         };
         if (DRY_RUN) {

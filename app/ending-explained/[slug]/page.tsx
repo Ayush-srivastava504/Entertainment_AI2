@@ -32,6 +32,13 @@ export async function generateStaticParams() {
 
 const BASE_URL = getBaseUrl();
 
+// A score from a handful of votes is noise ("5.0 from 3 ratings") and reads as
+// low-quality data. Only show scores with enough ratings behind them; a
+// missing count (some sources omit it) is treated as enough.
+const MIN_RATINGS = 20;
+const shownScore = (t: MediaItem) =>
+  typeof t.score === "number" && t.score > 0 && (t.ratingCount === undefined || t.ratingCount >= MIN_RATINGS) ? t.score : undefined;
+
 /**
  * A slug can belong to either table — movies are tried first (the larger
  * catalog), then anime. Both tables' slugs embed their own numeric id, so
@@ -77,7 +84,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     subtitle: "Ending Explained",
     badge: item.kind === "anime" ? "ANIME" : "MOVIE",
     poster: item.posterUrl,
-    rating: item.score ? item.score.toFixed(1) : undefined,
+    rating: shownScore(item)?.toFixed(1),
   });
 
   return {
@@ -138,7 +145,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
 
   // Rating chart: this title vs the similar titles shown below (real scores only).
   const ratingChartItems = [item, ...similar]
-    .filter((t) => typeof t.score === "number" && t.score > 0)
+    .filter((t) => shownScore(t) !== undefined)
     .slice(0, 6)
     .map((t) => ({
       label: t.title,
@@ -160,8 +167,8 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     ["Type", item.kind === "anime" ? "Anime" : "Movie"],
     ...(item.year ? ([["Year", String(item.year)]] as [string, string][]) : []),
     ...(item.genres.length ? ([["Genres", item.genres.join(", ")]] as [string, string][]) : []),
-    ...(item.score ? ([["Rating", `${item.score.toFixed(1)} / 10`]] as [string, string][]) : []),
-    ...(item.ratingCount ? ([["Ratings counted", item.ratingCount.toLocaleString("en-US")]] as [string, string][]) : []),
+    ...(shownScore(item) ? ([["Rating", `${item.score!.toFixed(1)} / 10`]] as [string, string][]) : []),
+    ...(shownScore(item) && item.ratingCount ? ([["Ratings counted", item.ratingCount.toLocaleString("en-US")]] as [string, string][]) : []),
     ...(item.castList?.length ? ([["Cast listed", String(item.castList.length)]] as [string, string][]) : []),
     ...(item.endingExplainedWordCount ? ([["Guide length", `${item.endingExplainedWordCount.toLocaleString("en-US")} words`]] as [string, string][]) : []),
   ];
@@ -270,7 +277,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-2 text-sm font-semibold">
               {item.year ? <span className="rounded-full bg-white/15 px-3 py-1">{item.year}</span> : null}
-              {item.score ? <span className="rounded-full bg-white/15 px-3 py-1">★ {item.score.toFixed(1)}</span> : null}
+              {shownScore(item) ? <span className="rounded-full bg-white/15 px-3 py-1">★ {item.score!.toFixed(1)}</span> : null}
               {item.genres.map((genre) => (
                 <span key={genre} className="rounded-full bg-white/15 px-3 py-1">{genre}</span>
               ))}
@@ -316,7 +323,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
               {ee.recap && (
                 <section id="recap" className="scroll-mt-24">
                   <h2 className="font-display text-3xl font-bold tracking-tight">{item.title} plot recap, spoiler-light</h2>
-                  {toParagraphs(ee.recap).map((para, i) => (
+                  {toParagraphs(ee.recap, 3, [item.title]).map((para, i) => (
                     <p key={i} className="guide-prose mt-4">{para}</p>
                   ))}
                 </section>
@@ -336,7 +343,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
                           </ul>
                         </div>
                       )}
-                      {toParagraphs(ee.ending).map((para, i) => (
+                      {toParagraphs(ee.ending, 3, [item.title]).map((para, i) => (
                         <p key={i} className={`guide-prose ${i > 0 ? "mt-4" : ""}`}>{para}</p>
                       ))}
                     </SpoilerGate>
@@ -346,7 +353,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
               {ee.themes && (
                 <section id="themes" className="scroll-mt-24">
                   <h2 className="font-display text-3xl font-bold tracking-tight">What does the ending of {item.title} mean?</h2>
-                  {toParagraphs(ee.themes).map((para, i) => (
+                  {toParagraphs(ee.themes, 3, [item.title]).map((para, i) => (
                     <p key={i} className="guide-prose mt-4">{para}</p>
                   ))}
                 </section>

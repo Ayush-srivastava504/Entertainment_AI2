@@ -4,9 +4,10 @@ values (#organization, #website) so search engines see one connected graph
 instead of several unrelated blobs.
 */
 
-import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { getBaseUrl, getHomeUrl, SITE_NAME } from "@/lib/site";
 
 const BASE_URL = getBaseUrl();
+const HOME_URL = getHomeUrl();
 
 export const ORG_ID = `${BASE_URL}/#organization`;
 export const WEBSITE_ID = `${BASE_URL}/#website`;
@@ -16,7 +17,7 @@ export function organizationNode() {
     "@type": "Organization",
     "@id": ORG_ID,
     name: SITE_NAME,
-    url: BASE_URL,
+    url: HOME_URL,
     logo: {
       "@type": "ImageObject",
       url: `${BASE_URL}/icon-512.png`,
@@ -24,7 +25,7 @@ export function organizationNode() {
       height: 512,
     },
     description:
-      "Animegirl4u publishes plain-English ending explained guides and franchise watch orders for movies and anime.",
+      "Animegirl4u is a free library of anime girl GIFs, stickers, PFPs and HD wallpapers, with ending explained guides and watch orders for anime and movies.",
   };
 }
 
@@ -33,7 +34,7 @@ export function websiteNode() {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
-    url: BASE_URL,
+    url: HOME_URL,
     inLanguage: "en",
     publisher: { "@id": ORG_ID },
     potentialAction: {

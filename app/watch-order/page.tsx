@@ -9,24 +9,57 @@ import { WATCH_ORDER_INDEX_FAQ } from "@/lib/faq";
 import { WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 import { socialMeta } from "@/lib/og";
+import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 
 export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
 export const metadata = {
-  title: "Watch Order Guides",
+  title: "Anime & Movie Watch Order Guides",
   description:
-    "The correct order to watch every franchise: release order, chronological order, or the best-experience recommended order.",
+    "The correct order to watch every anime and movie franchise: release order, chronological order, and the recommended order for first-timers.",
   alternates: { canonical: `${BASE_URL}/watch-order` },
-  ...socialMeta({ title: "Watch Order Guides | Animegirl4u", description: "The correct order to watch every franchise: release order, chronological order, or the best-experience recommended order.", path: "/watch-order", cardTitle: "Watch Order Guides", cardSubtitle: "Release, chronological and recommended order for every franchise", badge: "WATCH ORDER" }),
+  ...socialMeta({ title: "Anime & Movie Watch Order Guides | Animegirl4u", description: "The correct order to watch every anime and movie franchise: release order, chronological order, and the recommended order for first-timers.", path: "/watch-order", cardTitle: "Watch Order Guides", cardSubtitle: "Release, chronological and recommended order for every franchise", badge: "WATCH ORDER" }),
 };
 
 export default async function WatchOrderIndexPage() {
   const franchises = await getAllPublishedFranchises();
 
+  // CollectionPage + ItemList + breadcrumb, matching the ending explained hub.
+  const hubUrl = `${BASE_URL}/watch-order`;
+  const hubLd = graph(
+    {
+      "@type": "CollectionPage",
+      "@id": `${hubUrl}#webpage`,
+      url: hubUrl,
+      name: "Anime & Movie Watch Order Guides",
+      inLanguage: "en",
+      isPartOf: { "@id": `${BASE_URL}/#website` },
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: franchises.length,
+        itemListElement: franchises.map((f, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `${BASE_URL}/watch-order/${f.slug}`,
+          name: `${f.title} watch order`,
+        })),
+      },
+    },
+    breadcrumbNode([
+      { name: "Home", path: "/" },
+      { name: "Watch Order", path: "/watch-order" },
+    ])
+  );
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: jsonLdString(hubLd) }}
+      />
       <PageHero
         kicker="Watch order"
         title="What to watch first, and what next"

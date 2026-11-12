@@ -102,7 +102,7 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
 
   if (name === "pages") {
     const entries: UrlEntry[] = [
-      { loc: BASE_URL, lastmod: newest([...guides, ...franchises]) },
+      { loc: `${BASE_URL}/`, lastmod: newest([...guides, ...franchises]) },
       { loc: `${BASE_URL}/ending-explained`, lastmod: newest(guides) },
       { loc: `${BASE_URL}/watch-order`, lastmod: newest(franchises) },
       { loc: `${BASE_URL}/about` },

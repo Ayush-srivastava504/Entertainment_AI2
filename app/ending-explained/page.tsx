@@ -37,7 +37,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   if (page > 1) qs.set("page", String(page));
   const canonical = `${BASE_URL}/ending-explained${qs.toString() ? `?${qs}` : ""}`;
   const label = active === "movie" ? "Movie " : active === "anime" ? "Anime " : "";
-  const title = `${label}Ending Explained Guides${page > 1 ? `, Page ${page}` : ""}`;
+  const title = `${label || "Anime & Movie "}Ending Explained Guides${page > 1 ? `, Page ${page}` : ""}`;
   const description =
     "Spoiler-forward breakdowns of how your favorite movies and anime actually end: a recap, the final scene explained, what it means, and a quick FAQ for each title.";
   return {

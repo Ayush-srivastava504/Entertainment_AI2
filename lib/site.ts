@@ -27,4 +27,13 @@ export function getBaseUrl(): string {
   }
 }
 
+/**
+ * The homepage URL exactly as Google reports it: "https://animegirl4u.com/"
+ * with the trailing slash. Use this (not getBaseUrl()) wherever the homepage
+ * itself is the target: canonical, sitemap <loc>, JSON-LD url.
+ */
+export function getHomeUrl(): string {
+  return `${getBaseUrl()}/`;
+}
+
 export const SITE_NAME = "Animegirl4u";

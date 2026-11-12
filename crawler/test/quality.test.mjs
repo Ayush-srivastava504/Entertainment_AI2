@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { parseModelJson, normalizeGuide, validateGuide, guideWordCount } from "../lib/quality.mjs";
-import { extractPlotSection, titleMatches } from "../lib/wikipedia.mjs";
+import { extractPlotSection, extractPlotSectionWithHeading, coversEnding, MIN_FULL_PLOT_CHARS, titleMatches } from "../lib/wikipedia.mjs";
 
 const filler = (n, seed = "word") => Array.from({ length: n }, (_, i) => `${seed}${i}`).join(" ");
 const sentences = (n, seed) =>
@@ -69,4 +69,14 @@ test("title matching is accent and punctuation tolerant", () => {
   assert.ok(titleMatches("Amélie (film)", "Amelie"));
   assert.ok(titleMatches("Spider-Man: Into the Spider-Verse", "Spider-Man Into the Spider-Verse"));
   assert.ok(!titleMatches("Inception (film)", "Interstellar"));
+});
+
+test("only a full plot section counts as covering the ending", () => {
+  const long = "x".repeat(MIN_FULL_PLOT_CHARS);
+  assert.equal(extractPlotSectionWithHeading("== Premise ==\nSetup only.\n").heading, "Premise");
+  assert.ok(coversEnding({ heading: "Plot", text: long }));
+  assert.ok(coversEnding({ heading: "Synopsis", text: long }));
+  assert.ok(!coversEnding({ heading: "Premise", text: long }), "premise describes the setup, not the ending");
+  assert.ok(!coversEnding({ heading: "Plot", text: "too short" }));
+  assert.ok(!coversEnding(null));
 });

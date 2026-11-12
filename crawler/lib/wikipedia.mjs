@@ -29,12 +29,36 @@ async function api(params) {
   return res.json();
 }
 
+// Sections that narrate the whole story, ending included. "Premise" and
+// "Summary" usually describe only the setup, so a guide grounded on them has
+// to invent its ending.
+const FULL_PLOT_HEADINGS = new Set(["plot", "synopsis", "story", "plot summary"]);
+
+/**
+ * Minimum plot text needed to write the "ending" section from facts instead
+ * of guesses. Below this the guide is skipped (generator) or flagged weak
+ * (crawler/guide-grounding-audit.mjs).
+ */
+export const MIN_FULL_PLOT_CHARS = 1500;
+
+/** True when a fetched plot ({ heading, text }) can support a real ending breakdown. */
+export function coversEnding(plot) {
+  return Boolean(
+    plot && FULL_PLOT_HEADINGS.has(String(plot.heading ?? "").toLowerCase()) && (plot.text ?? "").length >= MIN_FULL_PLOT_CHARS
+  );
+}
+
 /** Pulls the "Plot" (or similar) section out of a plain-text article. */
 export function extractPlotSection(fullText) {
-  if (!fullText) return "";
+  return extractPlotSectionWithHeading(fullText).text;
+}
+
+/** Same as extractPlotSection, plus the heading it came from. */
+export function extractPlotSectionWithHeading(fullText) {
+  if (!fullText) return { heading: "", text: "" };
   const headingRe = /^==\s*(Plot|Synopsis|Premise|Story|Summary|Plot summary)\s*==\s*$/im;
   const m = headingRe.exec(fullText);
-  if (!m) return "";
+  if (!m) return { heading: "", text: "" };
   const rest = fullText.slice(m.index + m[0].length);
   // Stop at the next top-level (==) heading; keep === subsections as part of the plot.
   const next = /^==\s*[^=].*?==\s*$/m.exec(rest);
@@ -42,7 +66,7 @@ export function extractPlotSection(fullText) {
     .replace(/^=+\s*.*?\s*=+\s*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
-  return section;
+  return { heading: m[1], text: section };
 }
 
 /** Confident-match check: title words must all appear in the page title. */
@@ -70,13 +94,14 @@ export async function fetchPlot({ title, year, kind }) {
         pageids: String(hit.pageid),
       });
       const text = page?.query?.pages?.[0]?.extract ?? "";
-      const plot = extractPlotSection(text);
+      const { heading, text: plot } = extractPlotSectionWithHeading(text);
       // Sanity: it should look like the right kind of work, and be substantial.
       const lower = text.slice(0, 1500).toLowerCase();
       const kindOk = kind === "anime" ? /anime|manga|animation|series/.test(lower) : /film|movie/.test(lower);
       if (plot.length >= 400 && kindOk) {
         return {
           text: plot.slice(0, 7000),
+          heading,
           url: `https://en.wikipedia.org/?curid=${hit.pageid}`,
           pageTitle: hit.title,
         };

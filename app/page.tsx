@@ -8,7 +8,10 @@ import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { ANIME_GIRL_FAQ, HOME_FAQ } from "@/lib/faq";
 import { AnimeGirlGuide } from "@/components/home/AnimeGirlGuide";
-import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { getBaseUrl, getHomeUrl, SITE_NAME } from "@/lib/site";
+import { getGuidesPage } from "@/lib/api/guides";
+import { getFeaturedFranchises } from "@/lib/api/franchises";
+import { posterSrc } from "@/lib/image";
 import { buildOgImageUrl } from "@/lib/og";
 import { graph, jsonLdString, ORG_ID, WEBSITE_ID } from "@/lib/jsonld";
 import HeroGifRotator from "@/components/HeroGifRotator";
@@ -16,6 +19,8 @@ import HeroGifRotator from "@/components/HeroGifRotator";
 export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
+// Google reports the homepage as "https://animegirl4u.com/" (with the slash).
+const HOME_URL = getHomeUrl();
 
 // "anime girl" leads the title (the head term); pfp / cute / sad cover the
 // biggest modifiers people search with it. Keep the title under ~60 chars.
@@ -30,10 +35,14 @@ const DEMO_POSTER = "/home/download-demo-poster.jpg";
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: BASE_URL },
+  // No alternates.canonical here on purpose. Next.js strips the trailing
+  // slash from a root URL ("https://animegirl4u.com"), and Search Console
+  // then reported "https://animegirl4u.com/" as "Alternate page with proper
+  // canonical tag". The exact URL is rendered as a <link> in the page
+  // instead (React hoists it into <head>).
   openGraph: {
     type: "website",
-    url: BASE_URL,
+    url: HOME_URL,
     siteName: SITE_NAME,
     title: TITLE,
     description: DESCRIPTION,
@@ -78,20 +87,17 @@ const demoSteps = [
 // The newest, most striking wallpaper styles first.
 const FEATURED_STYLES = ["fantasy", "gothic", "cyberpunk", "sketch", "vampire", "crazy", "kitsune", "lofi"];
 
-const moreOnSite = [
-  { href: "/games", title: "Mini-games", text: "Play, earn coins and collect chibi avatars." },
-  { href: "/ending-explained", title: "Ending explained", text: "What that anime or movie finale really meant." },
-  { href: "/watch-order", title: "Watch orders", text: "The right order for every long franchise." },
-];
 
 const sectionKicker = "text-sm font-bold uppercase text-beam";
 const sectionTitle = "font-display text-2xl font-extrabold tracking-tight sm:text-3xl";
 const browseAll = "shrink-0 text-sm font-bold text-beam underline underline-offset-4";
 
 export default async function HomePage() {
-  const [heroGifs, characters] = await Promise.all([
+  const [heroGifs, characters, latestGuides, watchOrders] = await Promise.all([
     searchGifs("cute anime girl", 12),
     getTrendingCharacters(6),
+    getGuidesPage("all", 1, 6),
+    getFeaturedFranchises(6),
   ]);
 
   const featuredWallpapers = FEATURED_STYLES.map((c) => WALLPAPERS.find((w) => w.category === c)).filter(
@@ -102,7 +108,7 @@ export default async function HomePage() {
     {
       "@type": "WebPage",
       "@id": `${BASE_URL}/#webpage`,
-      url: BASE_URL,
+      url: HOME_URL,
       name: TITLE,
       description: DESCRIPTION,
       inLanguage: "en",
@@ -135,6 +141,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <link rel="canonical" href={HOME_URL} />
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
@@ -330,22 +337,92 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Everything else, kept compact */}
-      <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="more-heading">
-        <h2 id="more-heading" className="font-display text-xl font-bold">
-          Also on {SITE_NAME}
-        </h2>
-        <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {moreOnSite.map((m) => (
-            <li key={m.href}>
-              <Link href={m.href} className="group block h-full rounded-xl border-2 border-ink bg-surface px-4 py-3 transition hover:bg-tape">
-                <span className="block font-display text-lg font-bold group-hover:text-ink">{m.title} →</span>
-                <span className="mt-0.5 block font-body text-sm leading-snug text-muted group-hover:text-ink">{m.text}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Secondary: ending explained + watch order guides. Real links to the
+          newest guides so they get a crawl path from the strongest page. */}
+      {(latestGuides.length > 0 || watchOrders.length > 0) && (
+        <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="guides-heading">
+          <p className={sectionKicker}>Anime &amp; movie guides</p>
+          <h2 id="guides-heading" className={sectionTitle}>
+            Ending explained &amp; watch order guides
+          </h2>
+          <p className="mt-2 max-w-2xl font-body text-base leading-relaxed text-muted">
+            Finished a series and want to know what the ending meant? Starting a long franchise? Every guide has a recap,
+            the ending, what it means and the right order to watch.
+          </p>
+
+          {latestGuides.length > 0 && (
+            <>
+              <div className="mt-6 flex items-end justify-between gap-4">
+                <h3 className="font-display text-xl font-bold">Latest ending explained</h3>
+                <Link href="/ending-explained" className={browseAll}>
+                  All endings →
+                </Link>
+              </div>
+              <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {latestGuides.map((g) => (
+                  <li key={`${g.kind}-${g.id}`}>
+                    <Link
+                      href={`/ending-explained/${g.slug}`}
+                      className="group flex h-full gap-3 rounded-xl border-2 border-ink bg-surface p-2.5 transition hover:-translate-y-0.5 hover:shadow-block"
+                    >
+                      {g.posterUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={posterSrc(g.posterUrl, 185)}
+                          alt={`${g.title} poster`}
+                          width={64}
+                          height={96}
+                          loading="lazy"
+                          className="h-24 w-16 shrink-0 rounded-md border border-ink/20 object-cover"
+                        />
+                      ) : (
+                        <span className="h-24 w-16 shrink-0 rounded-md bg-fog" aria-hidden="true" />
+                      )}
+                      <span className="min-w-0">
+                        <span className="text-xs font-bold uppercase text-muted">
+                          {g.kind === "anime" ? "Anime" : "Movie"}
+                          {g.year ? ` · ${g.year}` : ""}
+                        </span>
+                        <span className="mt-0.5 block font-display text-base font-bold leading-snug group-hover:text-beam">
+                          {g.title} ending explained
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {watchOrders.length > 0 && (
+            <>
+              <div className="mt-8 flex items-end justify-between gap-4">
+                <h3 className="font-display text-xl font-bold">Watch order guides</h3>
+                <Link href="/watch-order" className={browseAll}>
+                  All watch orders →
+                </Link>
+              </div>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {watchOrders.map((f) => (
+                  <li key={f.id}>
+                    <Link
+                      href={`/watch-order/${f.slug}`}
+                      className="inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-surface px-4 py-1.5 text-sm font-bold transition hover:bg-tape hover:text-ink"
+                    >
+                      {f.title} watch order
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          <p className="mt-8 font-body text-sm text-muted">
+            Taking a break? <Link href="/games" className="font-semibold text-beam underline underline-offset-4">Play the mini-games</Link>,
+            earn coins and collect chibi avatars.
+          </p>
+        </section>
+      )}
 
       <AnimeGirlGuide />
 
