@@ -22,6 +22,10 @@ const normalize = (s) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
+// Wikipedia search treats "-word" as "exclude word" and quotes as phrases, so
+// catalog titles like "Demon Slayer -Kimetsu no Yaiba-" must be flattened.
+const searchText = (s) => String(s).replace(/["–—:!?]+|(^|\s)-|-(\s|$)/g, " ").replace(/\s+/g, " ").trim();
+
 async function api(params) {
   const url = `${API}?${new URLSearchParams({ format: "json", formatversion: "2", origin: "*", ...params })}`;
   const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
@@ -32,7 +36,9 @@ async function api(params) {
 // Sections that narrate the whole story, ending included. "Premise" and
 // "Summary" usually describe only the setup, so a guide grounded on them has
 // to invent its ending.
-const FULL_PLOT_HEADINGS = new Set(["plot", "synopsis", "story", "plot summary"]);
+// "Episodes" is the joined per-episode summaries of a season or episode-list
+// article (fetchEpisodeSummaries): every episode, the final one included.
+const FULL_PLOT_HEADINGS = new Set(["plot", "synopsis", "story", "plot summary", "episodes"]);
 
 /**
  * Minimum plot text needed to write the "ending" section from facts instead
@@ -76,12 +82,12 @@ export function titleMatches(pageTitle, wantedTitle) {
   return w.length > 0 && p.includes(w);
 }
 
-export async function fetchPlot({ title, year, kind }) {
+async function fetchPlotSection({ title, year, kind }) {
   const noun = kind === "anime" ? "anime" : "film";
   const queries = [`${title} ${year ?? ""} ${noun}`.replace(/\s+/g, " ").trim(), `${title} ${noun}`];
 
   for (const q of queries) {
-    const search = await api({ action: "query", list: "search", srsearch: q, srlimit: "3" });
+    const search = await api({ action: "query", list: "search", srsearch: searchText(q), srlimit: "3" });
     const hits = search?.query?.search ?? [];
     for (const hit of hits) {
       if (!titleMatches(hit.title, title)) continue;
@@ -109,4 +115,130 @@ export async function fetchPlot({ title, year, kind }) {
     }
   }
   return null;
+}
+
+const ROMAN = { II: 2, III: 3, IV: 4, V: 5, VI: 6 };
+
+/**
+ * Splits a catalog season title into its series and season number:
+ * "Attack on Titan Season 2", "JUJUTSU KAISEN 2nd Season", "Mob Psycho 100 II",
+ * "Avatar: The Last Airbender Book 3: Fire". Returns null for anything else.
+ * "Part N" titles return null: a season article covers every part, so its
+ * last episode is not that part's ending.
+ */
+export function parseSeasonTitle(title) {
+  const t = String(title ?? "").trim();
+  if (/part\s*\d/i.test(t)) return null;
+  let m = t.match(/^(.+?)[\s:,-]+season\s+(\d+)\s*$/i) || t.match(/^(.+?)[\s:,-]+(\d+)(?:st|nd|rd|th)\s+season\s*$/i);
+  if (m) return { base: m[1].trim(), season: Number(m[2]) };
+  m = t.match(/^(.+?)\s+book\s+(\d+)(?::.*)?$/i);
+  if (m) return { base: m[1].trim(), season: Number(m[2]) };
+  m = t.match(/^(.+?)\s+(II|III|IV|V|VI)\s*$/);
+  if (m) return { base: m[1].trim(), season: ROMAN[m[2]] };
+  return null;
+}
+
+/** Strips wiki markup from an episode summary. */
+function cleanWikitext(s) {
+  let out = s
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<ref[^>]*\/>/gi, "")
+    .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, "");
+  for (let i = 0; i < 5; i++) out = out.replace(/\{\{[^{}]*\}\}/g, "");
+  return out
+    .replace(/\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, "$1")
+    .replace(/\[https?:\/\/\S+\s([^\]]*)\]/g, "$1")
+    .replace(/'{2,}/g, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Episode summaries ({{Episode list|ShortSummary=...}}) from one article's wikitext. */
+export function extractEpisodeSummaries(wikitext) {
+  const out = [];
+  for (const m of String(wikitext ?? "").matchAll(/\|\s*ShortSummary\s*=([\s\S]*?)(?=\n\s*\||\n?\}\})/g)) {
+    const text = cleanWikitext(m[1]);
+    if (text.length >= 40) out.push(text);
+  }
+  return out;
+}
+
+/**
+ * Joins episode summaries into one plot text. Long runs keep the opening and
+ * the final episodes (the ending is what the guide explains), marking the cut.
+ */
+function joinEpisodes(summaries, cap = 7000) {
+  const lines = summaries.map((s, i) => `Episode ${i + 1}: ${s}`);
+  const all = lines.join("\n\n");
+  if (all.length <= cap) return all;
+  const head = [];
+  let n = 0;
+  for (const l of lines) {
+    if (n + l.length > 1500) break;
+    head.push(l);
+    n += l.length;
+  }
+  const tail = [];
+  n = 0;
+  for (const l of [...lines].reverse()) {
+    if (n + l.length > cap - 1600) break;
+    tail.unshift(l);
+    n += l.length;
+  }
+  return [...head, "[Middle episodes omitted]", ...tail].join("\n\n");
+}
+
+async function episodesFromPage(pageTitle) {
+  const res = await api({ action: "parse", page: pageTitle, prop: "wikitext", redirects: "1" }).catch(() => null);
+  const wikitext = res?.parse?.wikitext;
+  if (!wikitext) return null;
+  const summaries = extractEpisodeSummaries(wikitext);
+  const text = joinEpisodes(summaries);
+  if (summaries.length < 3 || text.length < MIN_FULL_PLOT_CHARS) return null;
+  return {
+    text,
+    heading: "Episodes",
+    url: `https://en.wikipedia.org/?curid=${res.parse.pageid}`,
+    pageTitle: res.parse.title,
+    episodes: summaries.length,
+  };
+}
+
+/**
+ * Season and episode-list articles, for titles whose main article has no
+ * full plot: "Attack on Titan Season 2" -> "Attack on Titan season 2". Only
+ * pages whose title names the same series (and season) are accepted.
+ */
+export async function fetchEpisodeSummaries(title) {
+  const season = parseSeasonTitle(title);
+  const base = normalize(season ? season.base : title.replace(/\s*\([^)]*\)\s*$/, ""));
+  if (!base) return null;
+  const query = season ? `${season.base} season ${season.season}` : `List of ${title} episodes`;
+  const accept = (pageTitle) => {
+    const p = normalize(pageTitle);
+    if (!p.includes(base)) return false;
+    return season ? new RegExp(`\\bseason ${season.season}\\b`).test(p) : /^list of .* episodes$/.test(p);
+  };
+
+  const search = await api({ action: "query", list: "search", srsearch: searchText(query), srlimit: "5" });
+  for (const hit of search?.query?.search ?? []) {
+    if (!accept(hit.title)) continue;
+    const found = await episodesFromPage(hit.title);
+    if (found) return found;
+  }
+  return null;
+}
+
+export async function fetchPlot({ title, year, kind }) {
+  if (kind === "anime" && parseSeasonTitle(title)) {
+    const episodes = await fetchEpisodeSummaries(title);
+    if (episodes) return episodes;
+  }
+  const main = await fetchPlotSection({ title, year, kind });
+  if (kind === "anime" && !coversEnding(main)) {
+    const episodes = await fetchEpisodeSummaries(title).catch(() => null);
+    if (episodes) return episodes;
+  }
+  return main;
 }

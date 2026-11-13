@@ -19,7 +19,7 @@ Ending Explained generator (v2). Built for accuracy first:
               titles never starve the queue.
 
   node crawler/ending-explained-generator.mjs [--table=movies|anime] [--limit=20]
-       [--id=<row id>] [--no-verify] [--no-wikipedia] [--dry-run]
+       [--id=<row id>[,<row id>...]] [--no-verify] [--no-wikipedia] [--dry-run]
 
 --dry-run prints the result without saving. GEMINI_MODEL / AI_DELAY_MS apply.
 */
@@ -56,6 +56,7 @@ const MAX_CONSECUTIVE_FAILURES = 3;
 const RETRY_AFTER_DAYS = 14;
 const MIN_GROUNDING_CHARS = 500; // total source text needed to write about a title
 const MODEL = getConfiguredModel();
+const INDEX_MOVIE_GUIDES = false; // keep in sync with lib/site.ts
 
 const call = (prompt, opts = {}) =>
   generateWithGemini(prompt, { system: GUIDE_SYSTEM_PROMPT, json: true, maxTokens: 5000, temperature: 0.4, ...opts });
@@ -87,7 +88,13 @@ function loadQueue(pool, table) {
        coalesce(synopsis_override, description, tagline) as synopsis`;
   const order = isAnime ? "popularity asc nulls last" : "watchers desc nulls last";
 
-  if (ONLY_ID) return pool.query(`select ${select} from ${table} where id = $1`, [ONLY_ID]).then((r) => r.rows);
+  // --id accepts one id or a comma-separated list; rows keep the given order.
+  if (ONLY_ID) {
+    const ids = ONLY_ID.split(",").map((s) => s.trim()).filter(Boolean);
+    return pool
+      .query(`select ${select} from ${table} where id::text = any($1::text[])`, [ids])
+      .then((r) => r.rows.sort((a, b) => ids.indexOf(String(a.id)) - ids.indexOf(String(b.id))));
+  }
 
   return pool
     .query(
@@ -260,7 +267,8 @@ async function processTable(pool, table) {
     }
     await sleep(REQUEST_DELAY_MS);
   }
-  if (!DRY_RUN) await pingIndexNow(publishedUrls);
+  // Movie guides are held out of search for now (INDEX_MOVIE_GUIDES in lib/site.ts).
+  if (!DRY_RUN && (table === "anime" || INDEX_MOVIE_GUIDES)) await pingIndexNow(publishedUrls);
   return stats;
 }
 

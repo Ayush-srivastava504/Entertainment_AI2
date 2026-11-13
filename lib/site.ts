@@ -37,3 +37,10 @@ export function getHomeUrl(): string {
 }
 
 export const SITE_NAME = "Animegirl4u";
+
+/**
+ * Movie guides are kept out of search for now: left out of the sitemap and
+ * served with <meta name="robots" content="noindex, follow">. The pages stay
+ * live for visitors. Set true to submit and index them again.
+ */
+export const INDEX_MOVIE_GUIDES = false;

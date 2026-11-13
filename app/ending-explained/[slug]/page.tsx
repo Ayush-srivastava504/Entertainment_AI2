@@ -20,7 +20,7 @@ import { getAdjacentGuides } from "@/lib/api/guides";
 import { ENDING_TOPICS, matchesMediaTopic } from "@/lib/topics";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { formatDate, readingMinutes, snippet, toParagraphs, fitTitle } from "@/lib/seo";
-import { SITE_NAME } from "@/lib/site";
+import { SITE_NAME, INDEX_MOVIE_GUIDES } from "@/lib/site";
 
 export const revalidate = 3600;
 // Without generateStaticParams a dynamic [param] route is rendered fresh on
@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    robots: item.noindex ? { index: false, follow: true } : undefined,
+    robots: item.noindex || (item.kind !== "anime" && !INDEX_MOVIE_GUIDES) ? { index: false, follow: true } : undefined,
     openGraph: {
       title,
       description,

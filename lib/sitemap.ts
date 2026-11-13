@@ -15,7 +15,7 @@ import { getPublishedMovieSlugs } from "@/lib/api/movies";
 import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
 import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
-import { getBaseUrl } from "@/lib/site";
+import { getBaseUrl, INDEX_MOVIE_GUIDES } from "@/lib/site";
 import { getCharacterSitemapRows } from "@/lib/characters-db";
 import { WALLPAPERS, WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 
@@ -60,11 +60,9 @@ export function indexXml(items: { loc: string; lastmod?: Date }[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
 
-// Movie guides were held back while the domain was new. They are just as
-// substantial as the anime guides (~1,300-1,600 words, none noindexed) and
-// were already linked from the /ending-explained hub, so leaving them out
-// only slowed discovery and sent mixed signals. Set false to hold back again.
-const INCLUDE_MOVIES = true;
+// Movie guides are held out of search for now (INDEX_MOVIE_GUIDES in
+// lib/site.ts): no movies-N.xml sitemaps, and the pages carry noindex.
+const INCLUDE_MOVIES = INDEX_MOVIE_GUIDES;
 
 async function load() {
   const [movies, anime, franchises] = await Promise.all([

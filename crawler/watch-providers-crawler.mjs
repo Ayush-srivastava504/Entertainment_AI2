@@ -11,6 +11,8 @@ to stay well inside TMDB's rate limits — run it as often as the main sync.
 
 import { getPool, sleep } from "./db.mjs";
 import { pingIndexNow } from "./lib/indexnow.mjs";
+
+const INDEX_MOVIE_GUIDES = false; // keep in sync with lib/site.ts
 import { buildMediaSlug } from "./lib/slug.mjs";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -107,8 +109,9 @@ async function main() {
   }
 
   console.log(`watch-providers: updated ${updated}/${movies.length} movie(s); ${changedUrls.length} guide(s) with changed streaming data.`);
-  // Tell Bing straight away that these guides' streaming info changed.
-  await pingIndexNow(changedUrls);
+  // Tell Bing straight away that these guides' streaming info changed. Off
+  // while movie guides are held out of search (INDEX_MOVIE_GUIDES in lib/site.ts).
+  if (INDEX_MOVIE_GUIDES) await pingIndexNow(changedUrls);
   await pool.end();
 }
 
