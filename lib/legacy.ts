@@ -1,17 +1,18 @@
 /*
-Handlers for URLs from the old site (TMDB/Jikan movie + anime list pages:
-/movies/*, /anime/*, /genres/*, /rankings/*). Those pages no longer exist and
-should leave Google's index.
+Handlers for URLs from the old site (movie + anime list pages: /movies/*,
+/anime/*, /genres/*, /rankings/*) and for the removed movie guides. Those
+pages no longer exist and should leave Google's index.
 
  - 410 Gone is a stronger "drop this" signal than 404 and Google acts on it
    faster, which is what clears "Discovered - currently not indexed".
- - If an old /movies/<slug> or /anime/<slug> matches a guide that IS
-   published now, send a permanent redirect to that guide instead.
+ - If an old /anime/<slug> matches a guide that IS published now, send a
+   permanent redirect to that guide instead.
+ - Movies were removed entirely (2026-11-13): /movies/* is always 410, and
+   the old movie guide and watch-order URLs are 410'd in middleware.ts.
 
 IMPORTANT: never Disallow these paths in robots.txt. Google can only see a
 410 by crawling the URL; a robots block leaves them stuck in the report.
 */
-import { getPublishedMovieBySlugOrId } from "@/lib/api/movies";
 import { getPublishedAnimeBySlugOrId } from "@/lib/api/anime";
 import { getBaseUrl } from "@/lib/site";
 
@@ -25,15 +26,12 @@ export function gone() {
   return new Response("410 Gone: this page has been permanently removed.", { status: 410, headers: GONE_HEADERS });
 }
 
-export async function legacyTitle(kind: "movie" | "anime", path?: string[]) {
+export async function legacyTitle(kind: "anime", path?: string[]) {
   const slug = path?.[0];
   if (slug && path!.length === 1) {
     let hit;
     try {
-      hit =
-        kind === "movie"
-          ? (await getPublishedMovieBySlugOrId(slug))?.movie
-          : (await getPublishedAnimeBySlugOrId(slug))?.anime;
+      hit = (await getPublishedAnimeBySlugOrId(slug))?.anime;
     } catch {
       // DB unavailable: say "try later" rather than a 410 Google would act on.
       return new Response("Temporarily unavailable", { status: 503, headers: { "Retry-After": "300" } });

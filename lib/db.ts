@@ -1,8 +1,8 @@
 /*
 This module provides a server-side Postgres client and shared data access
 helpers: connection management plus comment moderation. Likes now live
-directly on the movies/anime/franchises rows they belong to (see
-lib/api/movies.ts, lib/api/anime.ts, lib/api/franchises.ts) rather than in
+directly on the anime/franchises rows they belong to (see
+lib/api/anime.ts, lib/api/franchises.ts) rather than in
 a separate table, since every likeable thing here is already one of those
 three row types.
 */

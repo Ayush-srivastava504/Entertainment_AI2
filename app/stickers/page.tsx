@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { socialMeta } from "@/lib/og";
 import StickerCard from "@/components/stickers/StickerCard";
 import { STICKER_COLLECTIONS, getStickersInCollection } from "@/lib/sticker-collections";
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -28,7 +29,7 @@ export async function generateMetadata({
     ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH, cardTitle: "Anime Girl Stickers & GIFs", cardSubtitle: "Free to download and send", badge: "STICKERS" }),
     // ?q= is an internal search result (any string, including empty results):
     // keep those out of the index, but let crawlers follow the sticker links.
-    robots: q ? { index: false, follow: true } : undefined,
+    robots: q ? NOINDEX_ROBOTS : INDEX_ROBOTS,
   };
 }
 

@@ -1,6 +1,7 @@
-import { legacyTitle } from "@/lib/legacy";
+import { gone } from "@/lib/legacy";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ path?: string[] }> }) {
-  return legacyTitle("movie", (await params).path);
+// The movie catalog was removed: every old /movies/* URL is gone for good.
+export async function GET() {
+  return gone();
 }
 export const HEAD = GET;

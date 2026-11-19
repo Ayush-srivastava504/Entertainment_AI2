@@ -74,7 +74,7 @@ export const ANIME_GIRL_FAQ: FaqItem[] = [
 export const HOME_FAQ: FaqItem[] = [
   {
     q: "What is an ending explained guide?",
-    a: "It is a plain-English breakdown of how a movie or anime ends: a short recap, exactly what happens in the final scenes, what the ending means, and answers to the questions people ask most after watching.",
+    a: "It is a plain-English breakdown of how an anime ends: a short recap, exactly what happens in the final scenes, what the ending means, and answers to the questions people ask most after watching.",
   },
   {
     q: "Are the guides full of spoilers?",
@@ -104,16 +104,12 @@ export const HOME_FAQ: FaqItem[] = [
 
 export const ENDING_INDEX_FAQ: FaqItem[] = [
   {
-    q: "How do I find the ending explained for a specific movie or anime?",
+    q: "How do I find the ending explained for a specific anime?",
     a: "Use the search box at the top of this page or on the search page. Type the title and open the guide from the results.",
   },
   {
     q: "What does each guide include?",
     a: "A recap, how the story ends, the themes and meaning, an FAQ, quick facts, where to watch, and the cast, all on one page.",
-  },
-  {
-    q: "Do the guides cover both movies and anime?",
-    a: "Yes. Use the All, Movies and Anime filters above the list to narrow what you see.",
   },
   {
     q: "Where should I start if I have not seen the whole franchise?",
@@ -174,8 +170,8 @@ export const ABOUT_FAQ: FaqItem[] = [
     a: "No. Likes and saved titles are stored in your own browser. Comments are open without signing up and are moderated.",
   },
   {
-    q: "Where does the movie and anime data come from?",
-    a: "Movie details and cast come from TMDB, and anime details come from public anime databases. Guide text is written on top of that data.",
+    q: "Where does the anime data come from?",
+    a: "Anime details and voice cast come from public anime databases. Guide text is written on top of that data.",
   },
   {
     q: "How can I report a mistake in a guide?",

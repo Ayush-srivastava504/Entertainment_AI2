@@ -18,7 +18,7 @@ Ending Explained generator (v2). Built for accuracy first:
               marked with a reason and retried after a cool-down, so failing
               titles never starve the queue.
 
-  node crawler/ending-explained-generator.mjs [--table=movies|anime] [--limit=20]
+  node crawler/ending-explained-generator.mjs [--table=anime] [--limit=20]
        [--id=<row id>[,<row id>...]] [--no-verify] [--no-wikipedia] [--dry-run]
 
 --dry-run prints the result without saving. GEMINI_MODEL / AI_DELAY_MS apply.
@@ -41,11 +41,12 @@ const argValue = (name) => args.find((a) => a.startsWith(`--${name}=`))?.split("
 const flag = (name) => args.includes(`--${name}`);
 
 const tableArg = argValue("table");
-if (tableArg && !["movies", "anime"].includes(tableArg)) {
-  console.error(`[ending-explained] --table must be "movies" or "anime" (got "${tableArg}")`);
+// Anime is the only catalog (movies were removed 2026-11-13); --table is kept for old commands.
+if (tableArg && tableArg !== "anime") {
+  console.error(`[ending-explained] --table must be "anime" (got "${tableArg}")`);
   process.exit(1);
 }
-const TABLES = tableArg ? [tableArg] : ["movies", "anime"];
+const TABLES = ["anime"];
 const LIMIT = Number(argValue("limit") ?? 20);
 const ONLY_ID = argValue("id");
 const VERIFY = !flag("no-verify");
@@ -56,13 +57,12 @@ const MAX_CONSECUTIVE_FAILURES = 3;
 const RETRY_AFTER_DAYS = 14;
 const MIN_GROUNDING_CHARS = 500; // total source text needed to write about a title
 const MODEL = getConfiguredModel();
-const INDEX_MOVIE_GUIDES = false; // keep in sync with lib/site.ts
 
 const call = (prompt, opts = {}) =>
   generateWithGemini(prompt, { system: GUIDE_SYSTEM_PROMPT, json: true, maxTokens: 5000, temperature: 0.4, ...opts });
 
 async function ensureColumns(pool) {
-  for (const table of ["movies", "anime"]) {
+  for (const table of TABLES) {
     await pool.query(
       `alter table ${table}
          add column if not exists ending_explained_attempted_at timestamptz,
@@ -267,8 +267,7 @@ async function processTable(pool, table) {
     }
     await sleep(REQUEST_DELAY_MS);
   }
-  // Movie guides are held out of search for now (INDEX_MOVIE_GUIDES in lib/site.ts).
-  if (!DRY_RUN && (table === "anime" || INDEX_MOVIE_GUIDES)) await pingIndexNow(publishedUrls);
+  if (!DRY_RUN) await pingIndexNow(publishedUrls);
   return stats;
 }
 

@@ -5,7 +5,7 @@ they download directly from this site and are unique content. Third-party
 Tenor/Giphy results were removed because downloading them sent people off-site.
 
 Named GifItem (not MediaItem) to avoid colliding with lib/api/normalize.ts's
-MediaItem, which is a movie/anime ending-explained title.
+MediaItem, which is an anime ending-explained title.
 */
 
 import { searchOriginalGifs, getOriginalGifById } from "./original-gifs";

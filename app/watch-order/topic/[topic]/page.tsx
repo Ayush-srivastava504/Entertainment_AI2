@@ -2,11 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
 import { socialMeta } from "@/lib/og";
-import { getAllPublishedFranchises } from "@/lib/api/franchises";
+import { getWatchOrderTopicItems, isThinWatchOrderTopic } from "@/lib/api/topic-hubs";
 import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
-import { WATCH_ORDER_TOPICS, findTopic, matchesFranchiseTopic } from "@/lib/topics";
+import { WATCH_ORDER_TOPICS, findTopic } from "@/lib/topics";
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 
 const BASE_URL = getBaseUrl();
 
@@ -18,8 +19,11 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
   const { topic: slug } = await params;
   const topic = findTopic(WATCH_ORDER_TOPICS, slug);
   if (!topic) return {};
+  const thin = await isThinWatchOrderTopic(topic);
   return {
     title: `${topic.title}: Watch Order Guides`,
+    // Too few guides to be a useful hub yet: keep it out of the index.
+    robots: thin ? NOINDEX_ROBOTS : INDEX_ROBOTS,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/watch-order/topic/${topic.slug}` },
     ...socialMeta({
@@ -38,7 +42,7 @@ export default async function WatchOrderTopicPage({ params }: { params: Promise<
   const topic = findTopic(WATCH_ORDER_TOPICS, slug);
   if (!topic) notFound();
 
-  const franchises = (await getAllPublishedFranchises()).filter((franchise) => matchesFranchiseTopic(franchise, topic));
+  const franchises = await getWatchOrderTopicItems(topic);
 
   return (
     <>
@@ -65,7 +69,7 @@ export default async function WatchOrderTopicPage({ params }: { params: Promise<
                 className="group flex flex-col rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
               >
                 <span className="w-fit rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold">
-                  {franchise.mediaType === "anime" ? "Anime" : franchise.mediaType === "mixed" ? "Movies and anime" : "Movies"}
+                  Anime
                 </span>
                 <h2 className="mt-4 font-display text-2xl font-extrabold leading-tight group-hover:text-beam">
                   {franchise.title} watch order

@@ -1,6 +1,6 @@
 /*
 Generates a branded 1200x630 Open Graph / Twitter card image on the fly for
-any page on the site — movie/anime detail pages, rankings, quizzes, genre
+any page on the site — anime guide pages, rankings, quizzes, genre
 pages, blog posts, and the homepage fallback. No static image assets or
 design tool needed: the whole card is composed here with next/og's
 ImageResponse (built into Next.js) and Animegirl4u's existing brand colors.

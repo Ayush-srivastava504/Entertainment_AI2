@@ -2,7 +2,7 @@
 
 export interface FavoriteItem {
   id: string; // stable key, e.g. "anime:toradora"
-  type: "anime" | "movie";
+  type: "anime";
   title: string;
   note?: string;
   savedAt: string; // ISO
@@ -14,7 +14,9 @@ function readAll(): FavoriteItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as FavoriteItem[]) : [];
+    // Movie guides were removed; drop any movie favorites saved before that.
+    const items = raw ? (JSON.parse(raw) as { type?: string }[]) : [];
+    return items.filter((f) => f?.type === "anime") as FavoriteItem[];
   } catch {
     return [];
   }

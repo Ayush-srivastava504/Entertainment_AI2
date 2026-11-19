@@ -2,6 +2,21 @@
 
 import { SITE_NAME } from "@/lib/site";
 
+/**
+ * Robots settings for indexable pages. Use this instead of `robots: undefined`:
+ * an explicit undefined in a page's metadata replaces the layout's robots
+ * entirely, so the page lost "max-image-preview: large" (large image previews
+ * in Search and Discover, which matter for a GIF and wallpaper site).
+ */
+export const INDEX_ROBOTS = {
+  index: true,
+  follow: true,
+  googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+} as const;
+
+/** Kept out of the index, but links are still followed. */
+export const NOINDEX_ROBOTS = { index: false, follow: true } as const;
+
 /** Trims to a search-snippet length on a word boundary, adding an ellipsis only when it cut. */
 export function snippet(text: string, max = 158): string {
   const t = text.replace(/\s+/g, " ").trim();

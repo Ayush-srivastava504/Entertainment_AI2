@@ -15,7 +15,7 @@ import { getAllPublishedFranchises } from "@/lib/api/franchises";
 import { countGuides } from "@/lib/api/guides";
 
 export interface GuideLink {
-  kind: "movie" | "anime";
+  kind: "anime";
   slug: string;
   title: string;
   year?: number;
@@ -32,16 +32,11 @@ function rowToLink(row: any): GuideLink {
   };
 }
 
-/** Highest-rated published guides of one kind. Never caches a failure. */
-export async function getTopRatedGuides(kind: "movie" | "anime", limit = 8): Promise<GuideLink[]> {
+/** Highest-rated published anime guides. Never caches a failure. */
+export async function getTopRatedGuides(limit = 8): Promise<GuideLink[]> {
   try {
-    return await cached(`hub:top:${kind}:${limit}`, 1800, async () => {
-      const sql =
-        kind === "movie"
-          ? `select 'movie'::text as kind, id, slug, title, year, score from movies
-             where noindex = false and ending_explained_content is not null and score is not null
-             order by score desc, vote_count desc nulls last limit $1`
-          : `select 'anime'::text as kind, id, slug, coalesce(title_english, title) as title, year, score from anime
+    return await cached(`hub:top:anime:${limit}`, 1800, async () => {
+      const sql = `select 'anime'::text as kind, id, slug, coalesce(title_english, title) as title, year, score from anime
              where noindex = false and ending_explained_content is not null and score is not null
              order by score desc, scored_by desc nulls last limit $1`;
       const { rows } = await getPool().query(sql, [limit]);
@@ -53,18 +48,14 @@ export async function getTopRatedGuides(kind: "movie" | "anime", limit = 8): Pro
   }
 }
 
-/** Newest published guides across movies and anime. Never caches a failure. */
+/** Newest published anime guides. Never caches a failure. */
 export async function getLatestGuideLinks(limit = 6): Promise<GuideLink[]> {
   try {
     return await cached(`hub:latest:${limit}`, 600, async () => {
       const { rows } = await getPool().query(
-        `select * from (
-           select 'movie'::text as kind, id, slug, title, year, score, ending_explained_published_at as p
-             from movies where noindex = false and ending_explained_content is not null
-           union all
-           select 'anime'::text, id, slug, coalesce(title_english, title), year, score, ending_explained_published_at
-             from anime where noindex = false and ending_explained_content is not null
-         ) g order by p desc nulls last limit $1`,
+        `select 'anime'::text as kind, id, slug, coalesce(title_english, title) as title, year, score
+           from anime where noindex = false and ending_explained_content is not null
+           order by ending_explained_published_at desc nulls last limit $1`,
         [limit]
       );
       return rows.map(rowToLink);
@@ -77,17 +68,14 @@ export async function getLatestGuideLinks(limit = 6): Promise<GuideLink[]> {
 
 export interface HubCounts {
   guides: number;
-  movies: number;
   anime: number;
   franchises: number;
 }
 
 export async function getHubCounts(): Promise<HubCounts> {
-  const [guides, movies, anime, franchises] = await Promise.all([
-    countGuides("all"),
-    countGuides("movie"),
+  const [anime, franchises] = await Promise.all([
     countGuides("anime"),
     getAllPublishedFranchises(500).then((f) => f.length),
   ]);
-  return { guides, movies, anime, franchises };
+  return { guides: anime, anime, franchises };
 }

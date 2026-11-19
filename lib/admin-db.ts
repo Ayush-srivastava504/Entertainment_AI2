@@ -1,6 +1,6 @@
 /*
 Database access for the admin panel: site-wide stats, listing/editing
-anime + movie rows (noindex/featured/synopsis_override), and comment
+anime rows (noindex/featured/synopsis_override), and comment
 moderation. Deliberately separate from lib/api/* (the public read path,
 which is cached) since admin reads/writes must always see fresh data and
 never go through the public TTL cache.
@@ -9,36 +9,27 @@ never go through the public TTL cache.
 import { getPool } from "@/lib/db";
 import { invalidate } from "@/lib/cache";
 
-export type TitleKind = "anime" | "movie";
+export type TitleKind = "anime";
 
-function table(kind: TitleKind): string {
-  return kind === "anime" ? "anime" : "movies";
+function table(_kind: TitleKind): string {
+  return "anime";
 }
 
 export interface AdminStats {
   animeTotal: number;
   animeNoindex: number;
   animeFeatured: number;
-  movieTotal: number;
-  movieNoindex: number;
-  movieFeatured: number;
   commentsTotal: number;
 }
 
 export async function getAdminStats(): Promise<AdminStats> {
   const pool = getPool();
-  const [anime, movies, comments] = await Promise.all([
+  const [anime, comments] = await Promise.all([
     pool.query(
       `select count(*)::int as total,
               count(*) filter (where noindex) ::int as noindex,
               count(*) filter (where featured)::int as featured
        from anime`
-    ),
-    pool.query(
-      `select count(*)::int as total,
-              count(*) filter (where noindex) ::int as noindex,
-              count(*) filter (where featured)::int as featured
-       from movies`
     ),
     pool.query(`select count(*)::int as total from comments`),
   ]);
@@ -47,9 +38,6 @@ export async function getAdminStats(): Promise<AdminStats> {
     animeTotal: anime.rows[0].total,
     animeNoindex: anime.rows[0].noindex,
     animeFeatured: anime.rows[0].featured,
-    movieTotal: movies.rows[0].total,
-    movieNoindex: movies.rows[0].noindex,
-    movieFeatured: movies.rows[0].featured,
     commentsTotal: comments.rows[0].total,
   };
 }

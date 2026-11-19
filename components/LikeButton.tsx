@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 
 interface LikeButtonProps {
-  type: "movie" | "anime" | "watch-order";
+  type: "anime" | "watch-order";
   slug: string;
   initialLikes: number;
   tone?: "onDark" | "onLight";

@@ -4,13 +4,13 @@ import { getAdminTitle, updateAdminTitle, type TitleKind } from "@/lib/admin-db"
 export const runtime = "nodejs";
 
 function isKind(k: string): k is TitleKind {
-  return k === "anime" || k === "movie";
+  return k === "anime";
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
   if (!isKind(kind)) {
-    return NextResponse.json({ error: "kind must be 'anime' or 'movie'." }, { status: 400 });
+    return NextResponse.json({ error: "kind must be 'anime'." }, { status: 400 });
   }
   try {
     const title = await getAdminTitle(kind, id);
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ kind
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
   if (!isKind(kind)) {
-    return NextResponse.json({ error: "kind must be 'anime' or 'movie'." }, { status: 400 });
+    return NextResponse.json({ error: "kind must be 'anime'." }, { status: 400 });
   }
 
   let body: { noindex?: boolean; featured?: boolean; synopsisOverride?: string | null };

@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
+import { getIndexableEndingTopics, getIndexableWatchOrderTopics } from "@/lib/api/topic-hubs";
+import { STICKER_COLLECTIONS } from "@/lib/sticker-collections";
+import { WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 import { getFeaturedFranchises } from "@/lib/api/franchises";
 import { getLatestGuideLinks } from "@/lib/api/hub";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
@@ -18,7 +20,14 @@ const inlineLink = "font-semibold text-white underline underline-offset-4 hover:
 export default async function Footer() {
   // Both lookups fail soft (empty list), so a database hiccup can never take
   // a page down; the static link columns below always render.
-  const [latest, franchises] = await Promise.all([getLatestGuideLinks(6), getFeaturedFranchises(6)]);
+  // Topic links only for hubs with enough guides to be indexed, so the
+  // footer never sends every page's link weight to an empty or noindex hub.
+  const [latest, franchises, endingTopics, watchOrderTopics] = await Promise.all([
+    getLatestGuideLinks(6),
+    getFeaturedFranchises(6),
+    getIndexableEndingTopics().catch(() => []),
+    getIndexableWatchOrderTopics().catch(() => []),
+  ]);
 
   return (
     <footer className="mt-24 border-t-2 border-ink bg-surface text-white">
@@ -28,7 +37,7 @@ export default async function Footer() {
         <div className="col-span-2 lg:col-span-1">
           <p className="font-display text-3xl font-extrabold tracking-tight">{SITE_NAME}</p>
           <p className="mt-3 max-w-sm font-body text-base leading-relaxed text-white/75">
-            Movie and anime endings explained in plain English, and the right order to watch every franchise.
+            Free anime girl GIFs, stickers and wallpapers, plus anime endings explained in plain English.
           </p>
           <a
             href={PREFERRED_SOURCE_URL}
@@ -41,25 +50,31 @@ export default async function Footer() {
           </a>
         </div>
 
-        <nav aria-label="Ending explained">
-          <p className={headingClass}>Ending explained</p>
+        <nav aria-label="Anime girl GIFs and wallpapers">
+          <p className={headingClass}>GIFs &amp; wallpapers</p>
           <ul className="mt-2">
-            <li><Link href="/ending-explained" className={linkClass}>All ending guides</Link></li>
-            {ENDING_TOPICS.map((t) => (
-              <li key={t.slug}>
-                <Link href={`/ending-explained/topic/${t.slug}`} className={linkClass}>{t.title}</Link>
+            <li><Link href="/stickers" className={linkClass}>Anime girl GIFs &amp; stickers</Link></li>
+            {STICKER_COLLECTIONS.slice(0, 4).map((c) => (
+              <li key={c.slug}>
+                <Link href={`/stickers/${c.slug}`} className={linkClass}>{c.label} stickers</Link>
+              </li>
+            ))}
+            <li><Link href="/wallpapers" className={linkClass}>Anime girl wallpapers</Link></li>
+            {WALLPAPER_CATEGORIES.slice(0, 4).map((c) => (
+              <li key={c.slug}>
+                <Link href={`/wallpapers/category/${c.slug}`} className={linkClass}>{c.label} wallpapers</Link>
               </li>
             ))}
           </ul>
         </nav>
 
-        <nav aria-label="Watch orders">
-          <p className={headingClass}>Watch orders</p>
+        <nav aria-label="Ending explained">
+          <p className={headingClass}>Ending explained</p>
           <ul className="mt-2">
-            <li><Link href="/watch-order" className={linkClass}>All watch orders</Link></li>
-            {WATCH_ORDER_TOPICS.map((t) => (
+            <li><Link href="/ending-explained" className={linkClass}>All ending guides</Link></li>
+            {endingTopics.map((t) => (
               <li key={t.slug}>
-                <Link href={`/watch-order/topic/${t.slug}`} className={linkClass}>{t.title}</Link>
+                <Link href={`/ending-explained/topic/${t.slug}`} className={linkClass}>{t.title}</Link>
               </li>
             ))}
           </ul>
@@ -79,17 +94,27 @@ export default async function Footer() {
           </ul>
         </nav>
 
-        <nav aria-label="Popular watch orders">
-          <p className={headingClass}>Popular watch orders</p>
+        <nav aria-label={franchises.length ? "Watch orders" : "Site"}>
+          {franchises.length > 0 && (
+            <>
+              <p className={headingClass}>Watch orders</p>
+              <ul className="mt-2">
+                <li><Link href="/watch-order" className={linkClass}>All watch orders</Link></li>
+                {franchises.map((f) => (
+                  <li key={f.slug}>
+                    <Link href={`/watch-order/${f.slug}`} className={linkClass}>{f.title} watch order</Link>
+                  </li>
+                ))}
+                {watchOrderTopics.map((t) => (
+                  <li key={t.slug}>
+                    <Link href={`/watch-order/topic/${t.slug}`} className={linkClass}>{t.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          <p className={`${headingClass} ${franchises.length ? "mt-6" : ""}`}>{SITE_NAME}</p>
           <ul className="mt-2">
-            {franchises.map((f) => (
-              <li key={f.slug}>
-                <Link href={`/watch-order/${f.slug}`} className={linkClass}>{f.title} watch order</Link>
-              </li>
-            ))}
-            {franchises.length === 0 && (
-              <li><Link href="/watch-order" className={linkClass}>Browse watch orders</Link></li>
-            )}
             <li><Link href="/about" className={linkClass}>About {SITE_NAME}</Link></li>
             <li><Link href="/privacy" className={linkClass}>Privacy policy</Link></li>
             <li><Link href="/delete-data" className={linkClass}>Delete my data</Link></li>
@@ -114,17 +139,16 @@ export default async function Footer() {
 
       <div className="border-t border-white/15">
         <p className="mx-auto max-w-6xl px-4 py-8 font-body text-sm leading-relaxed text-white/70 sm:px-6">
-          {SITE_NAME} is an ending explained and watch order guide for movie and anime fans. Read{" "}
-          <Link href="/ending-explained" className={inlineLink}>movie endings explained</Link>,{" "}
-          <Link href="/ending-explained/topic/anime-finales" className={inlineLink}>anime finales explained</Link>,{" "}
-          <Link href="/ending-explained/topic/mind-bending-endings" className={inlineLink}>mind-bending endings</Link> and{" "}
-          <Link href="/ending-explained/topic/horror-endings" className={inlineLink}>horror endings</Link>, then follow
-          the right <Link href="/watch-order" className={inlineLink}>watch order</Link> for{" "}
-          <Link href="/watch-order/topic/superhero-universes" className={inlineLink}>superhero universes</Link>,{" "}
-          <Link href="/watch-order/topic/anime-long-runners" className={inlineLink}>long-running anime</Link>,{" "}
-          <Link href="/watch-order/topic/horror-franchises" className={inlineLink}>horror franchises</Link> and{" "}
-          <Link href="/watch-order/topic/science-fiction-sagas" className={inlineLink}>science-fiction sagas</Link>.
-          Spoilers stay hidden until you choose to reveal them. Learn{" "}
+          {SITE_NAME} is a free library of <Link href="/stickers" className={inlineLink}>anime girl GIFs and stickers</Link>{" "}
+          and <Link href="/wallpapers" className={inlineLink}>anime girl wallpapers</Link>, with profiles of the{" "}
+          <Link href="/anime-characters" className={inlineLink}>anime characters</Link> fans love. Finished a series? Read{" "}
+          <Link href="/ending-explained" className={inlineLink}>anime endings explained</Link>
+          {franchises.length > 0 && (
+            <>
+              {" "}or check the right <Link href="/watch-order" className={inlineLink}>watch order</Link>
+            </>
+          )}
+          . Spoilers stay hidden until you choose to reveal them. Learn{" "}
           <Link href="/about" className={inlineLink}>how every guide is made</Link>.
         </p>
       </div>

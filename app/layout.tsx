@@ -7,6 +7,7 @@ import NavigationLoader from "@/components/NavigationLoader";
 import Footer from "@/components/Footer";
 import AppBridge from "@/components/AppBridge";
 import { buildOgImageUrl } from "@/lib/og";
+import { INDEX_ROBOTS } from "@/lib/seo";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { graph, jsonLdString, organizationNode, websiteNode } from "@/lib/jsonld";
 
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Free anime girl GIFs and stickers to download, plus spoiler-forward Ending Explained breakdowns and Watch Order guides for every anime and movie franchise.",
+    "Free anime girl GIFs and stickers to download, plus spoiler-forward Ending Explained breakdowns and Watch Order guides for anime.",
   keywords: [
     "anime girl gif",
     "anime girl stickers",
@@ -95,11 +96,7 @@ export const metadata: Metadata = {
       }),
     ],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
-  },
+  robots: INDEX_ROBOTS,
   // Optional site-verification tags. Set these in Vercel env vars after
   // copying the content value from Bing Webmaster Tools / Search Console.
   verification: {
@@ -120,7 +117,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <head>
-        <link rel="preconnect" href="https://image.tmdb.org" />
         <link rel="preconnect" href="https://cdn.myanimelist.net" />
       </head>
       <body className="font-display min-h-screen flex flex-col bg-paper text-ink antialiased">

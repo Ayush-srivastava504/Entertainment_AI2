@@ -12,11 +12,11 @@ import type { Metadata } from "next";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 
 export interface OgImageParams {
-  /** Main headline, e.g. a movie/anime title or page heading. */
+  /** Main headline, e.g. an anime title or page heading. */
   title: string;
   /** Smaller line under the title — description, tagline, or stat. */
   subtitle?: string;
-  /** Short uppercase label in the top-left corner, e.g. "MOVIE", "RANKING". */
+  /** Short uppercase label in the top-left corner, e.g. "ANIME", "RANKING". */
   badge?: string;
   /** Absolute poster/thumbnail URL to render alongside the text. */
   poster?: string;

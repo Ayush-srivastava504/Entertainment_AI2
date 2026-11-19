@@ -27,12 +27,18 @@ for a page to be left out; none of it guarantees indexing.
 
 ### Which URLs are indexable
 
+Indexable pages use `INDEX_ROBOTS` from `lib/seo.ts`, never `robots: undefined`:
+an explicit `undefined` drops the layout's robots tag, including
+`max-image-preview: large`. Noindexed pages use `NOINDEX_ROBOTS`.
+
 | Section | Indexable | Notes |
 |---|---|---|
-| Ending Explained guides (anime and movies) | yes | Movies were held back from the sitemap at launch; they are now included (`INCLUDE_MOVIES = true` in `lib/sitemap.ts`). |
-| Watch Order guides, topic hubs | yes | Topic hubs are only listed once enough guides exist. |
-| Character profiles (`/anime-characters/[slug]`) | yes, unless `noindex = true` in `anime_characters` | Live Jikan fallback profiles are always noindex. |
-| Wallpapers, sticker collections, `/gif/[id]` | yes | Each has its own description written from the image. |
+| Ending Explained guides (anime) | yes | Movies were removed on 2026-11-13: old movie guide URLs return 410 (`middleware.ts` + `lib/removed-movie-urls.json`), `/movies/*` returns 410. |
+| Watch Order guides | yes, anime/mixed only | Movie franchises are unpublished (`media_type <> 'movie'` in `lib/api/franchises.ts`) and 404. `/watch-order` is noindex and out of the sitemap while it lists nothing. |
+| Topic hubs (`/ending-explained/topic/*`, `/watch-order/topic/*`) | only with enough guides | At least 6 guides (ending) or 3 (watch order), else noindex and out of the sitemap. One rule for page, sitemap and footer: `lib/api/topic-hubs.ts`. A DB error never counts as "empty". |
+| Character profiles (`/anime-characters/[slug]`) | yes, if they have a bio | No bio of 300+ characters (`isThinCharacter()` in `lib/characters-db.ts`) means noindex and not in the sitemap. `noindex = true` in `anime_characters` and live Jikan fallback profiles are always noindex. |
+| Wallpapers, sticker collections | yes | Sticker collections are the GIF landing pages and are always indexable. |
+| `/gif/[id]` | no (noindex, follow) | ~80 words each; out of the sitemap. Flip `INDEX_GIF_PAGES` in `lib/site.ts` once each has real unique text. |
 | `/stickers/maker` | yes | `?src=` variants (preloaded sticker) are noindex. |
 | `/games/*`, `/favorites`, `/search` | no | Deliberate. |
 | `/ending-explained?type=...`, `/anime-characters?q=` or `?page=2+`, `/stickers?q=` | no (noindex, follow) | Filter, search and live-API listing views. |

@@ -3,8 +3,8 @@ Watch Order pipeline: fully automatic, same standards as the Ending Explained
 generator (ground -> draft -> validate -> verify -> publish).
 
   1. DISCOVER  Finds franchises by itself, no hand-kept list:
-                 movies: TMDB collections (belongs_to_collection)
-                 anime:  Jikan relations (sequel/prequel/side story graph)
+                 anime: Jikan relations (sequel/prequel/side story graph)
+               (Movies and TMDB collections were removed 2026-11-13.)
                Missing entries are added to the catalog so orders are complete.
                Franchises with fewer than MIN_ENTRIES titles are ignored (thin).
   2. DRAFT     Model writes intro, meta description, recommended order,
@@ -14,14 +14,14 @@ generator (ground -> draft -> validate -> verify -> publish).
   5. PUBLISH   needs_review=false only after every step passes. Failures keep
                needs_review=true and retry after a cool-down.
 
-  node crawler/watch-order-auto.mjs [--limit=10] [--discover-movies=150]
-       [--discover-anime=40] [--no-discover] [--no-verify] [--dry-run]
+  node crawler/watch-order-auto.mjs [--limit=10] [--discover-anime=40]
+       [--no-discover] [--no-verify] [--dry-run]
 */
 
 import { getPool, recordSync, sleep, upsertAnimeBatch } from "./db.mjs";
 import { generateWithGemini, getLastModelUsed } from "./lib/ai.mjs";
 import { parseModelJson } from "./lib/quality.mjs";
-import { slugifyTitle, buildMediaSlug } from "./lib/slug.mjs";
+import { slugifyTitle } from "./lib/slug.mjs";
 import { pingIndexNow } from "./lib/indexnow.mjs";
 
 const args = process.argv.slice(2);
@@ -29,7 +29,6 @@ const argValue = (n) => args.find((a) => a.startsWith(`--${n}=`))?.split("=")[1]
 const flag = (n) => args.includes(`--${n}`);
 
 const LIMIT = Number(argValue("limit") ?? 10);
-const DISCOVER_MOVIES = Number(argValue("discover-movies") ?? 150);
 const DISCOVER_ANIME = Number(argValue("discover-anime") ?? 40);
 const DISCOVER = !flag("no-discover");
 const VERIFY = !flag("no-verify");
@@ -38,9 +37,7 @@ const MIN_ENTRIES = Number(process.env.WATCH_ORDER_MIN_ENTRIES ?? 3);
 const MAX_ENTRIES = 30;
 const RETRY_AFTER_DAYS = 3;
 const REQUEST_DELAY_MS = Number(process.env.AI_DELAY_MS ?? 8_000);
-const TMDB_TOKEN = process.env.TMDB_API_READ_ACCESS_TOKEN;
 const TODAY = new Date().toISOString().slice(0, 10);
-const IMG = "https://image.tmdb.org/t/p";
 
 // ---------------------------------------------------------------- helpers
 async function getJson(url, headers = {}, label = url) {
@@ -56,7 +53,6 @@ async function getJson(url, headers = {}, label = url) {
   console.warn(`    [fetch] gave up on ${label}`);
   return null;
 }
-const tmdb = (path) => getJson(`https://api.themoviedb.org/3${path}`, { Authorization: `Bearer ${TMDB_TOKEN}` }, path);
 async function jikan(path) {
   await sleep(1100); // Jikan allows ~3 req/s, 60/min
   const json = await getJson(`https://api.jikan.moe/v4${path}`, {}, path);
@@ -71,7 +67,6 @@ async function ensureSchema(pool) {
       add column if not exists attempted_at timestamptz,
       add column if not exists skip_reason text;
     create unique index if not exists idx_franchises_source_key on franchises (source_key) where source_key is not null;
-    alter table movies add column if not exists collection_checked_at timestamptz;
     alter table anime add column if not exists relations_checked_at timestamptz;
   `);
 }
@@ -109,60 +104,6 @@ async function insertFranchise(pool, { sourceKey, title, mediaType, slugBase, en
   } finally {
     client.release();
   }
-}
-
-// -------------------------------------------------------- discover: movies
-async function discoverMovies(pool) {
-  if (!TMDB_TOKEN) { console.warn("[watch-order] TMDB token missing; skipping movie discovery."); return 0; }
-  const { rows } = await pool.query(
-    `select id, tmdb_id from movies
-     where tmdb_id is not null and collection_checked_at is null
-     order by coalesce(watchers, plays, list_count, 0) desc
-     limit $1`, [DISCOVER_MOVIES]);
-  const genreData = await tmdb("/genre/movie/list?language=en-US");
-  const genreMap = new Map((genreData?.genres ?? []).map((g) => [g.id, g.name]));
-  const seen = new Set();
-  let created = 0;
-
-  for (const row of rows) {
-    const detail = await tmdb(`/movie/${row.tmdb_id}`);
-    if (!detail) continue; // transient: leave unchecked, retry next run
-    await pool.query("update movies set collection_checked_at = now() where id = $1", [row.id]);
-    const col = detail.belongs_to_collection;
-    if (!col || seen.has(col.id)) continue;
-    seen.add(col.id);
-    const sourceKey = `tmdb-collection:${col.id}`;
-    if ((await pool.query("select 1 from franchises where source_key = $1", [sourceKey])).rowCount) continue;
-
-    const data = await tmdb(`/collection/${col.id}`);
-    const parts = (data?.parts ?? [])
-      .filter((p) => p.release_date && p.release_date <= TODAY)
-      .sort((a, b) => a.release_date.localeCompare(b.release_date));
-    if (parts.length < MIN_ENTRIES) continue;
-
-    for (const p of parts) {
-      const year = Number(p.release_date.slice(0, 4));
-      await pool.query(
-        `insert into movies (id, tmdb_id, slug, title, description, poster_url, background_url, year, score,
-                             vote_count, genres, language, released_at, raw)
-         values ($1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-         on conflict (id) do nothing`,
-        [String(p.id), buildMediaSlug(p.title, year, p.id), p.title, p.overview ?? null,
-         p.poster_path ? `${IMG}/w500${p.poster_path}` : null,
-         p.backdrop_path ? `${IMG}/original${p.backdrop_path}` : null,
-         year, p.vote_average ?? null, p.vote_count ?? null,
-         (p.genre_ids ?? []).map((g) => genreMap.get(g)).filter(Boolean),
-         p.original_language ?? null, p.release_date, JSON.stringify(p)]
-      );
-    }
-    const title = (data.name || col.name).replace(/\s+Collection$/i, "").trim();
-    const ok = await insertFranchise(pool, {
-      sourceKey, title, mediaType: "movie", slugBase: slugifyTitle(title),
-      entries: parts.map((p) => ({ id: String(p.id), mediaType: "movie" })),
-    });
-    if (ok) created++;
-  }
-  return created;
 }
 
 // --------------------------------------------------------- discover: anime
@@ -243,7 +184,7 @@ const BANNED = /\b(as an ai|i cannot|in conclusion|whether you're a|dive into|de
 const words = (s) => String(s ?? "").trim().split(/\s+/).filter(Boolean).length;
 
 function entryLine(e) {
-  const bits = [e.kind === "anime" ? (e.type ?? "anime") : "movie", e.year, e.episodes ? `${e.episodes} eps` : null, e.score ? `score ${Number(e.score).toFixed(1)}` : null]
+  const bits = [e.type ?? "anime", e.year, e.episodes ? `${e.episodes} eps` : null, e.score ? `score ${Number(e.score).toFixed(1)}` : null]
     .filter(Boolean).join(", ");
   return `[${e.id}] ${e.title} (${bits}) — ${(e.synopsis ?? "").replace(/\s+/g, " ").slice(0, 280)}`;
 }
@@ -321,9 +262,8 @@ async function loadFacts(pool, fr) {
      where franchise_id = $1 and order_type = 'release' order by order_index`, [fr.id]);
   const entries = [];
   for (const r of rows) {
-    const q = r.media_type === "anime"
-      ? "select id, coalesce(title_english, title) as title, year, type, episodes, score, coalesce(synopsis_override, synopsis) as synopsis from anime where id = $1"
-      : "select id, title, year, null as type, null as episodes, score, coalesce(synopsis_override, description) as synopsis from movies where id = $1";
+    if (r.media_type !== "anime") continue;
+    const q = "select id, coalesce(title_english, title) as title, year, type, episodes, score, coalesce(synopsis_override, synopsis) as synopsis from anime where id = $1";
     const t = (await pool.query(q, [r.title_id])).rows[0];
     if (t) entries.push({ ...t, id: String(t.id), kind: r.media_type });
   }
@@ -411,11 +351,8 @@ async function main() {
   const pool = getPool();
   try {
     await ensureSchema(pool);
-    const discovered = { movies: 0, anime: 0 };
-    if (DISCOVER) {
-      discovered.movies = await discoverMovies(pool);
-      discovered.anime = await discoverAnime(pool);
-    }
+    const discovered = { anime: 0 };
+    if (DISCOVER) discovered.anime = await discoverAnime(pool);
     const stats = await draftAndPublish(pool);
     if (!DRY_RUN) await recordSync("watch-order-auto", { rows: stats.published, details: { discovered, ...stats } });
     console.log("[watch-order] done:", JSON.stringify({ discovered, ...stats }));

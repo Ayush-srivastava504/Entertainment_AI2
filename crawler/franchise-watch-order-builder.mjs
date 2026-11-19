@@ -16,13 +16,13 @@ franchise-defs.json format:
   {
     "slug": "the-matrix",
     "title": "The Matrix",
-    "mediaType": "movie",              // "movie" | "anime" | "mixed"
+    "mediaType": "anime",
     "entries": [
-      { "titleId": "603", "mediaType": "movie", "releaseOrder": 1 }
+      { "titleId": "20", "mediaType": "anime", "releaseOrder": 1 }
     ]
   }
 ]
-titleId must already exist in movies/anime (run the crawlers first).
+titleId must already exist in anime (run the crawlers first). Movies were removed.
 
   node crawler/franchise-watch-order-builder.mjs [--slug=the-matrix]
 */
@@ -49,11 +49,8 @@ function loadDefinitions() {
 }
 
 async function lookupTitle(pool, mediaType, titleId) {
-  const sql =
-    mediaType === "anime"
-      ? "select id, coalesce(title_english, title) as title, year from anime where id = $1"
-      : "select id, title, year from movies where id = $1";
-  const { rows } = await pool.query(sql, [titleId]);
+  if (mediaType !== "anime") return null; // movies were removed 2026-11-13
+  const { rows } = await pool.query("select id, coalesce(title_english, title) as title, year from anime where id = $1", [titleId]);
   return rows[0] ?? null;
 }
 
@@ -131,7 +128,7 @@ async function processDefinition(pool, def) {
              intro = coalesce(excluded.intro, franchises.intro),
              updated_at = now()
        returning id`,
-      [def.slug, def.title, def.mediaType ?? "movie", intro || null]
+      [def.slug, def.title, "anime", intro || null]
     );
     const franchiseId = rows[0].id;
     await replaceEntries(client, franchiseId, "release", resolved.map((e, i) => ({ ...e, orderIndex: i + 1 })));

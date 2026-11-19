@@ -11,10 +11,8 @@ can be run by hand with the npm scripts below.
 | `anime-sync.mjs` (`crawl:anime`, `crawl:anime:full`) | AniList, then Kitsu, then Jikan (a source is demoted after repeated failures) | `anime` |
 | `jikan-crawler.mjs` (`crawl:anime:jikan-only`) | Jikan only, for debugging or backfill | `anime` |
 | `anime-cast-crawler.mjs` (`crawl:anime-cast`) | Jikan `/anime/{id}/characters` | `anime.cast_list` |
-| `tmdb-crawler.mjs` (`crawl:movies`, `crawl:movies:full`) | TMDB trending, popular, upcoming, top rated | `movies` |
-| `watch-providers-crawler.mjs` (`crawl:watch-providers`) | TMDB watch/providers (region from `WATCH_PROVIDERS_REGION`, default `IN`) | `movies.watch_providers`; pings IndexNow when streaming info changes |
 
-`crawl:all` runs anime, movies, watch providers and anime cast in sequence;
+`crawl:all` runs anime and anime cast in sequence;
 `crawl:all:full` does the same with full catalog passes.
 
 ## Characters
@@ -32,8 +30,8 @@ added.
 
 | Script (npm) | What it does |
 |---|---|
-| `ending-explained-generator.mjs` (`generate:ending-explained`, `:movies`, `:anime`) | Grounds on catalog data and Wikipedia plot text, drafts a structured JSON guide, validates it, then publishes. Titles with too little source material are skipped, not guessed. |
-| `watch-order-auto.mjs` (`generate:watch-order`) | Discovers franchises (TMDB collections, Jikan relations), adds missing entries to the catalog, writes the guide. |
+| `ending-explained-generator.mjs` (`generate:ending-explained`, `:anime`) | Grounds on catalog data and Wikipedia plot text, drafts a structured JSON guide, validates it, then publishes. Titles with too little source material are skipped, not guessed. |
+| `watch-order-auto.mjs` (`generate:watch-order`) | Discovers anime franchises (Jikan relations), adds missing entries to the catalog, writes the guide. |
 | `franchise-watch-order-builder.mjs` (`build:watch-order`) | Builds guides for the hand-kept groups in `franchise-defs.json`. |
 | `gif-captions-backfill.mjs` (`generate:gif-captions`) | Writes a caption for every original sticker that has none (`gif_captions`). Run after uploading stickers so `/gif` pages never wait on the model. `--dry-run`, `--limit=N`. |
 
@@ -81,7 +79,7 @@ Run any job manually from the Actions tab ("Run workflow"; choose `crawl`,
 ## Secrets
 
 Add under Settings, Secrets and variables, Actions: `DATABASE_URL`,
-`TMDB_API_READ_ACCESS_TOKEN`, `GEMINI_API_KEY`, and optionally `INDEXNOW_KEY`.
+`GEMINI_API_KEY`, and optionally `INDEXNOW_KEY`.
 GitHub runners have no IPv6, so on Supabase use the **Session pooler**
 connection string (port 5432), not the direct one. (Vercel is different: it
 should use the transaction pooler, port 6543. See docs/DEPLOYMENT.md.)

@@ -39,8 +39,12 @@ export function getHomeUrl(): string {
 export const SITE_NAME = "Animegirl4u";
 
 /**
- * Movie guides are kept out of search for now: left out of the sitemap and
- * served with <meta name="robots" content="noindex, follow">. The pages stay
- * live for visitors. Set true to submit and index them again.
+ * Single-GIF pages (/gif/<id>) carry one sentence of unique text (~80 words in
+ * the 2026-11-19 crawl). 160 of them in the sitemap made a third of the site
+ * thin, which is what keeps a new domain in "Discovered - currently not
+ * indexed". They stay live and crawlable (noindex, follow) and are left out of
+ * the sitemap; the sticker collection pages (/stickers/<collection>), which
+ * show every GIF with alt text, are the pages meant to rank. Set true to
+ * index them again once each has substantial unique text.
  */
-export const INDEX_MOVIE_GUIDES = false;
+export const INDEX_GIF_PAGES = false;

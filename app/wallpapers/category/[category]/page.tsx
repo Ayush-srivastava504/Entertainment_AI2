@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { fitTitle } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { WALLPAPER_CATEGORIES, getWallpapersByCategory } from "@/lib/wallpapers";
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!category) return {};
   const items = getWallpapersByCategory(slug);
   const path = `/wallpapers/category/${slug}`;
-  const title = `${category.heading} — Free Download | ${SITE_NAME}`;
+  // Kept under 60 characters so search results do not cut it off.
+  const title = fitTitle([`${category.heading} — Free Download`, `${category.heading}, Free`, category.heading]);
   const description = `${category.description} Download all ${items.length} free ${category.label.toLowerCase()} wallpapers.`;
   return {
     title: { absolute: title },

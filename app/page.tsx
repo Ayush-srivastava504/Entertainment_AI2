@@ -116,16 +116,9 @@ export default async function HomePage() {
       about: { "@id": ORG_ID },
       primaryImageOfPage: { "@type": "ImageObject", url: `${BASE_URL}${OG_IMAGE}`, width: 1200, height: 630 },
     },
-    {
-      "@type": "VideoObject",
-      "@id": `${BASE_URL}/#download-demo`,
-      name: "How to download an anime girl wallpaper on Animegirl4u",
-      description: "Pick an anime girl wallpaper, tap Download and it saves to your phone, free and without sign-up.",
-      thumbnailUrl: `${BASE_URL}${DEMO_POSTER}`,
-      contentUrl: `${BASE_URL}${DEMO_VIDEO}`,
-      uploadDate: "2026-11-10",
-      duration: "PT9S",
-    },
+    // No VideoObject for the download demo: Google only indexes a video on a
+    // page where it is the main content, so the markup just produced a "Video
+    // isn't on a watch page" report in Search Console.
     {
       "@type": "ItemList",
       name: "Featured anime girl wallpapers",
@@ -341,7 +334,7 @@ export default async function HomePage() {
           newest guides so they get a crawl path from the strongest page. */}
       {(latestGuides.length > 0 || watchOrders.length > 0) && (
         <section className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-16" aria-labelledby="guides-heading">
-          <p className={sectionKicker}>Anime &amp; movie guides</p>
+          <p className={sectionKicker}>Anime guides</p>
           <h2 id="guides-heading" className={sectionTitle}>
             Ending explained &amp; watch order guides
           </h2>
@@ -380,7 +373,7 @@ export default async function HomePage() {
                       )}
                       <span className="min-w-0">
                         <span className="text-xs font-bold uppercase text-muted">
-                          {g.kind === "anime" ? "Anime" : "Movie"}
+                          Anime
                           {g.year ? ` · ${g.year}` : ""}
                         </span>
                         <span className="mt-0.5 block font-display text-base font-bold leading-snug group-hover:text-beam">

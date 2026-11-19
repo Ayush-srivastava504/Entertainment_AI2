@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { incrementMovieLikes } from "@/lib/api/movies";
 import { incrementAnimeLikes } from "@/lib/api/anime";
 import { incrementFranchiseLikes } from "@/lib/api/franchises";
 
@@ -20,10 +19,10 @@ function rateLimited(key: string): boolean {
   return arr.length > MAX_PER_WINDOW;
 }
 
-type LikeType = "movie" | "anime" | "watch-order";
+type LikeType = "anime" | "watch-order";
 
 function isValidType(t: unknown): t is LikeType {
-  return t === "movie" || t === "anime" || t === "watch-order";
+  return t === "anime" || t === "watch-order";
 }
 
 export async function POST(req: NextRequest) {
@@ -37,7 +36,7 @@ export async function POST(req: NextRequest) {
   const { type, slug } = body;
   if (!isValidType(type)) {
     return NextResponse.json(
-      { error: "type must be 'movie', 'anime', or 'watch-order'." },
+      { error: "type must be 'anime' or 'watch-order'." },
       { status: 400 }
     );
   }
@@ -54,12 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const likes =
-      type === "movie"
-        ? await incrementMovieLikes(slug)
-        : type === "anime"
-          ? await incrementAnimeLikes(slug)
-          : await incrementFranchiseLikes(slug);
+    const likes = type === "anime" ? await incrementAnimeLikes(slug) : await incrementFranchiseLikes(slug);
     if (likes === null) {
       return NextResponse.json({ error: "Not found." }, { status: 404 });
     }

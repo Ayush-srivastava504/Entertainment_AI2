@@ -145,7 +145,7 @@ const process = [
   },
   {
     title: "Trusted data",
-    text: "Character profiles use AniList data, movie details come from TMDB, and anime details come from public anime databases.",
+    text: "Character profiles use AniList data, and anime details come from public anime databases.",
   },
   {
     title: "AI as a writing aid",
@@ -168,7 +168,7 @@ const findCards = [
     title: "Search by title",
     text: (
       <>
-        Look up a movie or anime on the{" "}
+        Look up an anime on the{" "}
         <Link className={linkClass} href="/search">
           search page
         </Link>{" "}
@@ -223,15 +223,14 @@ function Check() {
 }
 
 export default async function AboutPage() {
-  const [latest, topMovies, topAnime, franchises] = await Promise.all([
+  const [latest, topAnime, franchises] = await Promise.all([
     getLatestGuideLinks(5),
-    getTopRatedGuides("movie", 3),
-    getTopRatedGuides("anime", 3),
+    getTopRatedGuides(6),
     getFeaturedFranchises(5),
   ]);
   const readingLinks = [
     { label: "Newest guides", list: latest.map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
-    { label: "Reader favorites", list: [...topMovies, ...topAnime].map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
+    { label: "Reader favorites", list: topAnime.map((g) => ({ href: `/ending-explained/${g.slug}`, text: `${g.title} ending explained` })) },
     { label: "Watch orders", list: franchises.map((f) => ({ href: `/watch-order/${f.slug}`, text: `${f.title} watch order` })) },
     { label: "Collections", list: ENDING_TOPICS.slice(0, 5).map((t) => ({ href: `/ending-explained/topic/${t.slug}`, text: t.title })) },
   ].filter((c) => c.list.length > 0);
@@ -403,7 +402,7 @@ export default async function AboutPage() {
 
       {/* Finding titles */}
       <section id="find-titles" aria-labelledby="find-heading" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-        <SectionHeading id="find-heading" kicker="Getting around" title="Finding movies, anime and franchises" />
+        <SectionHeading id="find-heading" kicker="Getting around" title="Finding anime and franchises" />
         <ul className="mt-10 grid gap-5 md:grid-cols-3">
           {findCards.map((c) => (
             <li key={c.title} className="rounded-2xl border-2 border-ink bg-surface p-6">

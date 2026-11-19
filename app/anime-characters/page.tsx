@@ -7,6 +7,7 @@ import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/charact
 import { getPopularCharacters, getTrendingCharacters, type DbCharacter } from "@/lib/characters-db";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 
 function CharacterGrid({ items, rankKey }: { items: DbCharacter[]; rankKey: "trendingRank" | "popularRank" }) {
   return (
@@ -54,7 +55,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     description: DESCRIPTION,
     alternates: { canonical: `${BASE_URL}/anime-characters` },
     ...socialMeta({ title: TITLE, description: DESCRIPTION, path: "/anime-characters", cardTitle: "Anime Characters", cardSubtitle: "Profiles, voice actors and the most loved characters", badge: "CHARACTERS" }),
-    robots: isVariant ? { index: false, follow: true } : undefined,
+    robots: isVariant ? NOINDEX_ROBOTS : INDEX_ROBOTS,
   };
 }
 

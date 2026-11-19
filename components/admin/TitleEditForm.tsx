@@ -23,7 +23,7 @@ export default function TitleEditForm({ kind, title }: { kind: TitleKind; title:
   const [featured, setFeatured] = useState(title.featured);
   const [synopsisOverride, setSynopsisOverride] = useState(title.synopsisOverride ?? "");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const publicHref = `/${kind === "anime" ? "anime" : "movies"}/${title.slug}`;
+  const publicHref = `/ending-explained/${title.slug}`;
 
   async function handleSave() {
     setStatus("saving");

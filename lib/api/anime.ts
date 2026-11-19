@@ -161,8 +161,13 @@ export async function searchPublishedAnime(query: string, limit = 12): Promise<M
 }
 
 /** Recently published guides for the homepage / /ending-explained index. */
-export async function getRecentPublishedAnime(limit = 12): Promise<MediaItem[]> {
-  return cached(`anime:recent-published:${limit}`, 300, async () => {
+/**
+ * `strict` throws on a DB error instead of returning [] (and is cached under
+ * its own key), for callers that must not mistake an outage for "no guides",
+ * e.g. deciding whether a topic hub is noindex.
+ */
+export async function getRecentPublishedAnime(limit = 12, opts: { strict?: boolean } = {}): Promise<MediaItem[]> {
+  return cached(`anime:recent-published:${limit}${opts.strict ? ":strict" : ""}`, 300, async () => {
     try {
       const { rows } = await getPool().query(
         `select * from anime
@@ -173,6 +178,7 @@ export async function getRecentPublishedAnime(limit = 12): Promise<MediaItem[]> 
       return rows.map(rowToMedia);
     } catch (err) {
       console.error("recent published anime query failed:", err);
+      if (opts.strict) throw err;
       return [];
     }
   });

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getBaseUrl } from "@/lib/site";
 import { getAllPublishedFranchises } from "@/lib/api/franchises";
+import { isWatchOrderHubEmpty } from "@/lib/api/topic-hubs";
 import { SearchBar } from "@/components/media/SearchBar";
 import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
@@ -10,17 +11,25 @@ import { WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
-export const metadata = {
-  title: "Anime & Movie Watch Order Guides",
+// An empty hub ("No watch order guides yet") is a thin page: noindex until
+// at least one anime watch order is published. The sitemap applies the same rule.
+export async function generateMetadata() {
+  const empty = await isWatchOrderHubEmpty();
+  return { ...metadata, robots: empty ? NOINDEX_ROBOTS : INDEX_ROBOTS };
+}
+
+const metadata = {
+  title: "Anime Watch Order Guides",
   description:
-    "The correct order to watch every anime and movie franchise: release order, chronological order, and the recommended order for first-timers.",
+    "The correct order to watch every anime franchise: release order, chronological order, and the recommended order for first-timers.",
   alternates: { canonical: `${BASE_URL}/watch-order` },
-  ...socialMeta({ title: "Anime & Movie Watch Order Guides | Animegirl4u", description: "The correct order to watch every anime and movie franchise: release order, chronological order, and the recommended order for first-timers.", path: "/watch-order", cardTitle: "Watch Order Guides", cardSubtitle: "Release, chronological and recommended order for every franchise", badge: "WATCH ORDER" }),
+  ...socialMeta({ title: "Anime Watch Order Guides | Animegirl4u", description: "The correct order to watch every anime franchise: release order, chronological order, and the recommended order for first-timers.", path: "/watch-order", cardTitle: "Watch Order Guides", cardSubtitle: "Release, chronological and recommended order for every franchise", badge: "WATCH ORDER" }),
 };
 
 export default async function WatchOrderIndexPage() {
@@ -33,7 +42,7 @@ export default async function WatchOrderIndexPage() {
       "@type": "CollectionPage",
       "@id": `${hubUrl}#webpage`,
       url: hubUrl,
-      name: "Anime & Movie Watch Order Guides",
+      name: "Anime Watch Order Guides",
       inLanguage: "en",
       isPartOf: { "@id": `${BASE_URL}/#website` },
       mainEntity: {
@@ -91,7 +100,7 @@ export default async function WatchOrderIndexPage() {
                 className="group flex flex-col rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block"
               >
                 <span className="w-fit rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold">
-                  {f.mediaType === "anime" ? "Anime" : f.mediaType === "mixed" ? "Movies and anime" : "Movies"}
+                  Anime
                 </span>
                 <h2 className="mt-4 font-display text-2xl font-extrabold leading-tight group-hover:text-beam">
                   {f.title} watch order

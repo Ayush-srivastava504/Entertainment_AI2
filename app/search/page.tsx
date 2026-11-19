@@ -20,7 +20,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const { q } = await searchParams;
   const query = (q ?? "").trim();
   const results = query ? await searchSite(query) : null;
-  const items = results ? [...results.movies, ...results.anime] : [];
+  const items = results ? results.anime : [];
   const hasResults = Boolean(results && (items.length > 0 || results.franchises.length > 0));
 
   return (
@@ -38,7 +38,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           <div className="grid gap-5 sm:grid-cols-2">
             <Link href="/ending-explained" className="rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block">
               <p className="font-display text-2xl font-extrabold">Browse ending explained</p>
-              <p className="mt-2 font-body text-muted">Every movie and anime guide, newest first.</p>
+              <p className="mt-2 font-body text-muted">Every anime guide, newest first.</p>
             </Link>
             <Link href="/watch-order" className="rounded-2xl border-2 border-ink bg-surface p-6 transition hover:-translate-y-1 hover:shadow-block">
               <p className="font-display text-2xl font-extrabold">Browse watch orders</p>

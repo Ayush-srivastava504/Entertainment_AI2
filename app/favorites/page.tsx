@@ -46,7 +46,7 @@ export default function FavoritesPage() {
             <li key={f.id} className="flex items-center justify-between gap-4 rounded-2xl border-2 border-ink bg-surface p-5">
               <div className="min-w-0">
                 <span className="mr-3 rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold">
-                  {f.type === "anime" ? "Anime" : "Movie"}
+                  Anime
                 </span>
                 <span className="font-display text-xl font-bold">{f.title}</span>
               </div>

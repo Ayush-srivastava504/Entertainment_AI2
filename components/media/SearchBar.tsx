@@ -8,7 +8,7 @@ export function SearchBar({
   initialValue,
   path,
   size = "md",
-  placeholder = "Search a movie, anime or franchise",
+  placeholder = "Search an anime or franchise",
 }: {
   initialValue?: string;
   path: string;

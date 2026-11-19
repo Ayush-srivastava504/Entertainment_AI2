@@ -1,5 +1,5 @@
 /*
-Shared slug helpers used by crawlers when upserting movies/anime, mirrors
+Shared slug helpers used by crawlers when upserting anime, mirrors
 lib/slug.ts on the app side so generated URLs match on both sides. Keep the
 two files in sync if the algorithm changes.
 */

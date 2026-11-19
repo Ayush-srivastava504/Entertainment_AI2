@@ -25,7 +25,7 @@ export function organizationNode() {
       height: 512,
     },
     description:
-      "Animegirl4u is a free library of anime girl GIFs, stickers, PFPs and HD wallpapers, with ending explained guides and watch orders for anime and movies.",
+      "Animegirl4u is a free library of anime girl GIFs, stickers, PFPs and HD wallpapers, with anime ending explained guides and watch orders.",
   };
 }
 

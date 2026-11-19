@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
+import { fitTitle, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 import { socialMeta } from "@/lib/og";
-import { getRecentPublishedMovies } from "@/lib/api/movies";
-import { getRecentPublishedAnime } from "@/lib/api/anime";
+import { getEndingTopicItems, isThinEndingTopic } from "@/lib/api/topic-hubs";
 import { MediaGrid } from "@/components/media/MediaGrid";
 import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
-import { ENDING_TOPICS, findTopic, matchesMediaTopic } from "@/lib/topics";
+import { ENDING_TOPICS, findTopic } from "@/lib/topics";
 
 const BASE_URL = getBaseUrl();
 
@@ -20,8 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
   const { topic: slug } = await params;
   const topic = findTopic(ENDING_TOPICS, slug);
   if (!topic) return {};
+  const thin = await isThinEndingTopic(topic);
   return {
-    title: `${topic.title}: Ending Explained Guides`,
+    title: { absolute: fitTitle([`${topic.title}: Ending Explained Guides`, `${topic.title} Explained`, topic.title]) },
+    // Too few guides to be a useful hub yet: keep it out of the index.
+    robots: thin ? NOINDEX_ROBOTS : INDEX_ROBOTS,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/ending-explained/topic/${topic.slug}` },
     ...socialMeta({
@@ -40,8 +43,7 @@ export default async function EndingTopicPage({ params }: { params: Promise<{ to
   const topic = findTopic(ENDING_TOPICS, slug);
   if (!topic) notFound();
 
-  const [movies, anime] = await Promise.all([getRecentPublishedMovies(120), getRecentPublishedAnime(120)]);
-  const items = [...movies, ...anime].filter((item) => matchesMediaTopic(item, topic));
+  const items = await getEndingTopicItems(topic);
 
   return (
     <>

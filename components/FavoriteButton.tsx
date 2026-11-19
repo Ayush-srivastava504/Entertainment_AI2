@@ -6,7 +6,7 @@ import { trackEvent } from "@/lib/analytics";
 
 interface FavoriteButtonProps {
   id: string;
-  type: "anime" | "movie";
+  type: "anime";
   title: string;
   tone?: "onDark" | "onLight";
 }

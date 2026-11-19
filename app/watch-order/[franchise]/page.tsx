@@ -13,7 +13,7 @@ import ShareButton from "@/components/ShareButton";
 import CommentSection from "@/components/CommentSection";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { WATCH_ORDER_TOPICS, matchesFranchiseTopic } from "@/lib/topics";
-import { formatDate, snippet, fitTitle } from "@/lib/seo";
+import { formatDate, snippet, fitTitle, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ franchise
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    robots: franchise.noindex ? { index: false, follow: true } : undefined,
+    robots: franchise.noindex ? NOINDEX_ROBOTS : INDEX_ROBOTS,
     openGraph: {
       title,
       description,
@@ -134,7 +134,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
   const slateRows: [string, string][] = [
     ["Entries", String(resolvedEntries.length)],
     ...(years.length ? ([["Released", `${Math.min(...years)} to ${Math.max(...years)}`]] as [string, string][]) : []),
-    ["Format", franchise.mediaType === "anime" ? "Anime" : franchise.mediaType === "mixed" ? "Movies and anime" : "Movies"],
+    ["Format", "Anime"],
     ...(withGuides.length ? ([["Ending guides", String(withGuides.length)]] as [string, string][]) : []),
   ];
 
@@ -261,7 +261,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
                           <p className="font-display text-2xl font-bold leading-tight">{entry.title.title}</p>
                         )}
                         <p className="mt-1 text-sm font-semibold text-muted">
-                          {[entry.mediaType === "anime" ? "Anime" : "Movie", entry.title.year].filter(Boolean).join(", ")}
+                          {["Anime", entry.title.year].filter(Boolean).join(", ")}
                         </p>
                         {entry.note && <p className="mt-2 font-body text-base leading-relaxed text-muted">{entry.note}</p>}
                         {entry.title.endingExplained && (
@@ -302,7 +302,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ fra
                       <tr key={e.title!.slug} className="border-b border-fog last:border-0">
                         <td className="px-4 py-3 font-bold text-beam">{i + 1}</td>
                         <td className="px-4 py-3 font-semibold">{e.title!.title}</td>
-                        <td className="px-4 py-3 text-muted">{e.mediaType === "anime" ? "Anime" : "Movie"}</td>
+                        <td className="px-4 py-3 text-muted">Anime</td>
                         <td className="px-4 py-3 text-muted">{e.title!.year ?? "n/a"}</td>
                         <td className="px-4 py-3 text-muted">{e.title!.score ? `★ ${e.title!.score.toFixed(1)}` : "n/a"}</td>
                         <td className="px-4 py-3">

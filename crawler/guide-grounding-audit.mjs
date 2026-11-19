@@ -19,7 +19,7 @@ With --apply, weak guides get noindex = true. That removes them from the
 sitemap, the hubs and Google's index while the URL keeps working for
 visitors; it is reversible (set noindex back to false).
 
-  node --env-file=.env crawler/guide-grounding-audit.mjs [--table=movies|anime]
+  node --env-file=.env crawler/guide-grounding-audit.mjs [--table=anime]
        [--limit=N] [--out=weak-guides.json] [--apply]
 */
 
@@ -29,7 +29,7 @@ import { fetchPlot, coversEnding, MIN_FULL_PLOT_CHARS } from "./lib/wikipedia.mj
 
 const args = process.argv.slice(2);
 const argValue = (name) => args.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
-const TABLES = argValue("table") ? [argValue("table")] : ["movies", "anime"];
+const TABLES = ["anime"];
 const LIMIT = Number(argValue("limit") ?? 100000);
 const OUT = argValue("out") ?? "weak-guides.json";
 const APPLY = args.includes("--apply");
@@ -41,7 +41,7 @@ async function main() {
   const summary = {};
   try {
     for (const table of TABLES) {
-      if (!["movies", "anime"].includes(table)) throw new Error(`unknown table ${table}`);
+      if (table !== "anime") throw new Error(`unknown table ${table}`);
       const kind = table === "anime" ? "anime" : "movie";
       const titleCol = table === "anime" ? "coalesce(title_english, title)" : "title";
       const { rows } = await pool.query(

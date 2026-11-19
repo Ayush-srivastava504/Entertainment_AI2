@@ -3,18 +3,25 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGifById, searchGifs } from "@/lib/api/gifs";
 import { getOrCreateCaption } from "@/lib/api/gif-captions";
-import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { getBaseUrl, INDEX_GIF_PAGES, SITE_NAME } from "@/lib/site";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import ShareButton from "@/components/ShareButton";
 import CopyStickerButton from "@/components/stickers/CopyStickerButton";
 import { socialMeta } from "@/lib/og";
-import { snippet } from "@/lib/seo";
+import { snippet, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 import { collectionForSticker, getStickersInCollection } from "@/lib/sticker-collections";
 
 // Cache each GIF page for an hour (ISR) so crawlers and visitors get a fast,
 // pre-rendered page instead of a fresh Supabase + caption lookup every time.
 export const revalidate = 3600;
+// Without generateStaticParams this dynamic route rendered on every request
+// (build output: "ƒ /gif/[id]"), which is why uncached GIF pages took 2-7 s
+// for Googlebot. An empty list means: build each page on its first visit,
+// then serve it from cache (ISR), like the other [param] routes.
+export async function generateStaticParams() {
+  return [];
+}
 
 type Params = Promise<{ id: string }>;
 
@@ -31,6 +38,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: { absolute: title },
     description,
     alternates: { canonical: `${getBaseUrl()}/gif/${id}` },
+    robots: INDEX_GIF_PAGES ? INDEX_ROBOTS : NOINDEX_ROBOTS,
     // socialMeta adds og:url + siteName, which the hand-written block lacked.
     ...socialMeta({
       title,

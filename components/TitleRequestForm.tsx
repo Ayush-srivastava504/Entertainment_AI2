@@ -34,7 +34,7 @@ export function TitleRequestForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
-      <label className="sr-only" htmlFor="requested-title">Movie or anime title</label>
+      <label className="sr-only" htmlFor="requested-title">Anime title</label>
       <input
         id="requested-title"
         name="title"
@@ -42,7 +42,7 @@ export function TitleRequestForm() {
         onChange={(event) => setTitle(event.target.value)}
         maxLength={120}
         required
-        placeholder="Enter a movie or anime title"
+        placeholder="Enter an anime title"
         className="min-w-0 flex-1 rounded-xl border-2 border-ink bg-surface px-4 py-3 text-ink placeholder:text-muted"
       />
       <button

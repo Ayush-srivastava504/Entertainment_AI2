@@ -141,7 +141,7 @@ export default function TitleListTable({ kind }: { kind: TitleKind }) {
                 </td>
                 <td className="px-4 py-2 text-right">
                   <Link
-                    href={`/admin/${kind === "anime" ? "anime" : "movies"}/${row.id}`}
+                    href={`/admin/anime/${row.id}`}
                     className="text-xs text-beam hover:underline"
                   >
                     Edit

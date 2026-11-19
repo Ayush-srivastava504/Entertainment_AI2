@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
-import { fitTitle } from "@/lib/seo";
+import { fitTitle, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getCharacter, parseCharacterId } from "@/lib/characters";
-import { getDbCharacterBySlug, getLegacyCharacterRedirect, getRelatedCharacters, type DbCharacter } from "@/lib/characters-db";
+import { getDbCharacterBySlug, getLegacyCharacterRedirect, getRelatedCharacters, isThinCharacter, type DbCharacter } from "@/lib/characters-db";
 
 const BASE_URL = getBaseUrl();
 
@@ -88,7 +88,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       title: { absolute: title },
       description,
       alternates: { canonical: url },
-      robots: db.noindex ? { index: false, follow: true } : undefined,
+      // Thin profiles (no real bio) stay out of the index; see isThinCharacter().
+      robots: db.noindex || isThinCharacter(db) ? NOINDEX_ROBOTS : INDEX_ROBOTS,
       ...socialMeta({
         title,
         description,

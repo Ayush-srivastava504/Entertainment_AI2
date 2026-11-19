@@ -18,12 +18,6 @@ export default async function AdminDashboardPage() {
       href: "/admin/anime",
     },
     {
-      label: "Movie titles",
-      value: stats.movieTotal,
-      sub: `${stats.movieNoindex} noindexed · ${stats.movieFeatured} featured`,
-      href: "/admin/movies",
-    },
-    {
       label: "Comments",
       value: stats.commentsTotal,
       sub: "across ending-explained + watch-order",
@@ -35,7 +29,7 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="font-display text-3xl text-ink">Dashboard</h1>
       <p className="mt-2 text-sm text-muted">
-        Quick view of catalog size and moderation queue. Use Anime / Movies to flip{" "}
+        Quick view of catalog size and moderation queue. Use Anime to flip{" "}
         <code className="text-beam">noindex</code>, <code className="text-beam">featured</code>, or
         write a real synopsis for thin pages.
       </p>
@@ -57,7 +51,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-10 ticket p-5">
         <p className="text-sm font-bold text-beam">Suggested workflow</p>
         <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-muted">
-          <li>Open Anime or Movies, filter by "Thin description".</li>
+          <li>Open Anime, filter by "Thin description".</li>
           <li>For titles worth keeping, write a real synopsis override.</li>
           <li>For the rest, flip noindex — the sitemap updates automatically.</li>
           <li>Flip featured on your best titles to surface them across the site.</li>

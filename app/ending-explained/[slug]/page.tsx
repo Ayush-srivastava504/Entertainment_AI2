@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getBaseUrl } from "@/lib/site";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getPublishedMovieBySlugOrId, getSimilarMovies } from "@/lib/api/movies";
 import { getPublishedAnimeBySlugOrId, getSimilarAnime } from "@/lib/api/anime";
 import { buildOgImageUrl } from "@/lib/og";
 import { posterSrc, posterSrcSet } from "@/lib/image";
@@ -19,8 +18,8 @@ import type { MediaItem } from "@/lib/api/normalize";
 import { getAdjacentGuides } from "@/lib/api/guides";
 import { ENDING_TOPICS, matchesMediaTopic } from "@/lib/topics";
 import { articleNode, breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
-import { formatDate, readingMinutes, snippet, toParagraphs, fitTitle } from "@/lib/seo";
-import { SITE_NAME, INDEX_MOVIE_GUIDES } from "@/lib/site";
+import { formatDate, readingMinutes, snippet, toParagraphs, fitTitle, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
+import { SITE_NAME } from "@/lib/site";
 
 export const revalidate = 3600;
 // Without generateStaticParams a dynamic [param] route is rendered fresh on
@@ -39,17 +38,10 @@ const MIN_RATINGS = 20;
 const shownScore = (t: MediaItem) =>
   typeof t.score === "number" && t.score > 0 && (t.ratingCount === undefined || t.ratingCount >= MIN_RATINGS) ? t.score : undefined;
 
-/**
- * A slug can belong to either table — movies are tried first (the larger
- * catalog), then anime. Both tables' slugs embed their own numeric id, so
- * collisions across tables are effectively impossible.
- */
+/** Resolves an anime guide slug (or bare id). Old movie guide URLs now 404. */
 async function resolveTitle(
   slug: string
 ): Promise<{ item: MediaItem; isCanonical: boolean } | null> {
-  const movieResult = await getPublishedMovieBySlugOrId(slug);
-  if (movieResult) return { item: movieResult.movie, isCanonical: movieResult.isCanonical };
-
   const animeResult = await getPublishedAnimeBySlugOrId(slug);
   if (animeResult) return { item: animeResult.anime, isCanonical: animeResult.isCanonical };
 
@@ -82,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const ogImage = buildOgImageUrl({
     title: item.title,
     subtitle: "Ending Explained",
-    badge: item.kind === "anime" ? "ANIME" : "MOVIE",
+    badge: "ANIME",
     poster: item.posterUrl,
     rating: shownScore(item)?.toFixed(1),
   });
@@ -91,7 +83,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: { absolute: title },
     description,
     alternates: { canonical: url },
-    robots: item.noindex || (item.kind !== "anime" && !INDEX_MOVIE_GUIDES) ? { index: false, follow: true } : undefined,
+    robots: item.noindex ? NOINDEX_ROBOTS : INDEX_ROBOTS,
     openGraph: {
       title,
       description,
@@ -128,7 +120,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   // Independent lookups run in parallel instead of one after another.
   const [similar, { newer, older }, franchise] = await Promise.all([
-    item.kind === "movie" ? getSimilarMovies(item.id, item.genres, 8) : getSimilarAnime(item.id, item.genres, 8),
+    getSimilarAnime(item.id, item.genres, 8),
     getAdjacentGuides(item.kind, item.id),
     getFranchiseForTitle(item.kind, item.id),
   ]);
@@ -164,7 +156,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
     : [];
 
   const factRows: [string, string][] = [
-    ["Type", item.kind === "anime" ? "Anime" : "Movie"],
+    ["Type", "Anime"],
     ...(item.year ? ([["Year", String(item.year)]] as [string, string][]) : []),
     ...(item.genres.length ? ([["Genres", item.genres.join(", ")]] as [string, string][]) : []),
     ...(shownScore(item) ? ([["Rating", `${item.score!.toFixed(1)} / 10`]] as [string, string][]) : []),
@@ -220,7 +212,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
       section: "Ending Explained",
       keywords: [`${item.title} ending explained`, `${item.title} ending meaning`, ...(item.tags ?? [])].slice(0, 8),
       about: {
-        "@type": item.kind === "movie" ? "Movie" : "CreativeWork",
+        "@type": "CreativeWork",
         name: item.title,
         ...(item.year ? { dateCreated: String(item.year) } : {}),
         genre: item.genres,
@@ -239,7 +231,7 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
   const minutes = readingMinutes(item.endingExplainedWordCount);
 
   const ee = item.endingExplained;
-  const kindLabel = item.kind === "anime" ? "Anime" : "Movie";
+  const kindLabel = "Anime";
 
   return (
     <>

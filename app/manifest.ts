@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: `${SITE_NAME}: Ending Explained and Watch Order guides`,
     short_name: SITE_NAME,
-    description: "Ending Explained breakdowns and Watch Order guides for movies and anime.",
+    description: "Anime girl GIFs, stickers and wallpapers, plus anime Ending Explained and Watch Order guides.",
     start_url: "/",
     display: "standalone",
     background_color: "#05070D",

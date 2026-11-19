@@ -1,8 +1,7 @@
 /*
 Queries that exist for internal linking.
 
-Before this, /ending-explained listed only the 60 newest movies + 60 newest
-anime, and a guide page linked to just 4 "similar" titles. Every other guide
+Before this, /ending-explained listed only the 60 newest guides, and a guide page linked to just 4 "similar" titles. Every other guide
 (thousands) had no crawlable inbound link except the sitemap, which is
 exactly the profile of "Discovered - currently not indexed". Two fixes:
 
@@ -19,7 +18,7 @@ import type { MediaItem, MediaKind } from "@/lib/api/normalize";
 
 export const GUIDES_PER_PAGE = 48;
 
-export type GuideType = "all" | "movie" | "anime";
+export type GuideType = "all" | "anime";
 
 function rowToCard(row: any): MediaItem {
   const kind = row.kind as MediaKind;
@@ -39,17 +38,13 @@ function rowToCard(row: any): MediaItem {
   };
 }
 
-const MOVIE_SELECT = `select 'movie'::text as kind, id, slug, title, year, score, poster_url, genres,
-  description, ending_explained_published_at as published_at
-  from movies where noindex = false and ending_explained_content is not null`;
 const ANIME_SELECT = `select 'anime'::text as kind, id, slug, coalesce(title_english, title) as title, year, score, poster_url, genres,
   synopsis as description, ending_explained_published_at as published_at
   from anime where noindex = false and ending_explained_content is not null`;
 
-function source(type: GuideType) {
-  if (type === "movie") return MOVIE_SELECT;
-  if (type === "anime") return ANIME_SELECT;
-  return `${MOVIE_SELECT} union all ${ANIME_SELECT}`;
+// Anime is the only guide catalog; "all" is kept so ?type=all URLs still work.
+function source(_type: GuideType) {
+  return ANIME_SELECT;
 }
 
 export async function countGuides(type: GuideType = "all"): Promise<number> {
@@ -83,14 +78,14 @@ export async function getGuidesPage(type: GuideType, page: number, perPage = GUI
   });
 }
 
-/** Previous (newer) and next (older) published guide in the same table. */
+/** Previous (newer) and next (older) published guide. */
 export async function getAdjacentGuides(
   kind: MediaKind,
   id: string
 ): Promise<{ newer: MediaItem | null; older: MediaItem | null }> {
   return cached(`guides:adjacent:${kind}:${id}`, 3600, async () => {
     try {
-      const sel = kind === "movie" ? MOVIE_SELECT : ANIME_SELECT;
+      const sel = ANIME_SELECT;
       const { rows } = await getPool().query(
         `with ordered as (
            select g.*,

@@ -25,7 +25,7 @@ export function MediaCard({ item, href }: { item: MediaItem; href: string }) {
           <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted">No poster yet</div>
         )}
         <span className="absolute left-3 top-3 rounded-full border-2 border-ink bg-tape px-2.5 py-0.5 text-xs font-bold text-ink">
-          {item.kind === "anime" ? "Anime" : "Movie"}
+          Anime
         </span>
         {item.score ? (
           <span className="absolute right-3 top-3 rounded-full border-2 border-ink bg-surface px-2.5 py-0.5 text-xs font-bold text-ink">

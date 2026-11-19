@@ -4,13 +4,13 @@ import { listAdminTitles, type TitleKind } from "@/lib/admin-db";
 export const runtime = "nodejs";
 
 function isKind(k: string): k is TitleKind {
-  return k === "anime" || k === "movie";
+  return k === "anime";
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
   if (!isKind(kind)) {
-    return NextResponse.json({ error: "kind must be 'anime' or 'movie'." }, { status: 400 });
+    return NextResponse.json({ error: "kind must be 'anime'." }, { status: 400 });
   }
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("q") ?? undefined;

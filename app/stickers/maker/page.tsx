@@ -7,11 +7,12 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Faq } from "@/components/ui/Faq";
 import StickerMaker from "@/components/stickers/StickerMaker";
 import { getGifById } from "@/lib/api/gifs";
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
 
 const PATH = "/stickers/maker";
-const TITLE = `Image to Sticker Maker: Turn Any Photo Into a Sticker | ${SITE_NAME}`;
+const TITLE = `Image to Sticker Maker: Photo to Sticker | ${SITE_NAME}`;
 const DESCRIPTION =
-  "Free image to sticker maker for your phone: remove the background, add a white outline and a caption, then save a 512x512 WebP sticker. Your photo never leaves your device.";
+  "Free image to sticker maker: remove the background, add an outline and a caption, then save a 512x512 WhatsApp sticker. Your photo never leaves your phone.";
 
 type SP = Promise<{ src?: string | string[] }>;
 
@@ -30,7 +31,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SP }): 
       badge: "STICKER MAKER",
     }),
     // ?src= is the same tool with one sticker preloaded.
-    robots: src ? { index: false, follow: true } : undefined,
+    robots: src ? NOINDEX_ROBOTS : INDEX_ROBOTS,
   };
 }
 

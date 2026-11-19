@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
+import { fitTitle, INDEX_ROBOTS } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import StickerCard from "@/components/stickers/StickerCard";
@@ -26,14 +27,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!c) return { title: "Stickers not found", robots: { index: false } };
   const items = await getStickersInCollection(slug);
   const path = `/stickers/${slug}`;
-  const title = `${c.heading} — Free Download | ${SITE_NAME}`;
+  // Kept under 60 characters so search results do not cut it off.
+  const title = fitTitle([`${c.heading} — Free Download`, `${c.heading}, Free`, c.heading]);
   const description = `${c.description} Download ${items.length ? `all ${items.length}` : "them"} free.`;
   const image = items[0]?.previewUrl;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: `${getBaseUrl()}${path}` },
-    robots: items.length ? undefined : { index: false },
+    // Always indexable: collections are defined in code, and an empty list
+    // usually means the Supabase file listing failed, not that the set is gone.
+    // (Before, that blip stamped noindex on the main GIF landing pages, and an
+    // explicit `undefined` also dropped the layout's max-image-preview setting.)
+    robots: INDEX_ROBOTS,
     openGraph: { type: "website", url: `${getBaseUrl()}${path}`, siteName: SITE_NAME, title, description, images: image ? [image] : undefined },
     twitter: { card: "summary_large_image", title, description, images: image ? [image] : undefined },
   };

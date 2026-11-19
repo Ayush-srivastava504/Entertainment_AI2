@@ -1,7 +1,7 @@
 /*
 Sitemap builders. /sitemap.xml is a sitemap INDEX that points at small
 per-section files, so Search Console and Bing Webmaster Tools report
-indexing per section (movies / anime / watch orders / pages). With one big
+indexing per section (anime / watch orders / pages). With one big
 file you cannot tell which part of the site Google is refusing to index.
 
 Only <loc> and an honest <lastmod> are emitted. Google ignores <priority>
@@ -11,11 +11,10 @@ the one field worth getting right: it is the real last content change.
 
 import { listOriginalGifs } from "@/lib/api/original-gifs";
 import { STICKER_COLLECTIONS } from "@/lib/sticker-collections";
-import { getPublishedMovieSlugs } from "@/lib/api/movies";
 import { getPublishedAnimeSlugs } from "@/lib/api/anime";
 import { getPublishedFranchiseSlugs } from "@/lib/api/franchises";
-import { ENDING_TOPICS, WATCH_ORDER_TOPICS } from "@/lib/topics";
-import { getBaseUrl, INDEX_MOVIE_GUIDES } from "@/lib/site";
+import { getIndexableEndingTopics, getIndexableWatchOrderTopics } from "@/lib/api/topic-hubs";
+import { getBaseUrl, INDEX_GIF_PAGES } from "@/lib/site";
 import { getCharacterSitemapRows } from "@/lib/characters-db";
 import { WALLPAPERS, WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 
@@ -60,20 +59,15 @@ export function indexXml(items: { loc: string; lastmod?: Date }[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`;
 }
 
-// Movie guides are held out of search for now (INDEX_MOVIE_GUIDES in
-// lib/site.ts): no movies-N.xml sitemaps, and the pages carry noindex.
-const INCLUDE_MOVIES = INDEX_MOVIE_GUIDES;
-
 async function load() {
-  const [movies, anime, franchises] = await Promise.all([
-    INCLUDE_MOVIES ? getPublishedMovieSlugs({ strict: true }) : Promise.resolve([] as Row[]),
+  const [anime, franchises] = await Promise.all([
     getPublishedAnimeSlugs({ strict: true }),
     getPublishedFranchiseSlugs({ strict: true }),
   ]);
   // A row with an empty/blank slug would emit "/watch-order/" or
   // "/ending-explained/", duplicates of the hub pages. Never list those.
   const valid = (rows: Row[]) => rows.filter((r) => typeof r.slug === "string" && r.slug.trim() !== "");
-  return { movies: valid(movies as Row[]), anime: valid(anime as Row[]), franchises: valid(franchises as Row[]) };
+  return { anime: valid(anime as Row[]), franchises: valid(franchises as Row[]) };
 }
 
 const chunks = <T,>(rows: T[]) => {
@@ -83,26 +77,26 @@ const chunks = <T,>(rows: T[]) => {
 };
 
 export async function buildSitemapIndex(): Promise<string> {
-  const { movies, anime, franchises } = await load();
+  const { anime, franchises } = await load();
   const items: { loc: string; lastmod?: Date }[] = [
-    { loc: `${BASE_URL}/sitemaps/pages.xml`, lastmod: newest([...movies, ...anime, ...franchises]) },
+    { loc: `${BASE_URL}/sitemaps/pages.xml`, lastmod: newest([...anime, ...franchises]) },
   ];
   if (franchises.length) items.push({ loc: `${BASE_URL}/sitemaps/watch-order.xml`, lastmod: newest(franchises) });
-  chunks(movies).forEach((c, i) => items.push({ loc: `${BASE_URL}/sitemaps/movies-${i + 1}.xml`, lastmod: newest(c) }));
   chunks(anime).forEach((c, i) => items.push({ loc: `${BASE_URL}/sitemaps/anime-${i + 1}.xml`, lastmod: newest(c) }));
   return indexXml(items);
 }
 
-/** `name` is the file name without extension, e.g. "movies-2" or "pages". */
+/** `name` is the file name without extension, e.g. "anime-2" or "pages". */
 export async function buildSitemapByName(name: string): Promise<string | null> {
-  const { movies, anime, franchises } = await load();
-  const guides = [...movies, ...anime];
+  const { anime, franchises } = await load();
+  const guides = anime;
 
   if (name === "pages") {
     const entries: UrlEntry[] = [
       { loc: `${BASE_URL}/`, lastmod: newest([...guides, ...franchises]) },
       { loc: `${BASE_URL}/ending-explained`, lastmod: newest(guides) },
-      { loc: `${BASE_URL}/watch-order`, lastmod: newest(franchises) },
+      // The watch-order hub only while it lists something (noindex when empty).
+      ...(franchises.length ? [{ loc: `${BASE_URL}/watch-order`, lastmod: newest(franchises) }] : []),
       { loc: `${BASE_URL}/about` },
       { loc: `${BASE_URL}/anime-characters` },
       { loc: `${BASE_URL}/privacy` },
@@ -115,9 +109,11 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       ...WALLPAPER_CATEGORIES.map((c) => ({ loc: `${BASE_URL}/wallpapers/category/${c.slug}` })),
       ...WALLPAPERS.map((w) => ({ loc: `${BASE_URL}/wallpapers/${w.slug}` })),
     ];
-    try {
-      for (const g of await listOriginalGifs()) entries.push({ loc: `${BASE_URL}/gif/${g.id}` });
-    } catch {}
+    if (INDEX_GIF_PAGES) {
+      try {
+        for (const g of await listOriginalGifs()) entries.push({ loc: `${BASE_URL}/gif/${g.id}` });
+      } catch {}
+    }
     // Character profiles (Supabase). A DB error must not take the whole
     // "pages" sitemap down, so just leave them out of this build.
     try {
@@ -125,13 +121,10 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
     } catch (err) {
       console.error("sitemap: character rows unavailable:", err);
     }
-    // Topic hubs only once they have real content behind them.
-    if (guides.length >= 10) {
-      for (const t of ENDING_TOPICS) entries.push({ loc: `${BASE_URL}/ending-explained/topic/${t.slug}`, lastmod: newest(guides) });
-    }
-    if (franchises.length >= 5) {
-      for (const t of WATCH_ORDER_TOPICS) entries.push({ loc: `${BASE_URL}/watch-order/topic/${t.slug}`, lastmod: newest(franchises) });
-    }
+    // Topic hubs only when the topic itself has enough guides (same rule as
+    // the page's robots tag, lib/api/topic-hubs.ts).
+    for (const t of await getIndexableEndingTopics()) entries.push({ loc: `${BASE_URL}/ending-explained/topic/${t.slug}`, lastmod: newest(guides) });
+    for (const t of await getIndexableWatchOrderTopics()) entries.push({ loc: `${BASE_URL}/watch-order/topic/${t.slug}`, lastmod: newest(franchises) });
     return urlsetXml(entries);
   }
 
@@ -141,9 +134,9 @@ export async function buildSitemapByName(name: string): Promise<string | null> {
       : null;
   }
 
-  const m = name.match(/^(movies|anime)-(\d+)$/);
+  const m = name.match(/^anime-(\d+)$/);
   if (m) {
-    const rows = chunks(m[1] === "movies" ? movies : anime)[Number(m[2]) - 1];
+    const rows = chunks(anime)[Number(m[1]) - 1];
     if (!rows) return null;
     return urlsetXml(rows.map((r) => ({ loc: `${BASE_URL}/ending-explained/${r.slug}`, lastmod: r.updatedAt })));
   }

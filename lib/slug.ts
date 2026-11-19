@@ -1,7 +1,7 @@
 /*
-Shared slug helpers for building human-readable, SEO-friendly URLs for movie
-and anime detail pages (e.g. /movies/the-matrix-1999-603 instead of
-/movies/603). The numeric catalog id is always appended so slugs stay unique
+Shared slug helpers for building human-readable, SEO-friendly URLs for
+anime guide pages (e.g. /ending-explained/toradora-2008-4224 instead of
+/ending-explained/4224). The numeric catalog id is always appended so slugs stay unique
 even when two titles share a name, or a title changes after the URL has
 already been indexed by search engines.
 */

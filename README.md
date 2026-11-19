@@ -1,9 +1,9 @@
 # Animegirl4u
 
-Anime and movie guide site built with Next.js 16 (App Router, TypeScript,
+Anime girl GIF, sticker and wallpaper site with anime guides, built with Next.js 16 (App Router, TypeScript,
 Tailwind), deployed on Vercel. Live at <https://animegirl4u.com>.
 
-- **Ending Explained** guides for anime and movies, and **Watch Order** guides for franchises
+- **Ending Explained** guides for anime, and **Watch Order** guides for anime franchises
 - **Anime character profiles** (bios, voice actors, appearances)
 - Free **stickers, GIFs and wallpapers**, plus an in-browser **sticker maker**
 - Browser **mini-games** with coins and collectible avatars
@@ -22,7 +22,7 @@ Android app (mobile/)            Capacitor shell that loads the live site
 ```
 
 - **Postgres is the source of truth** for catalog content. Pages read the
-  database; nothing calls TMDB, AniList or Jikan while serving a page, except
+  database; nothing calls AniList or Jikan while serving a page, except
   the live Jikan fallback for character pages that are not saved yet.
 - **Request-time external calls:** Supabase Storage (sticker/GIF file list)
   and, only as a fallback, Gemini for a GIF caption that was not
@@ -40,19 +40,19 @@ Android app (mobile/)            Capacitor shell that loads the live site
 | Area | Routes | Notes |
 |---|---|---|
 | Home | `/` | Hub with links to every section |
-| Ending Explained | `/ending-explained`, `/ending-explained/[slug]`, `/ending-explained/topic/[topic]` | Paginated hub; `?type=movie\|anime` filters are noindex |
+| Ending Explained | `/ending-explained`, `/ending-explained/[slug]`, `/ending-explained/topic/[topic]` | Paginated hub of anime guides |
 | Watch Order | `/watch-order`, `/watch-order/[franchise]`, `/watch-order/topic/[topic]` | |
 | Characters | `/anime-characters`, `/anime-characters/[slug]`, `/anime-characters/leads`, `/anime-characters/leads/[slug]` | `/characters/*` permanently redirects here |
 | Stickers and GIFs | `/stickers`, `/stickers/[collection]`, `/stickers/maker`, `/gif/[id]` | See [docs/STICKER_MAKER.md](docs/STICKER_MAKER.md) |
 | Wallpapers | `/wallpapers`, `/wallpapers/category/[category]`, `/wallpapers/[slug]` | |
 | Games | `/games`, `/games/{memory,match3,tetris,g2048,snake,whack,minesweeper,tictactoe,simon,reaction,four,slide,spin}` | noindex by design |
 | Other pages | `/about`, `/privacy`, `/delete-data`, `/search`, `/favorites` | search and favorites are noindex |
-| Legacy URLs | `/movies/*`, `/anime/*`, `/genres/*`, `/rankings/*` | Redirect to the matching guide or return 410 |
-| Admin | `/admin`, `/admin/login`, `/admin/{anime,movies,comments,title-requests}` | Password protected (`middleware.ts`) |
+| Legacy URLs | `/movies/*`, `/anime/*`, `/genres/*`, `/rankings/*`, removed movie guides | Redirect to the matching anime guide or return 410 (movie guide URLs: `middleware.ts` + `lib/removed-movie-urls.json`) |
+| Admin | `/admin`, `/admin/login`, `/admin/{anime,comments,title-requests}` | Password protected (`middleware.ts`) |
 | SEO and infra | `/sitemap.xml`, `/sitemaps/[name]`, `/robots.txt`, `/manifest.webmanifest`, `/<INDEXNOW_KEY>.txt`, `/.well-known/assetlinks.json` | See [docs/SEO.md](docs/SEO.md) |
 
 A title only gets a public URL once its guide has been generated. The
-`movies` and `anime` tables are source data, not pages.
+The `anime` table is source data, not pages. Movies were removed on 2026-11-13.
 
 ---
 
@@ -99,7 +99,7 @@ A title only gets a public URL once its guide has been generated. The
 | `wallpapers/...` | Wallpaper gallery, category pages, wallpaper pages |
 | `games/...` | Games hub and one folder per game (client components); `layout.tsx` sets noindex |
 | `about`, `privacy`, `delete-data`, `search`, `favorites` | Static and utility pages |
-| `movies`, `anime`, `genres`, `rankings` | Legacy URL handlers (`lib/legacy.ts`) |
+| `movies`, `anime`, `genres`, `rankings` | Legacy URL handlers (`lib/legacy.ts`); `/movies/*` is always 410 |
 | `admin/...` | Admin pages: titles, comments, title requests, login |
 | `api/og` | Dynamic Open Graph images |
 | `api/search` | Title search (JSON) |
@@ -136,7 +136,7 @@ A title only gets a public URL once its guide has been generated. The
 | `db.ts` | Postgres pool (error handler, timeouts, one retry on transient errors), comments and title requests |
 | `cache.ts` | TTL cache for database reads: Upstash Redis when configured, otherwise in memory |
 | `site.ts` | Canonical base URL and site name |
-| `sitemap.ts`, `sitemap-response.ts` | Sitemap builders (`INCLUDE_MOVIES` switch) and a response wrapper that never serves a broken sitemap |
+| `sitemap.ts`, `sitemap-response.ts` | Sitemap builders and a response wrapper that never serves a broken sitemap |
 | `jsonld.ts`, `og.ts`, `seo.ts`, `faq.ts` | Structured data helpers, share-card metadata (`socialMeta`), title/snippet helpers, static FAQ copy |
 | `indexnow.ts` | Submits changed URLs to IndexNow |
 | `legacy.ts` | Handles old `/movies`, `/anime`, `/genres`, `/rankings` URLs |
@@ -147,7 +147,7 @@ A title only gets a public URL once its guide has been generated. The
 | `wallpapers.ts` | Wallpaper list and categories, merged with `data/wallpaper-descriptions.json` |
 | `sticker-collections.ts` | Sticker collections by filename prefix, plus the catch-all "Reactions" collection |
 | `anime-cutout.ts` | Optional on-device anime AI cut-out for the sticker maker (browser only, loaded on demand) |
-| `api/` | Data access: `anime`, `movies`, `franchises`, `guides`, `hub`, `normalize` (guide content shape), `gifs`, `original-gifs` (Supabase Storage list + descriptions), `gif-captions` (Gemini captions cached in Postgres) |
+| `api/` | Data access: `anime`, `franchises`, `guides`, `hub`, `normalize` (guide content shape), `gifs`, `original-gifs` (Supabase Storage list + descriptions), `gif-captions` (Gemini captions cached in Postgres) |
 | `games/` | `wallet` (coins), `collection` (owned avatars), `avatars`, `user-avatars` (Supabase bucket), `spin` (shared spin rules) |
 | `data/` | Generated JSON: `trending-leads.json`, `sticker-descriptions.json`, `wallpaper-descriptions.json` |
 
@@ -156,7 +156,6 @@ A title only gets a public URL once its guide has been generated. The
 | Path | What it does |
 |---|---|
 | `anime-sync.mjs`, `jikan-crawler.mjs`, `anime-cast-crawler.mjs` | Anime catalog (AniList, then Kitsu, then Jikan) and cast lists |
-| `tmdb-crawler.mjs`, `watch-providers-crawler.mjs` | Movie catalog and where-to-watch data |
 | `characters-sync.mjs` | Character profiles into `anime_characters`; `--ai` writes fact-based overviews |
 | `trending-leads.mjs` | Builds `lib/data/trending-leads.json` |
 | `ending-explained-generator.mjs` | Writes Ending Explained guides with Gemini, grounded on catalog and Wikipedia data |
@@ -183,7 +182,7 @@ A title only gets a public URL once its guide has been generated. The
 
 | Path | What it does |
 |---|---|
-| `schema.sql` | Full schema: `anime`, `movies`, `franchises`, `franchise_entries`, `comments`, `title_requests`, `sync_state`, `device_tokens`, `gif_captions` |
+| `schema.sql` | Full schema: `anime`, `franchises`, `franchise_entries`, `comments`, `title_requests`, `sync_state`, `device_tokens`, `gif_captions` |
 | `migrations/20260929_title_requests.sql` | Title request queue |
 | `migrations/20261110_anime_characters.sql` | Character profiles table |
 
@@ -195,7 +194,7 @@ A title only gets a public URL once its guide has been generated. The
 npm install
 cp .env.example .env.local     # set DATABASE_URL at minimum
 npm run db:migrate             # applies db/schema.sql
-npm run crawl:all:full         # first catalog load (needs TMDB_API_READ_ACCESS_TOKEN)
+npm run crawl:all:full         # first catalog load
 npm run dev                    # http://localhost:3000
 ```
 
@@ -208,11 +207,11 @@ Postgres. The sticker maker, wallpapers and games work without a database.
 |---|---|
 | `dev`, `build`, `start`, `lint` | Standard Next.js |
 | `db:migrate`, `db:migrate:title-requests` | Apply the full schema, or only the title-requests table |
-| `crawl:anime` (`:full`, `:jikan-only`), `crawl:movies` (`:full`), `crawl:watch-providers`, `crawl:anime-cast` | Catalog crawlers |
+| `crawl:anime` (`:full`, `:jikan-only`), `crawl:anime-cast` | Catalog crawlers |
 | `crawl:all`, `crawl:all:full` | All catalog crawlers in sequence |
 | `crawl:characters` | Character profiles (`-- --ai` / `-- --ai-only` for overviews) |
 | `generate:leads` | Trending female leads JSON |
-| `generate:ending-explained` (`:movies`, `:anime`) | Ending Explained guides |
+| `generate:ending-explained` (`:anime`) | Ending Explained guides |
 | `generate:watch-order`, `build:watch-order` | Watch Order guides |
 | `generate:gif-captions` | Pre-generate sticker captions |
 | `indexnow:all` | Submit all sitemap URLs to IndexNow |

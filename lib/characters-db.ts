@@ -165,10 +165,27 @@ export async function getRelatedCharacters(c: DbCharacter, limit = 6): Promise<D
   );
 }
 
+/**
+ * A profile with no real bio (only name, series and voice actors) is a thin
+ * page: 41 of them were under 250 words in the 2026-11-19 crawl. Those stay
+ * live for visitors but get noindex and are left out of the sitemap, so
+ * Google spends its crawl on profiles worth indexing. Once the
+ * characters-sync overview pass fills in a bio, the page indexes again.
+ */
+export const MIN_CHARACTER_BIO_CHARS = 300;
+
+export function isThinCharacter(c: Pick<DbCharacter, "about" | "overview">): boolean {
+  return (c.about ?? "").trim().length < MIN_CHARACTER_BIO_CHARS && (c.overview ?? "").trim().length < MIN_CHARACTER_BIO_CHARS;
+}
+
 /** For the sitemap: throws on DB failure so a blip is not cached as an empty list. */
 export async function getCharacterSitemapRows(): Promise<{ slug: string; updatedAt: Date }[]> {
   const { rows } = await getPool().query(
-    `select slug, updated_at from anime_characters where noindex = false order by favourites desc`,
+    `select slug, updated_at from anime_characters
+     where noindex = false
+       and (length(trim(coalesce(about, ''))) >= $1 or length(trim(coalesce(overview, ''))) >= $1)
+     order by favourites desc`,
+    [MIN_CHARACTER_BIO_CHARS],
   );
   return rows.map((r: any) => ({ slug: r.slug, updatedAt: r.updated_at }));
 }

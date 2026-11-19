@@ -72,7 +72,12 @@ async function fetchBucketList(): Promise<StorageObject[]> {
       offset: 0,
       sortBy: { column: "created_at", order: "desc" },
     }),
-    cache: "no-store",
+    // Not "no-store": inside a page, a no-store fetch makes Next render the
+    // whole route dynamically. That turned the homepage and /gif pages into
+    // per-request renders (Cache-Control: no-store, 2-7 s TTFB for Googlebot)
+    // whenever the Redis entry below was cold. A 5-minute data-cache entry
+    // keeps those routes static/ISR, matching the cached() TTL.
+    next: { revalidate: 300 },
     signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) throw new Error(`Supabase Storage list failed: ${res.status} ${await res.text().catch(() => "")}`);
