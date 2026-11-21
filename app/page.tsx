@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { searchGifs } from "@/lib/api/gifs";
+import { collectionForSticker } from "@/lib/sticker-collections";
+import type { GifItem } from "@/lib/api/gifs";
+
+/** A GIF lives on its collection page (single-GIF URLs redirect there). */
+function stickerHref(g: GifItem): string {
+  const c = collectionForSticker(g);
+  return `${c ? `/stickers/${c.slug}` : "/stickers"}#${encodeURIComponent(g.id)}`;
+}
 import { getTrendingCharacters } from "@/lib/characters-db";
 import { WALLPAPERS, WALLPAPER_CATEGORIES } from "@/lib/wallpapers";
 import { SearchBar } from "@/components/media/SearchBar";
@@ -70,8 +78,9 @@ export const metadata: Metadata = {
 
 // Quick jumps from the hero: moods for GIFs, styles for wallpapers.
 const heroChips = [
-  { label: "Blushing GIFs", href: "/stickers?q=blush" },
-  { label: "Wink GIFs", href: "/stickers?q=wink" },
+  // Real pages, not ?q= searches (those are noindex and blocked in robots.txt).
+  { label: "Anime girl PFP", href: "/anime-girl-pfp" },
+  { label: "Blushing PFPs", href: "/anime-girl-pfp#blushing" },
   { label: "Fantasy wallpapers", href: "/wallpapers/category/fantasy" },
   { label: "Gothic wallpapers", href: "/wallpapers/category/gothic" },
   { label: "Sketch wallpapers", href: "/wallpapers/category/sketch" },
@@ -121,13 +130,15 @@ export default async function HomePage() {
     // isn't on a watch page" report in Search Console.
     {
       "@type": "ItemList",
-      name: "Featured anime girl wallpapers",
+      name: "Anime girl wallpaper styles",
       numberOfItems: featuredWallpapers.length,
+      // One distinct page per item (the category), with its lead image.
       itemListElement: featuredWallpapers.map((w, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `${BASE_URL}/wallpapers/${w.slug}`,
-        name: w.title,
+        url: `${BASE_URL}/wallpapers/category/${w.category}`,
+        name: WALLPAPER_CATEGORIES.find((c) => c.slug === w.category)?.heading ?? w.title,
+        image: `${BASE_URL}${w.src}`,
       })),
     },
   );
@@ -245,7 +256,7 @@ export default async function HomePage() {
           {heroGifs.map((g) => (
             <li key={g.id} className="w-32 shrink-0 sm:w-auto">
               <Link
-                href={`/gif/${g.id}`}
+                href={stickerHref(g)}
                 className="block overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block transition hover:-translate-y-0.5"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -254,6 +265,11 @@ export default async function HomePage() {
             </li>
           ))}
         </ul>
+        <p className="mt-4">
+          <Link href="/anime-girl-pfp" className="inline-flex min-h-11 items-center rounded-full border-2 border-ink bg-surface px-4 py-1.5 text-sm font-bold transition hover:bg-tape">
+            Anime girl PFPs: cute, blushing &amp; dark aesthetic →
+          </Link>
+        </p>
       </section>
 
       {/* Wallpapers */}
@@ -273,7 +289,7 @@ export default async function HomePage() {
           {featuredWallpapers.map((w) => (
             <li key={w.slug} className="w-32 shrink-0 sm:w-auto">
               <Link
-                href={`/wallpapers/${w.slug}`}
+                href={`/wallpapers/category/${w.category}#${w.slug}`}
                 className="block overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block transition hover:-translate-y-0.5"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

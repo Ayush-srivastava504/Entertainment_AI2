@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getTopCharacters, searchCharacters } from "@/lib/characters";
@@ -45,6 +46,8 @@ type SP = { q?: string; page?: string };
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<SP> }): Promise<Metadata> {
   const sp = await searchParams;
+  // The old browse pages (?page=2..200 without a search) no longer exist.
+  if (!(sp.q ?? "").trim() && sp.page !== undefined) permanentRedirect("/anime-characters");
   // ?q= search results and ?page=2..200 are live MyAnimeList listings whose
   // cards link to noindexed fallback profiles. Their canonical pointed at
   // page 1 even though the content differs, which Google ignores and then
@@ -62,8 +65,9 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 export default async function CharactersPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim().slice(0, 80);
+  if (!q && sp.page !== undefined) permanentRedirect("/anime-characters");
   const page = Math.max(1, Math.min(200, Number(sp.page) || 1));
-  const [trending, popular] = !q && page === 1 ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
+  const [trending, popular] = !q ? await Promise.all([getTrendingCharacters(60), getPopularCharacters(100)]) : [[], []];
 
   const pageUrl = `${BASE_URL}/anime-characters`;
   const jsonLd = graph(
@@ -122,16 +126,54 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
         )}
         {popular.length > 0 && (
           <section className="mb-12">
-            <h2 className="font-display text-2xl font-bold">Top 100 most loved anime characters</h2>
+            <h2 className="font-display text-2xl font-bold">Most loved anime characters</h2>
             <p className="mt-1 text-muted">Ranked by how many fans have favourited them.</p>
             <CharacterGrid items={popular} rankKey="popularRank" />
           </section>
         )}
-        <h2 className="font-display text-xl font-bold">{q ? `Results for “${q}”` : popular.length ? "Browse more characters" : "Most loved characters"}</h2>
+        {!q && (
+          <section className="mb-12 max-w-3xl" aria-labelledby="about-profiles">
+            <h2 id="about-profiles" className="font-display text-2xl font-bold">About these character profiles</h2>
+            <div className="mt-3 space-y-3 leading-relaxed">
+              <p>
+                Each profile brings together what fans usually look up about an anime character: who they are, which series they
+                come from and the other anime they appear in, their Japanese and English voice actors, and basic facts such as
+                birthday, height or blood type when they are known. A short, spoiler-free overview sits above the official
+                character description, so you can read about a character without having a twist ruined.
+              </p>
+              <p>
+                The lists above are ranked by real fan data: &ldquo;trending&rdquo; follows the main characters of the anime people are
+                watching right now, and &ldquo;most loved&rdquo; follows how many fans have marked a character as a favourite. Only
+                characters with a full profile are listed here; more are added as their profiles are written. To find someone
+                who is not listed yet, use the search box at the top of the page.
+              </p>
+              <p>
+                Looking for a picture of a character instead? Try the{" "}
+                <Link href="/anime-girl-pfp" className="font-semibold text-beam underline underline-offset-2">anime girl PFP</Link> page,
+                the{" "}
+                <Link href="/stickers" className="font-semibold text-beam underline underline-offset-2">sticker collections</Link> for
+                characters like Sakura, Nami and Orihime, or the list of{" "}
+                <Link href="/anime-characters/leads" className="font-semibold text-beam underline underline-offset-2">female leads of trending anime</Link>.
+              </p>
+            </div>
+          </section>
+        )}
 
-        <Suspense fallback={<CharacterGridSkeleton />}>
-          <BrowseCharacters q={q} page={page} />
-        </Suspense>
+        {/* Live MyAnimeList results only for a search. The old "Browse more"
+            grid paged through ?page=2..200, each card linking to a live,
+            noindexed fallback profile: thousands of URLs Google kept crawling
+            instead of the real profiles. ?q= is disallowed in robots.txt. */}
+        {q && (
+          <>
+            <h2 className="font-display text-xl font-bold">Results for “{q}”</h2>
+            <Suspense fallback={<CharacterGridSkeleton />}>
+              <BrowseCharacters q={q} page={page} />
+            </Suspense>
+          </>
+        )}
+        {!q && trending.length === 0 && popular.length === 0 && (
+          <p className="text-muted">Character profiles are loading slowly right now. Please try again shortly, or search above.</p>
+        )}
       </div>
     </>
   );

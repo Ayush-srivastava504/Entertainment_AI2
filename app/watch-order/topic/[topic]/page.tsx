@@ -7,7 +7,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { WATCH_ORDER_TOPICS, findTopic } from "@/lib/topics";
-import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
+import { INDEX_ROBOTS } from "@/lib/seo";
 
 const BASE_URL = getBaseUrl();
 
@@ -18,12 +18,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ topic: string }> }) {
   const { topic: slug } = await params;
   const topic = findTopic(WATCH_ORDER_TOPICS, slug);
-  if (!topic) return {};
-  const thin = await isThinWatchOrderTopic(topic);
+  // A topic with too few guides is a thin list page: it does not exist (404)
+  // until enough matching guides are published (lib/api/topic-hubs.ts). Same
+  // rule as the sitemap and the topic links on the hub.
+  if (!topic || (await isThinWatchOrderTopic(topic))) notFound();
   return {
     title: `${topic.title}: Watch Order Guides`,
-    // Too few guides to be a useful hub yet: keep it out of the index.
-    robots: thin ? NOINDEX_ROBOTS : INDEX_ROBOTS,
+    robots: INDEX_ROBOTS,
     description: topic.description,
     alternates: { canonical: `${BASE_URL}/watch-order/topic/${topic.slug}` },
     ...socialMeta({
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
 export default async function WatchOrderTopicPage({ params }: { params: Promise<{ topic: string }> }) {
   const { topic: slug } = await params;
   const topic = findTopic(WATCH_ORDER_TOPICS, slug);
-  if (!topic) notFound();
+  if (!topic || (await isThinWatchOrderTopic(topic))) notFound();
 
   const franchises = await getWatchOrderTopicItems(topic);
 

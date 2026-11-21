@@ -7,6 +7,12 @@ push everything:
   INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs
   INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs --dry
   INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs --since-hours=36   # only URLs whose <lastmod> is recent
+  INDEXNOW_KEY=yourkey node crawler/indexnow-bulk.mjs --removed          # the removed movie guides (410 Gone)
+
+--removed submits the paths in lib/removed-movie-urls.json instead of the
+sitemap. IndexNow accepts deleted URLs: Bing recrawls them, sees the 410 and
+drops them from its index right away instead of on its own schedule. Run it
+once after a batch of pages is removed, not on a schedule.
 
 Before running, confirm https://animegirl4u.com/<INDEXNOW_KEY>.txt returns the
 key (the INDEXNOW_KEY env var must ALSO be set on Vercel, not only in
@@ -17,6 +23,7 @@ const BASE = (process.env.NEXT_PUBLIC_SITE_URL || "https://animegirl4u.com")
   .replace(/\/$/, "");
 const KEY = process.env.INDEXNOW_KEY;
 const DRY = process.argv.includes("--dry");
+const REMOVED = process.argv.includes("--removed");
 const sinceArg = process.argv.find((a) => a.startsWith("--since-hours="));
 const SINCE = sinceArg ? Date.now() - Number(sinceArg.split("=")[1]) * 3600_000 : 0;
 
@@ -41,8 +48,22 @@ if (keyBody !== KEY) {
 }
 console.log("Key file OK.");
 
-const sitemaps = locs(await get(`${BASE}/sitemap.xml`));
 const urls = new Set();
+let sitemaps = [];
+if (REMOVED) {
+  const { readFile } = await import("node:fs/promises");
+  const removed = JSON.parse(await readFile(new URL("../lib/removed-movie-urls.json", import.meta.url), "utf8"));
+  for (const slug of removed.endingExplained ?? []) urls.add(`${BASE}/ending-explained/${slug}`);
+  // Spot-check that the server really answers 410 before telling Bing to recrawl.
+  const sample = [...urls][0];
+  if (sample) {
+    const res = await fetch(sample, { redirect: "manual" });
+    if (res.status !== 410) {
+      console.error(`Expected 410 for ${sample}, got HTTP ${res.status}. Deploy the middleware first.`);
+      process.exit(1);
+    }
+  }
+} else sitemaps = locs(await get(`${BASE}/sitemap.xml`));
 for (const sm of sitemaps) {
   const xml = await get(sm);
   // Walk <url> blocks so --since-hours can compare each URL's <lastmod>.
@@ -55,7 +76,7 @@ for (const sm of sitemaps) {
   }
 }
 const all = [...urls];
-console.log(`Collected ${all.length} URLs from ${sitemaps.length} sitemaps${SINCE ? ` (lastmod within ${sinceArg.split("=")[1]}h)` : ""}.`);
+console.log(`Collected ${all.length} URLs from ${REMOVED ? "lib/removed-movie-urls.json" : `${sitemaps.length} sitemaps`}${SINCE ? ` (lastmod within ${sinceArg.split("=")[1]}h)` : ""}.`);
 if (all.length === 0) process.exit(0);
 if (DRY) process.exit(0);
 

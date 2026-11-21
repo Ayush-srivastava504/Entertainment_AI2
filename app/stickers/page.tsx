@@ -186,6 +186,68 @@ export default async function StickersPage({
         </div>
       )}
 
+      {/* The hub's own text: what the library is, which collection is for
+          what, and how to use a sticker. Written once, not per sticker. */}
+      <section className="mt-14 max-w-3xl space-y-8" aria-label="About these stickers and GIFs">
+        <div>
+          <h2 className="font-display text-2xl font-extrabold">Free anime girl stickers for every chat</h2>
+          <div className="mt-3 space-y-3 leading-relaxed">
+            <p>
+              Every sticker and GIF here is an original anime girl drawing made for {SITE_NAME}, grouped into collections so you can
+              find the right reaction quickly. Some sets follow a favourite character: Sakura Haruno from Naruto, Nami from One
+              Piece, Orihime Inoue from Bleach, Noelle Silva from Black Clover, Mitsuha Miyamizu from Your Name, and nine of the My
+              Hero Academia heroines. Others follow a mood or a look: gothic, crush, tsundere, Ghibli-style and everyday reactions.
+            </p>
+            <p>
+              Stickers are still images with a transparent background, so they sit cleanly on top of any chat wallpaper. The
+              animated collection holds looping GIFs instead, with soft motion like blinking eyes, drifting sakura petals and
+              flickering lamps.
+            </p>
+          </div>
+        </div>
+        <div>
+          <h2 className="font-display text-2xl font-extrabold">Which collection to open</h2>
+          <ul className="mt-3 list-disc space-y-2 pl-5 leading-relaxed">
+            <li>
+              <strong>Replying to friends:</strong> the <Link href={`${PATH}/reactions`} className="font-semibold text-beam underline underline-offset-2">reactions</Link> set
+              covers laughing, blushing, pouting, crying and good night.
+            </li>
+            <li>
+              <strong>Flirting:</strong> the <Link href={`${PATH}/crush`} className="font-semibold text-beam underline underline-offset-2">crush</Link> set is all winks,
+              hearts and shy smiles; the <Link href={`${PATH}/tsundere`} className="font-semibold text-beam underline underline-offset-2">tsundere</Link> set is for
+              pretending you are not flattered.
+            </li>
+            <li>
+              <strong>Fan group chats:</strong> the character sets, starting with <Link href={`${PATH}/my-hero-academia`} className="font-semibold text-beam underline underline-offset-2">My Hero Academia</Link>, the biggest.
+            </li>
+            <li>
+              <strong>Discord and gaming profiles:</strong> the <Link href={`${PATH}/gothic`} className="font-semibold text-beam underline underline-offset-2">gothic</Link> set for
+              a darker look, or <Link href={`${PATH}/ghibli-style`} className="font-semibold text-beam underline underline-offset-2">Ghibli-style</Link> for a calm one.
+            </li>
+            <li>
+              <strong>A profile picture:</strong> the <Link href="/anime-girl-pfp" className="font-semibold text-beam underline underline-offset-2">anime girl PFP</Link> page
+              sorts the same drawings by mood and saves any of them as a square picture with a background.
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-display text-2xl font-extrabold">How to send one</h2>
+          <div className="mt-3 space-y-3 leading-relaxed">
+            <p>
+              Tap <strong>Copy for WhatsApp</strong> under a sticker: it is turned into a 512 &times; 512 sticker image and copied, so
+              you can paste it straight into WhatsApp, Telegram, Discord or Instagram messages. On phones that cannot copy images,
+              the share sheet opens instead. The <strong>&darr;</strong> button saves the original file, and tapping the picture
+              opens it full size.
+            </p>
+            <p>
+              Want a sticker of yourself, a pet or a friend? The{" "}
+              <Link href={`${PATH}/maker`} className="font-semibold text-beam underline underline-offset-2">sticker maker</Link> cuts the
+              subject out of any photo on your phone, adds an outline and a caption, and nothing is uploaded.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <p className="mt-10 text-sm text-muted">
         Want still images instead? Browse our{" "}
         <Link href="/wallpapers" className="font-semibold text-beam underline underline-offset-4 hover:text-beamDeep">

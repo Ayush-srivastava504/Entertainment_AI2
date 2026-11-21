@@ -1,12 +1,17 @@
-import Link from "next/link";
 import type { GifItem } from "@/lib/api/gifs";
+import CopyStickerButton from "@/components/stickers/CopyStickerButton";
 
-/** Masonry card used on /stickers and /stickers/[collection]. */
+/**
+ * Masonry card used on /stickers/[collection]. The id is the anchor old
+ * /gif/<id> URLs redirect to; the image opens the full file (which also makes
+ * this page its landing page in Google Images); download and WhatsApp copy
+ * are right on the card, so no separate single-GIF page is needed.
+ */
 export default function StickerCard({ item, label, eager }: { item: GifItem; label?: string; eager?: boolean }) {
   const name = label || item.title;
   return (
-    <div className="mb-3 break-inside-avoid overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block">
-      <Link href={`/gif/${item.id}`} className="block">
+    <div id={item.id} className="mb-3 scroll-mt-24 break-inside-avoid overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-block target:ring-4 target:ring-beam">
+      <a href={item.fullUrl} target="_blank" rel="noopener" className="block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.previewUrl}
@@ -17,7 +22,7 @@ export default function StickerCard({ item, label, eager }: { item: GifItem; lab
           decoding="async"
           className="h-auto w-full"
         />
-      </Link>
+      </a>
       <div className="flex items-center justify-between gap-2 px-2 py-1.5">
         <span className="truncate text-xs font-semibold text-ink/80">{name}</span>
         <a
@@ -30,6 +35,9 @@ export default function StickerCard({ item, label, eager }: { item: GifItem; lab
         >
           ↓
         </a>
+      </div>
+      <div className="px-2 pb-2">
+        <CopyStickerButton id={item.id} url={item.fullUrl} title={item.title} compact />
       </div>
     </div>
   );

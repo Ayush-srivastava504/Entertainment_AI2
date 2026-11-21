@@ -25,8 +25,14 @@ export default async function TrendingLeadsPage() {
   const { items } = getTrendingLeads();
   // Link straight to each profile's name slug ("/anime-characters/mikasa-ackerman"),
   // not the old id URL, so no internal link goes through a redirect.
-  const slugs = await getDbSlugsByIds(items.map((l) => l.character.id));
-  const profileHref = (l: (typeof items)[number]) => `/anime-characters/${slugs.get(l.character.id) ?? l.character.slug}`;
+  // Strict: on a DB error the page errors and ISR keeps the last good version,
+  // instead of caching a list with every link missing.
+  const slugs = await getDbSlugsByIds(items.map((l) => l.character.id), { strict: true });
+  // Only leads with a public profile get a link; the rest have no page yet.
+  const profileHref = (l: (typeof items)[number]) => {
+    const s = slugs.get(l.character.id);
+    return s ? `/anime-characters/${s}` : null;
+  };
 
   const jsonLd = graph(
     {
@@ -35,7 +41,7 @@ export default async function TrendingLeadsPage() {
       itemListElement: items.map((l) => ({
         "@type": "ListItem",
         position: l.rank,
-        url: `${BASE_URL}${profileHref(l)}`,
+        ...(profileHref(l) ? { url: `${BASE_URL}${profileHref(l)}` } : {}),
         name: `${l.character.name} (${l.anime.title})`,
       })),
     },
@@ -65,12 +71,10 @@ export default async function TrendingLeadsPage() {
           </p>
         ) : (
           <ol className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {items.map((l) => (
-              <li key={l.character.id}>
-                <Link
-                  href={profileHref(l)}
-                  className="relative block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block transition-transform hover:-translate-y-0.5"
-                >
+            {items.map((l) => {
+              const href = profileHref(l);
+              const card = (
+                <>
                   <span className="absolute left-2 top-2 z-10 rounded-full border-2 border-ink bg-beam px-2 text-sm font-bold text-white">
                     #{l.rank}
                   </span>
@@ -83,9 +87,21 @@ export default async function TrendingLeadsPage() {
                     <p className="text-sm text-muted">{l.anime.title}</p>
                     <p className="mt-1 text-sm text-muted">♥ {l.character.favourites.toLocaleString()}</p>
                   </div>
-                </Link>
-              </li>
-            ))}
+                </>
+              );
+              const box = "relative block overflow-hidden rounded-2xl border-2 border-ink bg-surface shadow-block";
+              return (
+                <li key={l.character.id}>
+                  {href ? (
+                    <Link href={href} className={`${box} transition-transform hover:-translate-y-0.5`}>
+                      {card}
+                    </Link>
+                  ) : (
+                    <div className={box}>{card}</div>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         )}
       </div>

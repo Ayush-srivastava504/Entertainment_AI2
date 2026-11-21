@@ -10,7 +10,12 @@ const BASE_URL = getBaseUrl();
 // Paths no crawler needs. /api/og is carved out below because Facebook,
 // X/Twitter, LinkedIn etc. obey robots.txt when fetching og:image, and every
 // share-card image on this site is served from /api/og.
-const DISALLOW = ["/api/", "/admin", "/favorites", "/search"];
+// Parameter URLs are user views, not pages: search results (?q= on
+// /stickers and /anime-characters) and the sticker maker opened with a
+// sticker (?src=, one URL per sticker). All are noindex already; disallowing
+// them stops Googlebot spending crawl on hundreds of variants of pages that
+// are crawled once at their clean URL.
+const DISALLOW = ["/api/", "/admin", "/favorites", "/search", "/*?q=", "/*&q=", "/stickers/maker?"];
 const ALLOW = ["/", "/api/og"];
 
 // A crawler that matches a named group IGNORES the "*" group completely, so

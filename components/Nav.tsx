@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
+// No "Watch order" link: /watch-order is a 404 until anime watch orders are
+// published (the old ones were all movie franchises). The footer adds the
+// link automatically once there are some; a nav link would mean fetching data
+// in the root layout, which would make every static page dynamic.
 const links = [
   { href: "/wallpapers", label: "Wallpapers" },
   { href: "/anime-characters", label: "Characters" },
   { href: "/stickers", label: "Stickers & GIFs" },
+  { href: "/anime-girl-pfp", label: "PFP" },
   { href: "/games", label: "Games" },
   { href: "/ending-explained", label: "Ending explained" },
-  { href: "/watch-order", label: "Watch order" },
   { href: "/about", label: "About" },
 ];
 

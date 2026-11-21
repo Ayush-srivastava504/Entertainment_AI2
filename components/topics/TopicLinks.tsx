@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { GuideTopic } from "@/lib/topics";
 
+/** Pass only indexable topics (lib/api/topic-hubs.ts): thin topics are 404s. */
 export function TopicLinks({ topics, basePath }: { topics: GuideTopic[]; basePath: string }) {
+  if (!topics.length) return null;
   return (
     <section className="border-y-2 border-ink bg-tape">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

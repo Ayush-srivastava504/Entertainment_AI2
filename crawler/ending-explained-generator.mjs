@@ -56,6 +56,11 @@ const REQUEST_DELAY_MS = Number(process.env.AI_DELAY_MS ?? 15_000);
 const MAX_CONSECUTIVE_FAILURES = 3;
 const RETRY_AFTER_DAYS = 14;
 const MIN_GROUNDING_CHARS = 500; // total source text needed to write about a title
+// Publish gate on the finished guide: a short guide is a thin page, and a
+// published guide goes live (and into the sitemap) with no deploy in between,
+// so this is the last check before Google sees it. Rejected titles are marked
+// skipped and retried on a later run.
+const MIN_GUIDE_WORDS = Number(process.env.MIN_GUIDE_WORDS ?? 600);
 const MODEL = getConfiguredModel();
 
 const call = (prompt, opts = {}) =>
@@ -213,6 +218,11 @@ async function processTable(pool, table) {
         stats.rejected++;
         await markSkipped(pool, table, row.id, result.reason);
         console.warn(`[ending-explained] ${label} rejected: ${result.reason}`);
+      } else if (guideWordCount(result.guide) < MIN_GUIDE_WORDS) {
+        const why = `guide too short (${guideWordCount(result.guide)} words; needs ${MIN_GUIDE_WORDS}+)`;
+        stats.rejected++;
+        await markSkipped(pool, table, row.id, why);
+        console.warn(`[ending-explained] ${label} rejected: ${why}`);
       } else {
         const words = guideWordCount(result.guide);
         const content = {

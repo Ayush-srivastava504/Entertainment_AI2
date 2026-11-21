@@ -1,7 +1,7 @@
 "use client";
 
 /*
-"Make WhatsApp sticker" on /gif/[id]: one tap turns the sticker into a
+"Make WhatsApp sticker" on each sticker card: one tap turns the sticker into a
 512 x 512 transparent sticker and puts it on the phone's clipboard, ready to
 paste into WhatsApp or any chat. Browsers only allow PNG images on the
 clipboard, so that is the format.
@@ -34,7 +34,23 @@ async function stickerPng(url: string): Promise<Blob> {
   return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error("encode"))), "image/png"));
 }
 
-export default function CopyStickerButton({ id, url, title }: { id: string; url: string; title: string }) {
+/**
+ * `compact`: the small card version, without the "Edit in sticker maker"
+ * link. That link carries a ?src= parameter, so on a collection page it
+ * would add one crawlable URL per sticker; the fallback still opens the
+ * maker by script when the browser cannot copy images.
+ */
+export default function CopyStickerButton({
+  id,
+  url,
+  title,
+  compact = false,
+}: {
+  id: string;
+  url: string;
+  title: string;
+  compact?: boolean;
+}) {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const makerHref = `/stickers/maker?src=${encodeURIComponent(id)}`;
@@ -65,6 +81,26 @@ export default function CopyStickerButton({ id, url, title }: { id: string; url:
     } finally {
       setBusy(false);
     }
+  }
+
+  if (compact) {
+    return (
+      <div className="w-full">
+        <button
+          type="button"
+          onClick={onTap}
+          disabled={busy}
+          className="w-full rounded-full border-2 border-ink px-2 py-1 text-xs font-bold hover:bg-fog disabled:opacity-50"
+        >
+          {busy ? "Making…" : "Copy for WhatsApp"}
+        </button>
+        {msg && (
+          <p role="status" className="mt-1.5 text-xs leading-snug text-muted">
+            {msg}
+          </p>
+        )}
+      </div>
+    );
   }
 
   return (

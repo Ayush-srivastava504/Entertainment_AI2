@@ -6,6 +6,7 @@ import { fitTitle } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { WALLPAPER_CATEGORIES, getWallpapersByCategory } from "@/lib/wallpapers";
+import { WALLPAPER_CATEGORY_ABOUT } from "@/lib/data/collection-about";
 import WallpaperDownloadCard from "@/components/wallpapers/WallpaperDownloadCard";
 
 const BASE_URL = getBaseUrl();
@@ -123,6 +124,42 @@ export default async function WallpaperCategoryPage({ params }: { params: Params
         <p className="mt-6 text-xs text-muted">
           {items[0].width}×{items[0].height}px WebP — sized for phone screens, not 4K desktop.
         </p>
+
+        {WALLPAPER_CATEGORY_ABOUT[slug] && (
+          <section className="mt-12 max-w-3xl" aria-labelledby="about-category">
+            <h2 id="about-category" className="font-display text-2xl font-extrabold">
+              About {category.label.toLowerCase()} anime girl wallpapers
+            </h2>
+            <div className="mt-3 space-y-3 leading-relaxed">
+              {WALLPAPER_CATEGORY_ABOUT[slug].map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* The unique text for this page: what each wallpaper shows. Without it
+            the category page was ~110 words of boilerplate around a grid. */}
+        {items.some((w) => w.description) && (
+          <section className="mt-12 max-w-3xl" aria-labelledby="in-category">
+            <h2 id="in-category" className="font-display text-2xl font-extrabold">
+              What&rsquo;s in the {category.label.toLowerCase()} collection
+            </h2>
+            <ul className="mt-4 space-y-3">
+              {items
+                .filter((w) => w.description)
+                .map((w) => (
+                  <li key={w.slug} className="leading-relaxed">
+                    <a href={`#${w.slug}`} className="font-semibold text-beam underline underline-offset-2">
+                      {w.title}
+                    </a>
+                    : <span className="text-muted">{w.description}</span>
+                  </li>
+                ))}
+            </ul>
+          </section>
+        )}
+
         <div className="mt-6">
           <Link
             href="/wallpapers"

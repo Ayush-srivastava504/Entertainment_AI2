@@ -7,21 +7,26 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { WATCH_ORDER_INDEX_FAQ } from "@/lib/faq";
-import { WATCH_ORDER_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
-import { INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
+import { INDEX_ROBOTS } from "@/lib/seo";
+import { redirect } from "next/navigation";
+import { getIndexableWatchOrderTopics } from "@/lib/api/topic-hubs";
 
 export const revalidate = 3600;
 
 const BASE_URL = getBaseUrl();
 
-// An empty hub ("No watch order guides yet") is a thin page: noindex until
-// at least one anime watch order is published. The sitemap applies the same rule.
+// An empty hub ("No watch order guides yet") is a thin page. Until at least
+// one anime watch order is published it temporarily redirects (307) to the
+// ending explained hub, so the ~10 links to /watch-order around the site
+// still land on real content; the nav, footer and sitemap leave it out by
+// the same rule. isWatchOrderHubEmpty() is false on a DB error, so a blip
+// never redirects a hub that has guides.
 export async function generateMetadata() {
-  const empty = await isWatchOrderHubEmpty();
-  return { ...metadata, robots: empty ? NOINDEX_ROBOTS : INDEX_ROBOTS };
+  if (await isWatchOrderHubEmpty()) redirect("/ending-explained");
+  return { ...metadata, robots: INDEX_ROBOTS };
 }
 
 const metadata = {
@@ -33,7 +38,11 @@ const metadata = {
 };
 
 export default async function WatchOrderIndexPage() {
-  const franchises = await getAllPublishedFranchises();
+  if (await isWatchOrderHubEmpty()) redirect("/ending-explained");
+  const [franchises, topics] = await Promise.all([
+    getAllPublishedFranchises(),
+    getIndexableWatchOrderTopics().catch(() => []),
+  ]);
 
   // CollectionPage + ItemList + breadcrumb, matching the ending explained hub.
   const hubUrl = `${BASE_URL}/watch-order`;
@@ -77,7 +86,7 @@ export default async function WatchOrderIndexPage() {
         <SearchBar path="/search" placeholder="Search a franchise" />
       </PageHero>
 
-      <TopicLinks topics={WATCH_ORDER_TOPICS} basePath="/watch-order" />
+      <TopicLinks topics={topics} basePath="/watch-order" />
 
       <div className="mx-auto max-w-6xl px-6 py-14">
         {franchises.length === 0 ? (

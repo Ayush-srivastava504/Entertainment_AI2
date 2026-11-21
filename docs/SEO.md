@@ -15,7 +15,7 @@ for a page to be left out; none of it guarantees indexing.
 | Piece | Where | What it does |
 |---|---|---|
 | Sitemap index | `app/sitemap.xml/route.ts` -> `lib/sitemap.ts` (`buildSitemapIndex`) | Lists one child sitemap per section so Search Console reports indexing per section. |
-| Child sitemaps | `app/sitemaps/[name]/route.ts` -> `buildSitemapByName` | `pages.xml` (hubs, wallpapers, stickers, GIFs, characters, topics, sticker maker), `watch-order.xml`, `anime-N.xml` and `movies-N.xml` (1,000 URLs each). Only `<loc>` and a real `<lastmod>`. |
+| Child sitemaps | `app/sitemaps/[name]/route.ts` -> `buildSitemapByName` | `pages.xml` (hubs, wallpapers, stickers, GIFs, characters, topics, sticker maker), `watch-order.xml`, `anime-N.xml` and `movies-N.xml` (1,000 URLs each). Only `<loc>`, a real `<lastmod>`, and `<image:loc>` for every image on sticker collection and wallpaper category pages (the image sitemap). |
 | robots.txt | `app/robots.ts` | Allows everything except `/api/` (but allows `/api/og` so share images work), `/admin`, `/favorites`, `/search`. Lists the index and every child sitemap. |
 | Canonicals | each page's `generateMetadata` / `metadata` (`alternates.canonical`) | Always self-referencing, absolute, non-www. The root layout deliberately sets no canonical. Exception: the homepage renders `<link rel="canonical" href="https://animegirl4u.com/">` itself in `app/page.tsx`, because Next.js strips the trailing slash from a root canonical and Search Console then flagged `/` as "Alternate page with proper canonical tag". |
 | noindex | per page (`robots: { index: false, follow: true }`) | Only for pages that should not rank: internal search results, filtered or parameter views, thin fallbacks, the games section. Never used to hide a fixable problem. |
@@ -25,23 +25,74 @@ for a page to be left out; none of it guarantees indexing.
 | IndexNow | `lib/indexnow.ts`, `crawler/indexnow-bulk.mjs` | Pushes new and changed URLs to Bing and friends. |
 | www redirect | `next.config.js` `redirects()` | `www.animegirl4u.com/*` -> `animegirl4u.com/*` (permanent). Should also be set to 308 in Vercel; see section 5. |
 
-### Which URLs are indexable
+### The URL rule: indexable, or it does not exist
 
-Indexable pages use `INDEX_ROBOTS` from `lib/seo.ts`, never `robots: undefined`:
-an explicit `undefined` drops the layout's robots tag, including
-`max-image-preview: large`. Noindexed pages use `NOINDEX_ROBOTS`.
+Every content URL is either a page we want Google to index, or it is not a
+page at all (404, or a redirect to the page that is). `noindex` is only for
+utility views (search, favorites, games, admin), never for content that
+"is not good enough yet". A noindexed content URL that the site links to is
+a URL Googlebot keeps crawling instead of the real pages; on a new domain
+with almost no crawl budget that is what produced "Discovered - currently
+not indexed" for 1,800+ URLs in November 2026.
 
-| Section | Indexable | Notes |
-|---|---|---|
-| Ending Explained guides (anime) | yes | Movies were removed on 2026-11-13: old movie guide URLs return 410 (`middleware.ts` + `lib/removed-movie-urls.json`), `/movies/*` returns 410. |
-| Watch Order guides | yes, anime/mixed only | Movie franchises are unpublished (`media_type <> 'movie'` in `lib/api/franchises.ts`) and 404. `/watch-order` is noindex and out of the sitemap while it lists nothing. |
-| Topic hubs (`/ending-explained/topic/*`, `/watch-order/topic/*`) | only with enough guides | At least 6 guides (ending) or 3 (watch order), else noindex and out of the sitemap. One rule for page, sitemap and footer: `lib/api/topic-hubs.ts`. A DB error never counts as "empty". |
-| Character profiles (`/anime-characters/[slug]`) | yes, if they have a bio | No bio of 300+ characters (`isThinCharacter()` in `lib/characters-db.ts`) means noindex and not in the sitemap. `noindex = true` in `anime_characters` and live Jikan fallback profiles are always noindex. |
-| Wallpapers, sticker collections | yes | Sticker collections are the GIF landing pages and are always indexable. |
-| `/gif/[id]` | no (noindex, follow) | ~80 words each; out of the sitemap. Flip `INDEX_GIF_PAGES` in `lib/site.ts` once each has real unique text. |
-| `/stickers/maker` | yes | `?src=` variants (preloaded sticker) are noindex. |
-| `/games/*`, `/favorites`, `/search` | no | Deliberate. |
-| `/ending-explained?type=...`, `/anime-characters?q=` or `?page=2+`, `/stickers?q=` | no (noindex, follow) | Filter, search and live-API listing views. |
+So, for every kind of URL, one function decides, and the page, the sitemap
+and every list that links to it use that same function:
+
+| Section | Exists when | Otherwise | Rule lives in |
+|---|---|---|---|
+| Ending Explained guides (anime) | published and grounded | 404; removed movie guides 410 (`middleware.ts` + `lib/removed-movie-urls.json`), `/movies/*` 410 | generator gate, `lib/api/anime.ts` |
+| Watch Order guides | anime/mixed franchise | 404 (movie franchises: `media_type <> 'movie'`) | `lib/api/franchises.ts` |
+| `/watch-order` hub | at least one watch order | temporary redirect (307) to `/ending-explained`, out of nav and sitemap | `isWatchOrderHubEmpty()` |
+| Topic hubs (`/ending-explained/topic/*`, `/watch-order/topic/*`) | 6+ guides (ending) / 3+ (watch order) | 404, not linked, not in sitemap | `lib/api/topic-hubs.ts` |
+| Character profiles (`/anime-characters/[slug]`) | official description of 500+ characters, and description + overview of 1,900+ (500+ words on the page; 46 profiles on 2026-11-22), not hidden | 404, not linked anywhere, not in sitemap | `isPublicCharacter()` / `indexableCharacterSql()` in `lib/characters-db.ts` |
+| `/anime-characters/leads/[slug]` | never a page of its own | 308 to the profile, or 404 | same |
+| Sticker collections, wallpaper categories, `/anime-girl-pfp` | always | | defined in code |
+| `/gif/[id]` | never a page of its own | 308 to `/stickers/<collection>#<id>` | `app/gif/[id]/page.tsx` |
+| `/wallpapers/[slug]` | never a page of its own | 308 to `/wallpapers/category/<category>#<slug>` | `app/wallpapers/[slug]/page.tsx` |
+| `/anime-characters?page=N`, `/ending-explained?type=` | never | 308 to the clean URL | the hub pages |
+| `?q=` searches, `/stickers/maker?src=` | utility views | noindex + disallowed in `robots.txt` | `app/robots.ts` |
+| `/games/*`, `/favorites`, `/search` | utility | noindex (allowed to be linked) | |
+
+Rules that make this safe:
+
+- **A database error never counts as "empty".** Every query that can turn a
+  page into a 404 is strict: it throws, the request fails and is retried,
+  and ISR keeps serving the last good version. (Before, one DB blip cached
+  "no guides" and stamped noindex on good pages.)
+- Indexable pages use `INDEX_ROBOTS` from `lib/seo.ts`, never
+  `robots: undefined` (an explicit `undefined` drops the layout's
+  `max-image-preview: large`).
+- Images are not pages. GIFs and wallpapers are listed as `<image:loc>` on
+  the collection page that shows them (the image sitemap), and each card's
+  image links to the file itself, so that page is the image's landing page
+  in Google Images.
+
+### Adding a new kind of URL (checklist)
+
+1. Decide the "exists when" rule and put it in ONE function next to the
+   data query. Use it in the page (`notFound()` / redirect), the sitemap,
+   and every list or link that points to it.
+2. If the rule depends on the database, make the check strict (throw on
+   error), never "empty on error".
+3. Never ship a content page as `noindex` "for now". If it is not ready, it
+   does not get a URL yet.
+4. A section that would hold only a handful of items is a section with an
+   anchor on an existing page (like the moods on `/anime-girl-pfp`), not a
+   new URL.
+5. Run `npm run seo:gate -- --base=http://localhost:3000` against a local
+   build before pushing. After the deploy, the SEO gate workflow checks the
+   live site again.
+
+### The SEO gate
+
+`scripts/seo-gate.mjs` (`npm run seo:gate`) checks every sitemap URL (200,
+indexable, self canonical, title, description, H1, at least 500 words of
+main text (warning under 800), no duplicate titles), every sitemap image, and every internal link on those
+pages (no 404s, no links to noindex pages). It exits 1 on any error.
+`.github/workflows/seo-gate.yml` runs it after every Production deploy,
+daily (which covers guides the crawler workflow publishes without a
+deploy), and on demand. A failed run emails the repo owner and attaches
+`seo-gate-report.json`.
 
 ---
 
@@ -108,6 +159,8 @@ depth from the homepage and response time.
 | Jump links to every 5th page in pagination | `components/ui/Pagination.tsx` |
 | Working Gemini default (`gemini-3.5-flash-lite`, `reasoning_effort: "low"`, 5 s timeout) | `lib/api/gif-captions.ts`, `crawler/lib/ai.mjs` |
 | Pre-generate GIF captions instead of at request time | `crawler/gif-captions-backfill.mjs`, `npm run generate:gif-captions` |
+| Guides and character profiles link to each other: "Characters in X" on each guide, and each appearance on a profile links to its guide (matched on AniList id, then exact title; indexable profiles only) | `getCharactersForAnime()` in `lib/characters-db.ts`, `getGuideSlugsForAppearances()` in `lib/api/anime.ts` |
+| `npm run indexnow:removed`: tells Bing/IndexNow about the 906 removed movie guides (410) so they drop out faster; run once after deploy | `crawler/indexnow-bulk.mjs --removed` |
 | Per-wallpaper alt text and description written from the actual image | `scripts/describe-wallpapers.mjs` -> `lib/data/wallpaper-descriptions.json`, merged in `lib/wallpapers.ts`, shown in `app/wallpapers/[slug]/page.tsx` |
 | Per-sticker alt text and description written from the actual image | `scripts/describe-stickers.mjs` -> `lib/data/sticker-descriptions.json`, merged in `lib/api/original-gifs.ts`, shown on `/gif/[id]` and in the "What's in the collection" list on `/stickers/[collection]` |
 | GIF pages: full social tags, image dimensions, per-item facts; removed a wrong "480 x 480" size row | `app/gif/[id]/page.tsx` |

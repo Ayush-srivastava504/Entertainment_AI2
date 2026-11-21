@@ -34,6 +34,9 @@ export function websiteNode() {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
+    // Site-name variants Google may show above the result (people search
+    // "animegirl4u" and "anime girl 4u").
+    alternateName: ["Anime Girl 4U", "animegirl4u.com"],
     url: HOME_URL,
     inLanguage: "en",
     publisher: { "@id": ORG_ID },

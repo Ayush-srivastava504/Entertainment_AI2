@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
-import { fitTitle, INDEX_ROBOTS, NOINDEX_ROBOTS } from "@/lib/seo";
+import { fitTitle, INDEX_ROBOTS } from "@/lib/seo";
 import { socialMeta } from "@/lib/og";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { characterSlug, getCharacter, parseCharacterId } from "@/lib/characters";
-import { getDbCharacterBySlug, getLegacyCharacterRedirect, getRelatedCharacters, isThinCharacter, type DbCharacter } from "@/lib/characters-db";
+import { getGuideSlugsForAppearances } from "@/lib/api/anime";
+import { getDbCharacterBySlug, getLegacyCharacterRedirect, getRelatedCharacters, isPublicCharacter, type DbCharacter } from "@/lib/characters-db";
 
 const BASE_URL = getBaseUrl();
 
@@ -75,6 +76,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
 
   const db = await getDbCharacterBySlug(slug);
+  // A thin or hidden profile does not exist publicly (404, not noindex): see
+  // isPublicCharacter(). It comes back by itself once a bio is written.
+  if (db && !isPublicCharacter(db)) notFound();
   if (db) {
     const show = db.anime[0]?.title;
     const title = fitTitle([
@@ -88,8 +92,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       title: { absolute: title },
       description,
       alternates: { canonical: url },
-      // Thin profiles (no real bio) stay out of the index; see isThinCharacter().
-      robots: db.noindex || isThinCharacter(db) ? NOINDEX_ROBOTS : INDEX_ROBOTS,
+      robots: INDEX_ROBOTS,
       ...socialMeta({
         title,
         description,
@@ -142,6 +145,7 @@ export default async function CharacterPage({ params }: { params: Promise<Params
   const { slug } = await params;
 
   const db = await getDbCharacterBySlug(slug);
+  if (db && !isPublicCharacter(db)) notFound();
   if (db) return <DbProfile c={db} />;
 
   // Profiles moved from "/anime-characters/<id>-<name>" to "/anime-characters/<name>": 301 so rankings carry over.
@@ -251,7 +255,8 @@ export default async function CharacterPage({ params }: { params: Promise<Params
 
 async function DbProfile({ c }: { c: DbCharacter }) {
   const url = `${BASE_URL}/anime-characters/${c.slug}`;
-  const related = await getRelatedCharacters(c, 6);
+  // Appearances that have a published guide link to it (profile -> guide).
+  const [related, guideSlugs] = await Promise.all([getRelatedCharacters(c, 6), getGuideSlugsForAppearances(c.anime)]);
   const faq = faqFor(c);
   const first = c.anime[0];
 
@@ -399,7 +404,13 @@ async function DbProfile({ c }: { c: DbCharacter }) {
                     <img src={a.image} alt={`${a.title} poster`} width={230} height={325} loading="lazy" className="aspect-[3/4] w-full object-cover" />
                   )}
                   <div className="p-2">
-                    <p className="text-sm font-semibold leading-tight">{a.title}</p>
+                    {guideSlugs.has(a.id) ? (
+                      <Link href={`/ending-explained/${guideSlugs.get(a.id)}`} className="text-sm font-semibold leading-tight text-beam underline underline-offset-2">
+                        {a.title} ending explained
+                      </Link>
+                    ) : (
+                      <p className="text-sm font-semibold leading-tight">{a.title}</p>
+                    )}
                     <p className="text-xs text-muted">
                       {[a.role ? a.role.charAt(0) + a.role.slice(1).toLowerCase() : null, a.year, a.format?.replace(/_/g, " "), a.score ? `★ ${a.score}` : null]
                         .filter(Boolean)

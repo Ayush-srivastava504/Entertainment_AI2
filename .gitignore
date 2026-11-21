@@ -12,3 +12,4 @@ tsconfig.tsbuildinfo
 # Supabase Storage, not committed to git (same reasoning as lib/api/original-gifs.ts).
 /original-gifs-for-supabase/
 seo-audit-report.json
+seo-gate-report.json

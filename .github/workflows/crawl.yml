@@ -58,7 +58,6 @@ jobs:
     timeout-minutes: 90
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      # The watch-providers step pings IndexNow when a guide's streaming info changes.
       INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
       NEXT_PUBLIC_SITE_URL: https://animegirl4u.com
     steps:

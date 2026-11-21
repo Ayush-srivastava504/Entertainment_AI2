@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { fitTitle, INDEX_ROBOTS } from "@/lib/seo";
 import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
+import { STICKER_COLLECTION_ABOUT } from "@/lib/data/collection-about";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import StickerCard from "@/components/stickers/StickerCard";
 import {
@@ -112,6 +113,19 @@ export default async function StickerCollectionPage({ params }: { params: Params
         ))}
       </div>
 
+      {STICKER_COLLECTION_ABOUT[slug] && (
+        <section className="mt-12 max-w-3xl" aria-labelledby="about-collection">
+          <h2 id="about-collection" className="font-display text-2xl font-extrabold">
+            About the {c.label} collection
+          </h2>
+          <div className="mt-3 space-y-3 leading-relaxed">
+            {STICKER_COLLECTION_ABOUT[slug].map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
       {items.some((g) => g.description) && (
         <section className="mt-12 max-w-3xl" aria-labelledby="in-collection">
           <h2 id="in-collection" className="font-display text-2xl font-extrabold">
@@ -122,9 +136,9 @@ export default async function StickerCollectionPage({ params }: { params: Params
               .filter((g) => g.description)
               .map((g) => (
                 <li key={g.id} className="leading-relaxed">
-                  <Link href={`/gif/${g.id}`} className="font-semibold text-beam underline underline-offset-2">
+                  <a href={`#${encodeURIComponent(g.id)}`} className="font-semibold text-beam underline underline-offset-2">
                     {shortStickerTitle(g, c)}
-                  </Link>
+                  </a>
                   : <span className="text-muted">{g.description}</span>
                 </li>
               ))}

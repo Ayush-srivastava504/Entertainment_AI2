@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getBaseUrl } from "@/lib/site";
 import { socialMeta } from "@/lib/og";
 import { countGuides, getGuidesPage, GUIDES_PER_PAGE, type GuideType } from "@/lib/api/guides";
@@ -12,8 +12,8 @@ import { Faq } from "@/components/ui/Faq";
 import { CtaBand } from "@/components/ui/CtaBand";
 import { ENDING_INDEX_FAQ } from "@/lib/faq";
 import { TitleRequestForm } from "@/components/TitleRequestForm";
-import { ENDING_TOPICS } from "@/lib/topics";
 import { TopicLinks } from "@/components/topics/TopicLinks";
+import { getIndexableEndingTopics } from "@/lib/api/topic-hubs";
 import { getTopRatedGuides } from "@/lib/api/hub";
 import { getFeaturedFranchises } from "@/lib/api/franchises";
 import { breadcrumbNode, graph, jsonLdString } from "@/lib/jsonld";
@@ -61,7 +61,11 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 }
 
 export default async function EndingExplainedIndexPage({ searchParams }: { searchParams: SearchParams }) {
-  const { active, page } = parse(await searchParams);
+  const sp = await searchParams;
+  // ?type= is left over from when movies were listed too; anime is the only
+  // catalog now, so it is the same page. Old URLs redirect to the clean one.
+  if (sp.type !== undefined) permanentRedirect(`/ending-explained${Number(sp.page) > 1 ? `?page=${Number(sp.page)}` : ""}`);
+  const { active, page } = parse(sp);
 
   const total = await countGuides(active);
   const totalPages = Math.max(1, Math.ceil(total / GUIDES_PER_PAGE));
@@ -100,6 +104,9 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
     ])
   );
   const showIntro = page === 1 && active === "all";
+  // Only topics with enough guides exist; on a DB error show no topic links
+  // rather than links that might 404.
+  const topics = await getIndexableEndingTopics().catch(() => []);
 
   return (
     <>
@@ -116,7 +123,7 @@ export default async function EndingExplainedIndexPage({ searchParams }: { searc
         <SearchBar path="/search" />
       </PageHero>
 
-      <TopicLinks topics={ENDING_TOPICS} basePath="/ending-explained" />
+      <TopicLinks topics={topics} basePath="/ending-explained" />
 
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         {showIntro && (

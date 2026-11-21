@@ -54,6 +54,7 @@ export default async function Footer() {
           <p className={headingClass}>GIFs &amp; wallpapers</p>
           <ul className="mt-2">
             <li><Link href="/stickers" className={linkClass}>Anime girl GIFs &amp; stickers</Link></li>
+            <li><Link href="/anime-girl-pfp" className={linkClass}>Anime girl PFP</Link></li>
             {STICKER_COLLECTIONS.slice(0, 4).map((c) => (
               <li key={c.slug}>
                 <Link href={`/stickers/${c.slug}`} className={linkClass}>{c.label} stickers</Link>

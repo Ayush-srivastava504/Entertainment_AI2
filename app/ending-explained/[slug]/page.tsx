@@ -14,6 +14,8 @@ import FavoriteButton from "@/components/FavoriteButton";
 import ShareButton from "@/components/ShareButton";
 import CommentSection from "@/components/CommentSection";
 import { getFranchiseForTitle, getFranchiseEntries } from "@/lib/api/franchises";
+import { getCharactersForAnime } from "@/lib/characters-db";
+import { getIndexableEndingTopics } from "@/lib/api/topic-hubs";
 import type { MediaItem } from "@/lib/api/normalize";
 import { getAdjacentGuides } from "@/lib/api/guides";
 import { ENDING_TOPICS, matchesMediaTopic } from "@/lib/topics";
@@ -119,12 +121,17 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
 
   const url = `${BASE_URL}/ending-explained/${item.slug}`;
   // Independent lookups run in parallel instead of one after another.
-  const [similar, { newer, older }, franchise] = await Promise.all([
+  const [similar, { newer, older }, franchise, characters, indexableTopics] = await Promise.all([
     getSimilarAnime(item.id, item.genres, 8),
     getAdjacentGuides(item.kind, item.id),
     getFranchiseForTitle(item.kind, item.id),
+    // Character profiles from this anime: links guide -> profile (and the
+    // profile links back to this guide), so the two sections reinforce each other.
+    getCharactersForAnime(item.id, 8),
+    // Thin topics are 404s, so only link the ones that exist.
+    getIndexableEndingTopics().catch(() => [] as typeof ENDING_TOPICS),
   ]);
-  const relatedTopics = ENDING_TOPICS.filter((t) => matchesMediaTopic(item, t)).slice(0, 4);
+  const relatedTopics = indexableTopics.filter((t) => matchesMediaTopic(item, t)).slice(0, 4);
 
   // Other guides in the same franchise, so each guide links to its siblings.
   const siblingGuides = franchise
@@ -478,6 +485,25 @@ export default async function EndingExplainedPage({ params }: { params: Promise<
                 </ul>
               )}
             </div>
+          )}
+
+          {characters.length > 0 && (
+            <nav aria-label={`${item.title} characters`} className="rounded-2xl border-2 border-ink bg-surface p-5">
+              <p className="font-display text-lg font-bold">Characters in {item.title}</p>
+              <ul className="mt-3 space-y-2">
+                {characters.map((ch) => (
+                  <li key={ch.slug}>
+                    <Link href={`/anime-characters/${ch.slug}`} className="flex items-center gap-3 font-semibold text-beam hover:underline">
+                      {ch.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={ch.image} alt="" width={36} height={36} loading="lazy" className="h-9 w-9 shrink-0 rounded-full border-2 border-ink object-cover" />
+                      ) : null}
+                      <span>{ch.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           )}
         </aside>
       </div>

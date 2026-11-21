@@ -1,0 +1,47 @@
+# SEO gate: checks every sitemap URL and every internal link on the live site
+# against the indexing rules in scripts/seo-gate.mjs (and docs/SEO.md).
+# A failed run means a URL that should not be public is live, or a page that
+# should be indexable is broken. GitHub emails the repo owner on failure, and
+# the full report is attached to the run as an artifact.
+#
+# When it runs:
+#   - after every successful Production deploy on Vercel (Vercel reports
+#     deployments to GitHub, which fires deployment_status)
+#   - every day, which also covers content the crawler workflow publishes
+#     straight to the database without a deploy
+#   - by hand from the Actions tab
+name: SEO gate
+
+on:
+  deployment_status:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: seo-gate
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    if: >
+      github.event_name != 'deployment_status' || (
+      github.event.deployment_status.state == 'success' &&
+      startsWith(github.event.deployment.environment, 'Production') )
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Give the new deployment a moment to take traffic and warm its caches.
+      - if: github.event_name == 'deployment_status'
+        run: sleep 90
+      - run: node scripts/seo-gate.mjs --base=https://animegirl4u.com
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-gate-report
+          path: seo-gate-report.json
+          if-no-files-found: ignore

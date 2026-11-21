@@ -193,3 +193,44 @@ export async function incrementAnimeLikes(idOrSlug: string): Promise<number | nu
   await invalidate("anime:");
   return rows[0].likes;
 }
+
+/**
+ * Published guide slug for each of a character's anime appearances, keyed by
+ * the appearance's AniList id. Matches anime.raw.id (AniList-sourced rows),
+ * then an exact case-insensitive title. Used to link character profiles to
+ * the guides for the shows they appear in. Fails soft to an empty map.
+ */
+export async function getGuideSlugsForAppearances(
+  appearances: { id: number; title: string }[],
+): Promise<Map<number, string>> {
+  if (!appearances.length) return new Map();
+  const ids = appearances.map((a) => String(a.id));
+  const titles = appearances.map((a) => a.title.toLowerCase());
+  try {
+    const rows = await cached(`anime:guides-for:${ids.join(",")}`, 3600, async () => {
+      const { rows } = await getPool().query(
+        `select id, slug, title, title_english, year, source, raw->>'id' as anilist_id
+           from anime
+          where noindex = false and ending_explained_content is not null
+            and ((source = 'anilist' and raw->>'id' = any($1::text[]))
+                 or lower(title) = any($2::text[])
+                 or lower(title_english) = any($2::text[]))`,
+        [ids, titles],
+      );
+      return rows as any[];
+    });
+    const slugOf = (r: any) => r.slug || buildMediaSlug(r.title_english || r.title, r.year, String(r.id));
+    const out = new Map<number, string>();
+    for (const a of appearances) {
+      const t = a.title.toLowerCase();
+      const hit =
+        rows.find((r) => r.source === "anilist" && r.anilist_id === String(a.id)) ??
+        rows.find((r) => r.title?.toLowerCase() === t || r.title_english?.toLowerCase() === t);
+      if (hit) out.set(a.id, slugOf(hit));
+    }
+    return out;
+  } catch (err) {
+    console.error("guide slugs for appearances query failed:", err);
+    return new Map();
+  }
+}

@@ -357,12 +357,22 @@ async function save(rows) {
 }
 
 /* ---------------- 4. AI overview (facts only) ---------------- */
+const MIN_ABOUT_FOR_AI = 500;
 async function writeOverviews() {
   const { generateWithAI } = await import("./lib/ai.mjs");
   const pool = getPool();
   const { rows } = await pool.query(
     `select id, name, name_native, gender, age, birthday, blood_type, favourites, about, anime, voice_actors
-       from anime_characters where overview is null order by coalesce(popular_rank, 999), coalesce(trending_rank, 999)`,
+       from anime_characters
+      where overview is null and noindex = false
+        -- Grounding: only characters with a real official description. For a
+        -- character with only a name, series and voice actor, a 150-word
+        -- overview would be filler, which is the kind of scaled thin content
+        -- search engines demote. Same idea as MIN_GROUNDING_CHARS in the
+        -- guide generator; keep in step with MIN_CHARACTER_ABOUT_CHARS in
+        -- lib/characters-db.ts.
+        and length(trim(coalesce(about, ''))) >= ${MIN_ABOUT_FOR_AI}
+      order by coalesce(popular_rank, 999), coalesce(trending_rank, 999)`,
   );
   console.log(`Writing overviews for ${rows.length} characters…`);
   let done = 0;
@@ -392,7 +402,7 @@ async function writeOverviews() {
       `no headings, no bullet points, no markdown.\n\n` +
       JSON.stringify(facts, null, 2);
     try {
-      const text = (await generateWithAI(prompt, { temperature: 0.4, maxTokens: 700 }))?.trim();
+      const text = (await generateWithAI(prompt, { temperature: 0.4, maxTokens: 1600 }))?.trim();
       if (text && text.length > 200) {
         await pool.query(`update anime_characters set overview = $2, updated_at = now() where id = $1`, [r.id, text]);
         done++;

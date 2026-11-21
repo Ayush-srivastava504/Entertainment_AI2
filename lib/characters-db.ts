@@ -70,7 +70,7 @@ function rowToCharacter(r: any): DbCharacter {
 }
 
 export async function getDbCharacterBySlug(slug: string): Promise<DbCharacter | null> {
-  return cached(`characters:slug:${slug}`, 3600, async () => {
+  return cached(`characters:slug:v3:${slug}`, 3600, async () => {
     // Throws on DB failure (nothing cached, page errors and is retried).
     const { rows } = await getPool().query(`select * from anime_characters where slug = $1`, [slug]);
     return rows[0] ? rowToCharacter(rows[0]) : null;
@@ -92,7 +92,7 @@ export async function getLegacyCharacterRedirect(slug: string): Promise<string |
   if (!m) return null;
   const id = Number(m[1]);
   try {
-    const row = await cached(`characters:id:${id}`, 3600, async () => {
+    const row = await cached(`characters:id:v3:${id}`, 3600, async () => {
       const { rows } = await getPool().query(`select slug, name from anime_characters where id = $1`, [id]);
       return (rows[0] as { slug: string; name: string } | undefined) ?? null;
     });
@@ -110,17 +110,19 @@ export async function getLegacyCharacterRedirect(slug: string): Promise<string |
   }
 }
 
-/** id -> current profile slug, for linking from the static leads list. Fails soft to an empty map. */
-export async function getDbSlugsByIds(ids: number[]): Promise<Map<number, string>> {
+/** id -> slug of the public profile (thin or hidden ones are left out), for linking from the static leads list. Fails soft to an empty map. */
+export async function getDbSlugsByIds(ids: number[], opts: { strict?: boolean } = {}): Promise<Map<number, string>> {
   if (!ids.length) return new Map();
   try {
-    const rows = await cached(`characters:slugs:${ids.join(",")}`, 3600, async () => {
-      const { rows } = await getPool().query(`select id, slug from anime_characters where id = any($1::bigint[])`, [ids]);
+    const rows = await cached(`characters:slugs:v3:${ids.join(",")}`, 3600, async () => {
+      const { rows } = await getPool().query(`select id, slug from anime_characters where id = any($1::bigint[]) and ${indexableCharacterSql()}`, [ids]);
       return rows as { id: string | number; slug: string }[];
     });
     return new Map(rows.map((r) => [Number(r.id), r.slug]));
   } catch (err) {
     console.error("character slugs query failed:", err);
+    // strict: a DB error must not look like "no profile" (that would 404 a lead).
+    if (opts.strict) throw err;
     return new Map();
   }
 }
@@ -137,17 +139,58 @@ async function list(key: string, sql: string, params: unknown[] = []): Promise<D
   }
 }
 
+/**
+ * One rule decides whether a character profile exists publicly, and every
+ * query below (indexableCharacterSql) and the page (isPublicCharacter) use
+ * it, so they can never disagree. A profile that fails it returns 404, is
+ * left out of the sitemap, and no list on the site links to it; it appears
+ * again everywhere by itself once it passes.
+ *
+ * Two conditions:
+ *  - grounded: an official description (AniList "about") of 500+ characters.
+ *    Without one, any longer text would have to be invented.
+ *  - substantial: description + overview of 1,900+ characters together,
+ *    so the page has 500+ words of main text. Measured on every profile of
+ *    the 2026-11-22 build: at 1,900+ the shortest page had 554 words; below
+ *    it, page length varies with the number of voice actors and appearances
+ *    and 16 profiles between 1,300 and 1,884 characters came out at 388-499.
+ *    The overview is written by `crawler/characters-sync.mjs --ai-only`
+ *    from the description and facts, for grounded characters only.
+ * scripts/seo-gate.mjs then checks every listed profile really has 500+ words.
+ */
+export const MIN_CHARACTER_ABOUT_CHARS = 500;
+export const MIN_CHARACTER_TEXT_CHARS = 1900;
+
+/** SQL condition for a public profile; `a` is the table alias ("" for none). */
+export function indexableCharacterSql(a = ""): string {
+  const c = a ? `${a}.` : "";
+  const about = `length(trim(coalesce(${c}about, '')))`;
+  const overview = `length(trim(coalesce(${c}overview, '')))`;
+  return `${c}noindex = false and ${about} >= ${MIN_CHARACTER_ABOUT_CHARS} and ${about} + ${overview} >= ${MIN_CHARACTER_TEXT_CHARS}`;
+}
+
+export function isThinCharacter(c: Pick<DbCharacter, "about" | "overview">): boolean {
+  const about = (c.about ?? "").trim().length;
+  const overview = (c.overview ?? "").trim().length;
+  return about < MIN_CHARACTER_ABOUT_CHARS || about + overview < MIN_CHARACTER_TEXT_CHARS;
+}
+
+/** True when the profile may be shown, linked and indexed. */
+export function isPublicCharacter(c: Pick<DbCharacter, "about" | "overview" | "noindex">): boolean {
+  return !c.noindex && !isThinCharacter(c);
+}
+
 export const getTrendingCharacters = (limit = 60) =>
   list(
-    `characters:trending:${limit}`,
-    `select * from anime_characters where trending_rank is not null and noindex = false order by trending_rank limit $1`,
+    `characters:trending:v3:${limit}`,
+    `select * from anime_characters where trending_rank is not null and ${indexableCharacterSql()} order by trending_rank limit $1`,
     [limit],
   );
 
 export const getPopularCharacters = (limit = 100) =>
   list(
-    `characters:popular:${limit}`,
-    `select * from anime_characters where popular_rank is not null and noindex = false order by popular_rank limit $1`,
+    `characters:popular:v3:${limit}`,
+    `select * from anime_characters where popular_rank is not null and ${indexableCharacterSql()} order by popular_rank limit $1`,
     [limit],
   );
 
@@ -156,36 +199,57 @@ export async function getRelatedCharacters(c: DbCharacter, limit = 6): Promise<D
   const animeIds = c.anime.map((a) => a.id);
   if (!animeIds.length) return [];
   return list(
-    `characters:related:${c.id}:${limit}`,
+    `characters:related:v3:${c.id}:${limit}`,
     `select * from anime_characters
-      where id <> $1 and noindex = false
+      where id <> $1 and ${indexableCharacterSql()}
         and exists (select 1 from jsonb_array_elements(anime) a where (a->>'id')::int = any($2::int[]))
       order by favourites desc limit $3`,
     [c.id, animeIds, limit],
   );
 }
 
-/**
- * A profile with no real bio (only name, series and voice actors) is a thin
- * page: 41 of them were under 250 words in the 2026-11-19 crawl. Those stay
- * live for visitors but get noindex and are left out of the sitemap, so
- * Google spends its crawl on profiles worth indexing. Once the
- * characters-sync overview pass fills in a bio, the page indexes again.
- */
-export const MIN_CHARACTER_BIO_CHARS = 300;
-
-export function isThinCharacter(c: Pick<DbCharacter, "about" | "overview">): boolean {
-  return (c.about ?? "").trim().length < MIN_CHARACTER_BIO_CHARS && (c.overview ?? "").trim().length < MIN_CHARACTER_BIO_CHARS;
-}
-
 /** For the sitemap: throws on DB failure so a blip is not cached as an empty list. */
 export async function getCharacterSitemapRows(): Promise<{ slug: string; updatedAt: Date }[]> {
   const { rows } = await getPool().query(
     `select slug, updated_at from anime_characters
-     where noindex = false
-       and (length(trim(coalesce(about, ''))) >= $1 or length(trim(coalesce(overview, ''))) >= $1)
+     where ${indexableCharacterSql()}
      order by favourites desc`,
-    [MIN_CHARACTER_BIO_CHARS],
   );
   return rows.map((r: any) => ({ slug: r.slug, updatedAt: r.updated_at }));
+}
+
+/**
+ * Indexable character profiles that appear in a given anime (anime.id), for
+ * the "Characters" links on its ending-explained guide. Matches on the
+ * AniList id stored in each character's appearances (anime.raw.id for
+ * AniList-sourced rows), falling back to an exact title match. Only public
+ * profiles are returned, so guides never link to a 404. Fails soft to [] (the guide renders without the section).
+ */
+export async function getCharactersForAnime(
+  animeId: string,
+  limit = 12,
+): Promise<{ name: string; slug: string; image: string | null }[]> {
+  try {
+    return await cached(`characters:for-anime:v3:${animeId}:${limit}`, 3600, async () => {
+      const { rows } = await getPool().query(
+        `select c.name, c.slug, c.image_url
+           from anime_characters c
+           join anime a on a.id = $1
+          where ${indexableCharacterSql("c")}
+            and (case when a.source = 'anilist' and a.raw->>'id' ~ '^[0-9]+$'
+                      then c.anime @> jsonb_build_array(jsonb_build_object('id', (a.raw->>'id')::bigint))
+                      else false end
+                 or c.anime @> jsonb_build_array(jsonb_build_object('title', a.title))
+                 or (a.title_english is not null
+                     and c.anime @> jsonb_build_array(jsonb_build_object('title', a.title_english))))
+          order by c.favourites desc
+          limit $2`,
+        [animeId, limit],
+      );
+      return rows.map((r: any) => ({ name: r.name, slug: r.slug, image: r.image_url ?? null }));
+    });
+  } catch (err) {
+    console.error("characters for anime query failed:", err);
+    return [];
+  }
 }

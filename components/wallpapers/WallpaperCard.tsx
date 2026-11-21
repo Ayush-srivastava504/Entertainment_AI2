@@ -2,11 +2,9 @@ import Link from "next/link";
 import type { Wallpaper } from "@/lib/wallpapers";
 
 /*
-Grid tile for the wallpaper gallery. The grid only ever shows the tiny
-`-thumb.webp` (a couple hundred px wide, a few KB) -- the full-resolution
-file is only fetched on the detail page, where it's actually viewed
-full-size. `loading="eager"`/`fetchPriority="high"` on the first row avoids
-competing with the hero band for LCP; everything below that lazy-loads.
+Gallery tile on /wallpapers. Links to the wallpaper on its category page
+(#slug): single-wallpaper pages were thin and now redirect there anyway.
+The grid only loads the small -thumb.webp.
 */
 export default function WallpaperCard({
   wallpaper,
@@ -17,7 +15,7 @@ export default function WallpaperCard({
 }) {
   return (
     <Link
-      href={`/wallpapers/${wallpaper.slug}`}
+      href={`/wallpapers/category/${wallpaper.category}#${wallpaper.slug}`}
       className="group block overflow-hidden rounded-xl border-2 border-ink bg-surface shadow-blockSm transition hover:-translate-y-0.5"
     >
       <div className="aspect-[326/462] overflow-hidden">
