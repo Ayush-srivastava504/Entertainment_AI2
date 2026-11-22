@@ -2,7 +2,8 @@
 # against the indexing rules in scripts/seo-gate.mjs (and docs/SEO.md).
 # A failed run means a URL that should not be public is live, or a page that
 # should be indexable is broken. GitHub emails the repo owner on failure, and
-# the full report is attached to the run as an artifact.
+# the full report is attached to the run as an artifact. After a deploy that
+# passes, it also submits new and changed URLs to IndexNow (Bing).
 #
 # When it runs:
 #   - after every successful Production deploy on Vercel (Vercel reports
@@ -39,6 +40,14 @@ jobs:
       - if: github.event_name == 'deployment_status'
         run: sleep 90
       - run: node scripts/seo-gate.mjs --base=https://animegirl4u.com
+      # Only after a deploy that passed the gate: tell Bing/IndexNow which URLs
+      # are new or changed (lastmod in the last 36h, plus pages without a
+      # lastmod). Needs the INDEXNOW_KEY repo secret (already used by crawl.yml).
+      - if: github.event_name == 'deployment_status' && success()
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          NEXT_PUBLIC_SITE_URL: https://animegirl4u.com
+        run: node crawler/indexnow-bulk.mjs --since-hours=36
       - if: always()
         uses: actions/upload-artifact@v4
         with:

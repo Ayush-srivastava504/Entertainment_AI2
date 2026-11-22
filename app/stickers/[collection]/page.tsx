@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { fitTitle, INDEX_ROBOTS } from "@/lib/seo";
-import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
+import { breadcrumbNode, graph, imageObject, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { STICKER_COLLECTION_ABOUT } from "@/lib/data/collection-about";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import StickerCard from "@/components/stickers/StickerCard";
@@ -78,7 +78,7 @@ export default async function StickerCollectionPage({ params }: { params: Params
       "@id": `${BASE_URL}${path}#gallery`,
       url: `${BASE_URL}${path}`,
       name: c.heading,
-      image: items.map((g) => g.fullUrl),
+      image: items.map((g) => imageObject(g.fullUrl, { name: g.title, caption: g.alt ?? g.description, width: g.width, height: g.height })),
     }
   );
 

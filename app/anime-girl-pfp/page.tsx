@@ -3,13 +3,14 @@ import Link from "next/link";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { fitTitle, INDEX_ROBOTS } from "@/lib/seo";
 import { socialMeta } from "@/lib/og";
-import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
+import { breadcrumbNode, graph, imageObject, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Faq } from "@/components/ui/Faq";
 import { listOriginalGifs } from "@/lib/api/original-gifs";
 import { collectionForSticker, shortStickerTitle } from "@/lib/sticker-collections";
 import { groupByMood } from "@/lib/pfp";
 import PfpDownloadButton from "@/components/stickers/PfpDownloadButton";
+import PinButton from "@/components/PinButton";
 
 // Static, rebuilt hourly. listOriginalGifs throws on a storage error, so a
 // failed rebuild keeps the last good page instead of caching an empty one.
@@ -77,7 +78,7 @@ export default async function AnimeGirlPfpPage() {
       ...(lead ? { primaryImageOfPage: { "@id": `${BASE_URL}${PATH}#primary-image` } } : {}),
     },
     ...(lead
-      ? [{ "@type": "ImageObject", "@id": `${BASE_URL}${PATH}#primary-image`, contentUrl: lead.fullUrl, caption: lead.alt ?? lead.title }]
+      ? [{ ...imageObject(lead.fullUrl, { name: lead.title, caption: lead.alt }), "@id": `${BASE_URL}${PATH}#primary-image` }]
       : []),
     {
       "@id": `${BASE_URL}${PATH}#breadcrumb`,
@@ -91,7 +92,7 @@ export default async function AnimeGirlPfpPage() {
       "@id": `${BASE_URL}${PATH}#gallery`,
       url: `${BASE_URL}${PATH}`,
       name: "Anime girl PFPs",
-      image: groups.flatMap((g) => g.items.map((i) => i.fullUrl)),
+      image: groups.flatMap((g) => g.items.map((i) => imageObject(i.fullUrl, { name: i.title, caption: i.alt, width: i.width, height: i.height }))),
     }
   );
 
@@ -160,6 +161,9 @@ export default async function AnimeGirlPfpPage() {
                     )}
                     <div className="mt-2">
                       <PfpDownloadButton url={g.fullUrl} name={g.title} bg={mood.bg} />
+                    </div>
+                    <div className="mt-1.5 flex justify-center">
+                      <PinButton path={`/anime-girl-pfp#${mood.slug}`} image={g.fullUrl} description={`${mood.label} anime girl PFP: ${g.alt ?? g.title}`} />
                     </div>
                   </li>
                 );

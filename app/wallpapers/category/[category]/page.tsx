@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBaseUrl, SITE_NAME } from "@/lib/site";
 import { fitTitle } from "@/lib/seo";
-import { breadcrumbNode, graph, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
+import { breadcrumbNode, graph, imageObject, jsonLdString, WEBSITE_ID } from "@/lib/jsonld";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { WALLPAPER_CATEGORIES, getWallpapersByCategory } from "@/lib/wallpapers";
 import { WALLPAPER_CATEGORY_ABOUT } from "@/lib/data/collection-about";
@@ -76,7 +76,7 @@ export default async function WallpaperCategoryPage({ params }: { params: Params
       "@id": `${BASE_URL}${path}#gallery`,
       url: `${BASE_URL}${path}`,
       name: category.heading,
-      image: items.map((w) => `${BASE_URL}${w.src}`),
+      image: items.map((w) => imageObject(`${BASE_URL}${w.src}`, { name: w.title, caption: w.alt, width: w.width, height: w.height })),
     }
   );
 

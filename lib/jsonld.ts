@@ -63,6 +63,27 @@ export function breadcrumbNode(items: { name: string; path: string }[]) {
   };
 }
 
+/**
+ * ImageObject for one of the site's own images (GIF, sticker, PFP, wallpaper),
+ * with the licence fields Google Images reads to show licence details and
+ * credit: license + acquireLicensePage point to /license, creator and
+ * creditText name the site. See app/license/page.tsx for what the licence says.
+ */
+export function imageObject(contentUrl: string, opts: { name?: string; caption?: string; width?: number; height?: number } = {}) {
+  return {
+    "@type": "ImageObject",
+    contentUrl,
+    ...(opts.name ? { name: opts.name } : {}),
+    ...(opts.caption ? { caption: opts.caption } : {}),
+    ...(opts.width && opts.height ? { width: opts.width, height: opts.height } : {}),
+    license: `${BASE_URL}/license`,
+    acquireLicensePage: `${BASE_URL}/license`,
+    creditText: SITE_NAME,
+    creator: { "@id": ORG_ID },
+    copyrightNotice: SITE_NAME,
+  };
+}
+
 /** Wraps nodes in one @graph document. */
 export function graph(...nodes: object[]) {
   return { "@context": "https://schema.org", "@graph": nodes };

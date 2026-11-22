@@ -51,6 +51,8 @@ and every list that links to it use that same function:
 | `/wallpapers/[slug]` | never a page of its own | 308 to `/wallpapers/category/<category>#<slug>` | `app/wallpapers/[slug]/page.tsx` |
 | `/anime-characters?page=N`, `/ending-explained?type=` | never | 308 to the clean URL | the hub pages |
 | `?q=` searches, `/stickers/maker?src=` | utility views | noindex + disallowed in `robots.txt` | `app/robots.ts` |
+| `/stickers`, `/anime-characters`, `/ending-explained` | always, as static (ISR) pages | `?q=` is rewritten by `middleware.ts` to `/stickers/search` / `/anime-characters/search` (noindex); `?page=N` to `/ending-explained/p/N` (indexable, canonical `?page=N`). Public URLs never change. Reading `searchParams` in the hub itself would make it render on every request (it was 2.2-2.9 s TTFB). | `middleware.ts`, `components/hubs/` |
+| `/license` | always | Image licence. Every gallery image's JSON-LD (`imageObject()` in `lib/jsonld.ts`) points `license` and `acquireLicensePage` here, for licence details in Google Images. | `app/license/page.tsx` |
 | `/games/*`, `/favorites`, `/search` | utility | noindex (allowed to be linked) | |
 
 Rules that make this safe:

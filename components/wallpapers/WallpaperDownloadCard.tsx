@@ -1,4 +1,5 @@
 import type { Wallpaper } from "@/lib/wallpapers";
+import PinButton from "@/components/PinButton";
 
 /*
 Category-page tile: thumbnail (opens the full-size image) plus a one-tap
@@ -33,6 +34,11 @@ export default function WallpaperDownloadCard({
       </a>
       <div className="flex items-center justify-between gap-2 p-2">
         <p className="truncate text-xs font-semibold text-ink/80">{wallpaper.title.replace(/ wallpaper/i, "")}</p>
+        <PinButton
+          path={`/wallpapers/category/${wallpaper.category}#${wallpaper.slug}`}
+          image={wallpaper.src}
+          description={`${wallpaper.alt} Free anime girl phone wallpaper.`}
+        />
         <a
           href={wallpaper.src}
           download={`${wallpaper.slug}.webp`}
