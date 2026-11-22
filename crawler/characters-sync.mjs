@@ -335,7 +335,21 @@ async function save(rows) {
            blood_type = excluded.blood_type, favourites = excluded.favourites, about = excluded.about,
            anime = excluded.anime, voice_actors = excluded.voice_actors, collections = excluded.collections,
            popular_rank = excluded.popular_rank, trending_rank = excluded.trending_rank,
-           source_url = excluded.source_url, updated_at = now()`,
+           source_url = excluded.source_url,
+           -- updated_at is the sitemap <lastmod>: move it only when what the
+           -- profile page says actually changed. Favourite counts and ranks
+           -- change on nearly every sync; stamping every row with now() made
+           -- all lastmods change while the pages did not, which teaches
+           -- Google to ignore the site's lastmod.
+           updated_at = case
+             when (anime_characters.name, anime_characters.name_native, anime_characters.aliases, anime_characters.image_url,
+                   anime_characters.gender, anime_characters.age, anime_characters.birthday, anime_characters.blood_type,
+                   anime_characters.about, anime_characters.anime, anime_characters.voice_actors)
+                  is distinct from
+                  (excluded.name, excluded.name_native, excluded.aliases, excluded.image_url,
+                   excluded.gender, excluded.age, excluded.birthday, excluded.blood_type,
+                   excluded.about, excluded.anime, excluded.voice_actors)
+             then now() else anime_characters.updated_at end`,
         // overview and noindex are editor/AI-owned and deliberately not touched by a re-sync;
         // slug is owned by reslug() below so live URLs stay stable.
         [

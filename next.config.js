@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // When this build was made. The sitemap index uses it as the lastmod of
+  // pages.xml: the hubs, collections and other code-defined pages only change
+  // with a deploy, and Google uses that lastmod to decide when to re-read the
+  // child sitemap.
+  env: { SITE_BUILD_TIME: new Date().toISOString() },
   // Streaming metadata puts <title>/<meta> in <body> for normal browsers.
   // For these crawlers (and link-preview bots) Next waits for metadata and
   // writes it into <head>, which is the safest form for indexing. Googlebot

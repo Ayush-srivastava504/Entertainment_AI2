@@ -88,8 +88,14 @@ const chunks = <T,>(rows: T[]) => {
 
 export async function buildSitemapIndex(): Promise<string> {
   const { anime, franchises } = await load();
+  // pages.xml changes when a guide or character profile changes, and on every
+  // deploy (the code-defined pages). Before, only guides counted, so after the
+  // Nov 2026 restructure the index still said pages.xml last changed on
+  // Nov 15 and Google had no reason to re-read it.
+  const characters = await getCharacterSitemapRows().catch(() => []);
+  const built = process.env.SITE_BUILD_TIME ? [{ updatedAt: new Date(process.env.SITE_BUILD_TIME) }] : [];
   const items: { loc: string; lastmod?: Date }[] = [
-    { loc: `${BASE_URL}/sitemaps/pages.xml`, lastmod: newest([...anime, ...franchises]) },
+    { loc: `${BASE_URL}/sitemaps/pages.xml`, lastmod: newest([...anime, ...franchises, ...characters, ...built]) },
   ];
   if (franchises.length) items.push({ loc: `${BASE_URL}/sitemaps/watch-order.xml`, lastmod: newest(franchises) });
   chunks(anime).forEach((c, i) => items.push({ loc: `${BASE_URL}/sitemaps/anime-${i + 1}.xml`, lastmod: newest(c) }));
